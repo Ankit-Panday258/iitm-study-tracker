@@ -353,8 +353,6 @@ export default function App() {
 
         {/* App Header */}
         <Navbar
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
           streak={streak}
           onOpenAddModal={handleOpenAddModal}
           darkMode={darkMode}
@@ -370,8 +368,6 @@ export default function App() {
           onInstallApp={handleInstallApp}
           isPhoneView={isPhoneView}
           onTogglePhoneView={togglePhoneView}
-          onPrevDay={handlePrevDay}
-          onNextDay={handleNextDay}
         />
 
         {/* View Switch: Daily Track or Main Planner */}
