@@ -402,6 +402,10 @@ export default function App() {
           onInstallApp={handleInstallApp}
           isPhoneView={isPhoneView}
           onTogglePhoneView={togglePhoneView}
+          taskDates={taskDates}
+          allTasks={allTasks}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
         />
 
         {/* View Switch: Daily Track or Main Planner */}
@@ -416,33 +420,6 @@ export default function App() {
           />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            
-            {/* Quick Date Shortcuts Bar */}
-            {taskDates.length > 1 && (
-              <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs no-scrollbar">
-                <span className="text-gray-400 font-semibold flex items-center gap-1 shrink-0">
-                  <Calendar className="w-3.5 h-3.5 text-pink-500" />
-                  Scheduled:
-                </span>
-                {taskDates.map(d => {
-                  const count = allTasks.filter(t => t.date === d).length;
-                  const isSelected = d === selectedDate;
-                  return (
-                    <button
-                      key={d}
-                      onClick={() => setSelectedDate(d)}
-                      className={`px-2.5 py-1 rounded-xl font-bold border transition-all shrink-0 active:scale-95 ${
-                        isSelected
-                          ? 'bg-pink-600 text-white border-pink-600 shadow-sm shadow-pink-600/20'
-                          : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-400'
-                      }`}
-                    >
-                      {d === getTodayString() ? 'Today' : d} ({count})
-                    </button>
-                  );
-                })}
-              </div>
-            )}
 
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
