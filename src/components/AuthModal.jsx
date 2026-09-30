@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, LogIn, Mail, User, ShieldCheck, Check, Sparkles, Smartphone } from 'lucide-react';
+import { X, LogIn, Mail, User, ShieldCheck, Check, Sparkles } from 'lucide-react';
 import { loginWithGoogle, loginWithEmail } from '../api';
 import { jwtDecode } from 'jwt-decode';
 
-export default function AuthModal({ isOpen, onClose, onLoginSuccess, isPhoneView, onTogglePhoneView }) {
+export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [authMode, setAuthMode] = useState('google'); // 'google' | 'email'
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -266,32 +266,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess, isPhoneView
             </form>
           )}
 
-          {/* Phone App View Simulator Toggle */}
-          {onTogglePhoneView && (
-            <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Smartphone className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                <div>
-                  <p className="text-xs font-bold text-gray-800 dark:text-slate-200">Phone App View</p>
-                  <p className="text-[10px] text-gray-400 dark:text-slate-500">Preview smartphone app frame</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={onTogglePhoneView}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                  isPhoneView
-                    ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
-                    : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-400'
-                }`}
-              >
-                {isPhoneView ? 'Active (ON)' : 'Switch ON'}
-              </button>
-            </div>
-          )}
-
           {/* Security badge */}
-          <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-center gap-1.5 text-[11px] text-gray-400">
+          <div className="mt-5 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-center gap-1.5 text-[11px] text-gray-400">
             <ShieldCheck className="w-3.5 h-3.5 text-pink-500" />
             <span>MongoDB Secured Authentication</span>
           </div>
