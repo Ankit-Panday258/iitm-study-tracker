@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { handleApiRequest } from './server/apiHandler.js'
 
 export default defineConfig({
   plugins: [
@@ -8,13 +7,23 @@ export default defineConfig({
     {
       name: 'sqlite-api-plugin',
       configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          handleApiRequest(req, res, next);
+        server.middlewares.use(async (req, res, next) => {
+          try {
+            const { handleApiRequest } = await import('./server/apiHandler.js');
+            handleApiRequest(req, res, next);
+          } catch (err) {
+            next();
+          }
         });
       },
       configurePreviewServer(server) {
-        server.middlewares.use((req, res, next) => {
-          handleApiRequest(req, res, next);
+        server.middlewares.use(async (req, res, next) => {
+          try {
+            const { handleApiRequest } = await import('./server/apiHandler.js');
+            handleApiRequest(req, res, next);
+          } catch (err) {
+            next();
+          }
         });
       }
     }
