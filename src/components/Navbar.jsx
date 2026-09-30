@@ -17,12 +17,17 @@ export default function Navbar({
   onInstallApp
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setIsUserMenuOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -51,7 +56,7 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* Mobile Right Controls: Streak & Profile */}
+          {/* Mobile Right Controls: Streak, Dark Mode & Account Icon */}
           <div className="flex sm:hidden items-center gap-2">
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800">
               <Flame className="w-3.5 h-3.5 fill-pink-500 text-pink-600 animate-pulse" />
@@ -64,76 +69,30 @@ export default function Navbar({
             >
               {darkMode ? <Sun className="w-3.5 h-3.5 text-yellow-400" /> : <Moon className="w-3.5 h-3.5" />}
             </button>
-          </div>
-        </div>
 
-        {/* Right Tools */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
-
-          {/* Install App Button (PWA) - Only shown if NOT already installed */}
-          {!isInstalled && isInstallable && (
-            <button
-              onClick={onInstallApp}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-300 dark:border-pink-700 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95"
-              title="Install App on Device / Desktop"
-            >
-              <Download className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 animate-bounce" />
-              <span className="hidden sm:inline">Install App</span>
-              <span className="sm:hidden">Install</span>
-            </button>
-          )}
-
-          {/* Desktop Streak Counter */}
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300 text-xs font-bold shadow-sm" title="Study Streak">
-            <Flame className="w-4 h-4 fill-pink-500 text-pink-600 dark:fill-pink-400 dark:text-pink-400 animate-pulse" />
-            <span>{streak}d Streak</span>
-          </div>
-
-          {/* Dark / Light Mode Toggle (Desktop) */}
-          <button
-            onClick={toggleDarkMode}
-            className="hidden sm:block p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all shadow-sm"
-            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
-          </button>
-
-          {/* User Auth & Login Area */}
-          {currentUser ? (
-            <div className="relative" ref={userMenuRef}>
+            {/* Mobile Account Button with Avatar Icon */}
+            <div className="relative" ref={mobileMenuRef}>
               <button
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1.5 p-0.5 rounded-full border-2 border-pink-500 hover:border-pink-600 transition-all bg-white dark:bg-slate-800 shadow-sm"
-                title={currentUser.name || currentUser.email}
+                onClick={currentUser ? () => setIsMobileMenuOpen(!isMobileMenuOpen) : onOpenAuthModal}
+                className="p-0.5 rounded-full border-2 border-pink-500 hover:border-pink-600 transition-all bg-white dark:bg-slate-800 shadow-sm active:scale-95 flex items-center justify-center"
+                title={currentUser ? (currentUser.name || 'Account') : 'Account'}
               >
-                {currentUser.picture ? (
-                  <img
-                    src={currentUser.picture}
-                    alt={currentUser.name}
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-pink-600 text-white font-bold text-xs flex items-center justify-center">
-                    {(currentUser.name || currentUser.email || 'U')[0].toUpperCase()}
-                  </div>
-                )}
+                <img
+                  src={currentUser?.picture || "/avatar-bot.png"}
+                  alt="Account"
+                  className="w-7 h-7 rounded-full object-cover"
+                />
               </button>
 
-              {/* Profile Dropdown Menu */}
-              {isUserMenuOpen && (
+              {/* Mobile Profile Dropdown Menu */}
+              {isMobileMenuOpen && currentUser && (
                 <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 z-50 animate-scaleUp">
                   <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-slate-800">
-                    {currentUser.picture ? (
-                      <img
-                        src={currentUser.picture}
-                        alt={currentUser.name}
-                        className="w-10 h-10 rounded-full object-cover border border-pink-400"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-pink-600 text-white font-bold text-sm flex items-center justify-center">
-                        {(currentUser.name || 'U')[0].toUpperCase()}
-                      </div>
-                    )}
+                    <img
+                      src={currentUser.picture || "/avatar-bot.png"}
+                      alt={currentUser.name}
+                      className="w-10 h-10 rounded-full object-cover border border-pink-400"
+                    />
                     <div className="min-w-0">
                       <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">
                         {currentUser.name}
@@ -146,7 +105,106 @@ export default function Navbar({
 
                   <div className="pt-2 space-y-1.5">
                     <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
-                      ✓ Google Authenticated
+                      ✓ Authenticated
+                    </span>
+
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 dark:border-red-900/50 transition-colors"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Install Button (if installable and not installed) */}
+        {!isInstalled && isInstallable && (
+          <div className="flex sm:hidden w-full justify-end">
+            <button
+              onClick={onInstallApp}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-300 dark:border-pink-700 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95"
+            >
+              <Download className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 animate-bounce" />
+              <span>Install App</span>
+            </button>
+          </div>
+        )}
+
+        {/* Desktop Right Tools */}
+        <div className="hidden sm:flex items-center gap-2 w-auto justify-end flex-wrap">
+
+          {/* Install App Button (PWA) - Only shown if NOT already installed */}
+          {!isInstalled && isInstallable && (
+            <button
+              onClick={onInstallApp}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-300 dark:border-pink-700 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95"
+              title="Install App on Device / Desktop"
+            >
+              <Download className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 animate-bounce" />
+              <span>Install App</span>
+            </button>
+          )}
+
+          {/* Desktop Streak Counter */}
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300 text-xs font-bold shadow-sm" title="Study Streak">
+            <Flame className="w-4 h-4 fill-pink-500 text-pink-600 dark:fill-pink-400 dark:text-pink-400 animate-pulse" />
+            <span>{streak}d Streak</span>
+          </div>
+
+          {/* Dark / Light Mode Toggle (Desktop) */}
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all shadow-sm"
+            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
+          </button>
+
+          {/* User Auth & Login Area (Desktop) */}
+          {currentUser ? (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-1.5 p-0.5 rounded-full border-2 border-pink-500 hover:border-pink-600 transition-all bg-white dark:bg-slate-800 shadow-sm"
+                title={currentUser.name || currentUser.email}
+              >
+                <img
+                  src={currentUser.picture || "/avatar-bot.png"}
+                  alt={currentUser.name}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              </button>
+
+              {/* Profile Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 z-50 animate-scaleUp">
+                  <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-slate-800">
+                    <img
+                      src={currentUser.picture || "/avatar-bot.png"}
+                      alt={currentUser.name}
+                      className="w-10 h-10 rounded-full object-cover border border-pink-400"
+                    />
+                    <div className="min-w-0">
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                        {currentUser.name}
+                      </h4>
+                      <p className="text-xs text-gray-400 truncate">
+                        {currentUser.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 space-y-1.5">
+                    <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
+                      ✓ Authenticated
                     </span>
 
                     <button
