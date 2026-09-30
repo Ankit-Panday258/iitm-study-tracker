@@ -236,12 +236,22 @@ export default function App() {
       navigator.vibrate(15);
     }
 
-    setAllTasks(prev => prev.map(t => {
-      if (t.id === taskId) {
-        return { ...t, completed: willBeCompleted };
-      }
-      return t;
-    }));
+    setAllTasks(prev => {
+      const updated = prev.map(t => {
+        if (t.id === taskId) {
+          return { 
+            ...t, 
+            completed: willBeCompleted,
+            completedAt: willBeCompleted ? (t.completedAt || new Date().toISOString()) : null
+          };
+        }
+        return t;
+      });
+      try {
+        localStorage.setItem('iitm_tasks_backup', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     if (willBeCompleted) {
       confetti({
@@ -262,7 +272,13 @@ export default function App() {
   };
 
   const handleDeleteTask = async (taskId) => {
-    setAllTasks(prev => prev.filter(t => t.id !== taskId));
+    setAllTasks(prev => {
+      const updated = prev.filter(t => t.id !== taskId);
+      try {
+        localStorage.setItem('iitm_tasks_backup', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
     showToast('Topic deleted');
     try {
       await deleteTask(taskId);
@@ -469,8 +485,11 @@ export default function App() {
                     key={task.id}
                     task={task}
                     onToggle={handleToggleTask}
+                    onToggleTask={handleToggleTask}
                     onDelete={handleDeleteTask}
+                    onDeleteTask={handleDeleteTask}
                     onEdit={handleOpenEditModal}
+                    onEditTask={handleOpenEditModal}
                     onStartTimer={(t) => setActiveTimerTask(t)}
                   />
                 ))}
