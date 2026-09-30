@@ -57,17 +57,48 @@ export default function App() {
 
   // ─── PWA Install Prompt State ─────────────────────────────
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    return isStandalone || localStorage.getItem('iitm_app_installed') === 'true';
+  });
   const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
+    const checkStandalone = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone || localStorage.getItem('iitm_app_installed') === 'true') {
+        setIsInstalled(true);
+        setIsInstallable(false);
+      }
+    };
+    checkStandalone();
+
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone || localStorage.getItem('iitm_app_installed') === 'true') {
+        setIsInstalled(true);
+        setIsInstallable(false);
+        return;
+      }
       setDeferredPrompt(e);
       setIsInstallable(true);
     };
 
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setIsInstallable(false);
+      localStorage.setItem('iitm_app_installed', 'true');
+      showToast('App installed to your device! 🎉');
+    };
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   const handleInstallApp = async () => {
@@ -75,7 +106,9 @@ export default function App() {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
+        setIsInstalled(true);
         setIsInstallable(false);
+        localStorage.setItem('iitm_app_installed', 'true');
         showToast('App installed to your device! 🎉');
       }
       setDeferredPrompt(null);
@@ -364,6 +397,7 @@ export default function App() {
           currentUser={currentUser}
           onOpenAuthModal={() => setIsAuthModalOpen(true)}
           onLogout={handleLogout}
+          isInstalled={isInstalled}
           isInstallable={isInstallable}
           onInstallApp={handleInstallApp}
           isPhoneView={isPhoneView}
@@ -566,6 +600,8 @@ export default function App() {
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
+          isPhoneView={isPhoneView}
+          onTogglePhoneView={togglePhoneView}
         />
 
         {/* Task Add / Edit Modal */}
