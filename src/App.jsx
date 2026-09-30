@@ -9,7 +9,6 @@ import DailyTrack from './components/DailyTrack';
 import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
-import PhoneSimulatorFrame from './components/PhoneSimulatorFrame';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
@@ -18,7 +17,6 @@ import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar } from 'lucide-
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY_DARK = 'iitm_dark_mode';
-const STORAGE_KEY_PHONE_VIEW = 'iitm_phone_view';
 
 export default function App() {
   const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -40,20 +38,6 @@ export default function App() {
     }
     localStorage.setItem(STORAGE_KEY_DARK, darkMode.toString());
   }, [darkMode]);
-
-  // ─── Phone Simulator View Toggle for Desktop ──────────────
-  const [isPhoneView, setIsPhoneView] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_PHONE_VIEW);
-    return saved === 'true';
-  });
-
-  const togglePhoneView = () => {
-    setIsPhoneView(prev => {
-      const next = !prev;
-      localStorage.setItem(STORAGE_KEY_PHONE_VIEW, next.toString());
-      return next;
-    });
-  };
 
   // ─── PWA Install Prompt State ─────────────────────────────
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -370,39 +354,33 @@ export default function App() {
 
   // ─── Main Render ───────────────────────────────────────────
   return (
-    <PhoneSimulatorFrame 
-      isPhoneView={isPhoneView} 
-      onTogglePhoneView={togglePhoneView}
-    >
-      <div className="min-h-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 flex flex-col font-sans selection:bg-pink-500 selection:text-white transition-colors duration-200 pb-20">
-        
-        {/* Toast Notification */}
-        {toastMessage && (
-          <div className="fixed top-14 sm:top-20 right-4 sm:right-6 z-50 bg-pink-600 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl shadow-pink-600/30 flex items-center gap-2 animate-bounce border border-pink-400">
-            <Check className="w-4 h-4" />
-            <span>{toastMessage}</span>
-          </div>
-        )}
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 flex flex-col font-sans selection:bg-pink-500 selection:text-white transition-colors duration-200 pb-20">
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-14 sm:top-20 right-4 sm:right-6 z-50 bg-pink-600 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl shadow-pink-600/30 flex items-center gap-2 animate-bounce border border-pink-400">
+          <Check className="w-4 h-4" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
-        {/* App Header */}
-        <Navbar
-          streak={streak}
-          onOpenAddModal={handleOpenAddModal}
-          darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
-          onOpenDailyTrack={() => {
-            setCurrentPage('dailyTrack');
-            setActiveBottomTab('track');
-          }}
-          currentUser={currentUser}
-          onOpenAuthModal={() => setIsAuthModalOpen(true)}
-          onLogout={handleLogout}
-          isInstalled={isInstalled}
-          isInstallable={isInstallable}
-          onInstallApp={handleInstallApp}
-          isPhoneView={isPhoneView}
-          onTogglePhoneView={togglePhoneView}
-        />
+      {/* App Header */}
+      <Navbar
+        streak={streak}
+        onOpenAddModal={handleOpenAddModal}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        onOpenDailyTrack={() => {
+          setCurrentPage('dailyTrack');
+          setActiveBottomTab('track');
+        }}
+        currentUser={currentUser}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
+        isInstalled={isInstalled}
+        isInstallable={isInstallable}
+        onInstallApp={handleInstallApp}
+      />
 
         {/* View Switch: Daily Track or Main Planner */}
         {currentPage === 'dailyTrack' ? (
@@ -573,8 +551,6 @@ export default function App() {
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
-          isPhoneView={isPhoneView}
-          onTogglePhoneView={togglePhoneView}
         />
 
         {/* Task Add / Edit Modal */}
@@ -604,6 +580,5 @@ export default function App() {
         )}
 
       </div>
-    </PhoneSimulatorFrame>
   );
 }
