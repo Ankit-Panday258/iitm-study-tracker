@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Flame, Calendar, Plus, Sun, Moon, Trophy, LogOut, 
-  ChevronLeft, ChevronRight, Download, Smartphone, Monitor 
+  Flame, Plus, Sun, Moon, Trophy, LogOut, 
+  Download, Smartphone, Monitor 
 } from 'lucide-react';
 
 export default function Navbar({ 
-  selectedDate, 
-  setSelectedDate, 
   streak, 
   onOpenAddModal, 
   darkMode, 
@@ -18,9 +16,7 @@ export default function Navbar({
   isInstallable,
   onInstallApp,
   isPhoneView,
-  onTogglePhoneView,
-  onPrevDay,
-  onNextDay
+  onTogglePhoneView
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -34,10 +30,6 @@ export default function Navbar({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-  };
 
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-30 px-3 sm:px-6 py-2.5 sm:py-3.5 shadow-sm">
@@ -55,9 +47,6 @@ export default function Navbar({
               <div className="flex items-center gap-1.5">
                 <span className="text-base sm:text-lg font-black text-gray-900 dark:text-white tracking-tight">
                   IIT Madras
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 font-bold border border-pink-200 dark:border-pink-800">
-                  App
                 </span>
               </div>
               <p className="text-[10px] sm:text-xs text-gray-500 dark:text-slate-400 font-medium">Study Planner & Progress</p>
@@ -80,35 +69,8 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Right Tools & Day Quick Navigation */}
+        {/* Right Tools */}
         <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
-          
-          {/* Quick Date Switcher with Prev/Next buttons */}
-          <div className="flex items-center bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-0.5 shadow-sm text-xs">
-            <button
-              onClick={onPrevDay}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              title="Previous Day"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-            <div className="flex items-center gap-1.5 px-2 py-1 text-gray-800 dark:text-slate-200 font-bold">
-              <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 shrink-0" />
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="bg-transparent text-gray-900 dark:text-white text-xs focus:outline-none cursor-pointer font-bold"
-              />
-            </div>
-            <button
-              onClick={onNextDay}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-              title="Next Day"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
 
           {/* Install App Button (PWA) */}
           <button
