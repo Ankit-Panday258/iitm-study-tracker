@@ -97,14 +97,27 @@ async function fetchWithTimeout(url, options = {}, timeout = 1500) {
   }
 }
 
+// Safe JSON parser to handle HTML responses (e.g. Vercel SPA fallbacks) gracefully
+async function safeJson(res) {
+  if (!res || !res.ok) return null;
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    return null;
+  }
+  try {
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
 // ─── TASKS ───────────────────────────────────────────────────
 
 export async function fetchTasks(date) {
   try {
     const url = date ? `${API_BASE}/tasks?date=${date}` : `${API_BASE}/tasks`;
     const res = await fetchWithTimeout(url);
-    if (!res.ok) throw new Error('Server returned ' + res.status);
-    const data = await res.json();
+    const data = await safeJson(res);
     if (Array.isArray(data) && data.length > 0) {
       setBackupTasks(data);
       return date ? data.filter(t => t.date === date) : data;
@@ -148,8 +161,8 @@ export async function createTask(taskData) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTask)
     });
-    if (res.ok) {
-      const data = await res.json();
+    const data = await safeJson(res);
+    if (data && data.id) {
       setBackupTasks([data, ...backup.filter(t => t.id !== data.id)]);
       return data;
     }
@@ -172,8 +185,8 @@ export async function updateTask(id, taskData) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(merged)
     });
-    if (res.ok) {
-      const data = await res.json();
+    const data = await safeJson(res);
+    if (data && data.id) {
       setBackupTasks(backup.map(t => t.id === id ? data : t));
       return data;
     }
@@ -204,8 +217,8 @@ export async function toggleTask(id) {
     const res = await fetchWithTimeout(`${API_BASE}/tasks/${id}/toggle`, {
       method: 'PATCH'
     });
-    if (res.ok) {
-      const data = await res.json();
+    const data = await safeJson(res);
+    if (data && data.id) {
       setBackupTasks(backup.map(t => t.id === id ? data : t));
       return data;
     }
