@@ -402,10 +402,6 @@ export default function App() {
           onInstallApp={handleInstallApp}
           isPhoneView={isPhoneView}
           onTogglePhoneView={togglePhoneView}
-          taskDates={taskDates}
-          allTasks={allTasks}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
         />
 
         {/* View Switch: Daily Track or Main Planner */}
