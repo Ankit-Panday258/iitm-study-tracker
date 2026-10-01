@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Database, X, RefreshCw, CheckCircle, Clock, Tag, FileText, Code, Table } from 'lucide-react';
-import { fetchAllTasks, fetchSubjects, fetchDailyTrack } from '../api';
+import { fetchAllTasks, fetchSubjects, fetchDailyTrack, fetchDbStatus } from '../api';
 import { formatTaskDuration } from '../utils/formatTime';
 
 export default function DatabaseViewerModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' | 'subjects' | 'rawJson'
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [dbStatus, setDbStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -19,12 +20,14 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [tData, sData] = await Promise.all([
+      const [tData, sData, status] = await Promise.all([
         fetchAllTasks(),
-        fetchSubjects()
+        fetchSubjects(),
+        fetchDbStatus()
       ]);
       setTasks(tData || []);
       setSubjects(sData || []);
+      setDbStatus(status);
     } catch (e) {
       console.error(e);
     } finally {
@@ -51,14 +54,23 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               <Database className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
                 <span>Database Explorer</span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-semibold">
-                  Live Data
-                </span>
+                {dbStatus?.activeDatabase === 'MySQL' ? (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
+                    🐬 MySQL 9.6 (Local)
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-semibold">
+                    {dbStatus?.activeDatabase || 'Live Data'}
+                  </span>
+                )}
               </h3>
               <p className="text-xs text-gray-500 dark:text-slate-400">
-                Live view of all tasks and subjects stored in the database
+                {dbStatus?.activeDatabase === 'MySQL' 
+                  ? 'Connected to local MySQL (127.0.0.1:3306 / iitm_study_tracker)'
+                  : 'Live view of all tasks and subjects stored in the database'}
               </p>
             </div>
           </div>
@@ -209,8 +221,10 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
 
         {/* Footer info */}
         <div className="px-6 py-3 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/60 flex items-center justify-between text-xs text-gray-500">
-          <span>Total Records: {tasks.length} tasks, {subjects.length} subjects</span>
-          <span className="font-mono text-[10px]">Endpoint: /api/tasks</span>
+          <span>
+            {dbStatus?.activeDatabase === 'MySQL' ? '🐬 Active DB: MySQL (Fallback: SQLite)' : '📦 Active DB: SQLite'} • {tasks.length} tasks, {subjects.length} subjects
+          </span>
+          <span className="font-mono text-[10px]">Host: 127.0.0.1:3306</span>
         </div>
 
       </div>

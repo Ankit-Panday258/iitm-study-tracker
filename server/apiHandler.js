@@ -1,6 +1,28 @@
 import db from './db.js';
 import url from 'url';
 import { isMongoConnected, getMongoStatus, Task, Subject, DailyNote, User } from './mongodb.js';
+import {
+  initMySQL,
+  isMySQLConnected,
+  getMySQLStatus,
+  mySQLGetTasks,
+  mySQLCreateTask,
+  mySQLUpdateTask,
+  mySQLToggleTask,
+  mySQLDeleteTask,
+  mySQLGetDailyTrack,
+  mySQLGetNote,
+  mySQLSaveNote,
+  mySQLGetStreak,
+  mySQLGetSubjects,
+  mySQLCreateSubject,
+  mySQLLoginUser
+} from './mysql.js';
+
+// Auto-initialize MySQL on startup
+initMySQL().catch(err => {
+  console.log('🐬 MySQL init notice:', err.message);
+});
 
 export function handleApiRequest(req, res, next) {
   const parsedUrl = url.parse(req.url, true);
@@ -37,20 +59,36 @@ export function handleApiRequest(req, res, next) {
 
   (async () => {
     try {
-      const useMongo = isMongoConnected();
+      const useMySQL = isMySQLConnected();
+      const useMongo = !useMySQL && isMongoConnected();
 
       // 0. GET /api/db-status
       if (method === 'GET' && pathname === '/api/db-status') {
-        const status = getMongoStatus();
+        const mysqlStatus = getMySQLStatus();
+        const mongoStatus = getMongoStatus();
+        let active = 'SQLite';
+        if (useMySQL) active = 'MySQL';
+        else if (useMongo) active = 'MongoDB';
+
         return sendJson(200, {
-          activeDatabase: useMongo ? 'MongoDB' : 'SQLite',
-          mongo: status
+          activeDatabase: active,
+          mysql: mysqlStatus,
+          mongo: mongoStatus
         });
       }
 
       // 1. GET /api/tasks
       if (method === 'GET' && pathname === '/api/tasks') {
         const date = parsedUrl.query.date;
+
+        if (useMySQL) {
+          try {
+            const mysqlTasks = await mySQLGetTasks(date);
+            return sendJson(200, mysqlTasks);
+          } catch (e) {
+            console.error('MySQL GET /api/tasks failed, falling back:', e.message);
+          }
+        }
 
         if (useMongo) {
           const query = date ? { date } : {};
@@ -70,30 +108,30 @@ export function handleApiRequest(req, res, next) {
             createdAt: t.createdAt
           }));
           return sendJson(200, formatted);
-        } else {
-          // SQLite fallback
-          let rows;
-          if (date) {
-            rows = db.prepare('SELECT * FROM tasks WHERE date = ? ORDER BY created_at DESC').all(date);
-          } else {
-            rows = db.prepare('SELECT * FROM tasks ORDER BY date DESC, created_at DESC').all();
-          }
-          const formatted = rows.map(t => ({
-            id: t.id,
-            date: t.date,
-            subject: t.subject,
-            topic: t.topic,
-            durationHours: t.duration_hours || 0,
-            durationMinutes: t.duration_minutes || 0,
-            durationSeconds: t.duration_seconds || 0,
-            priority: t.priority,
-            completed: t.completed === 1,
-            completedAt: t.completed_at,
-            notes: t.notes,
-            createdAt: t.created_at
-          }));
-          return sendJson(200, formatted);
         }
+
+        // SQLite fallback
+        let rows;
+        if (date) {
+          rows = db.prepare('SELECT * FROM tasks WHERE date = ? ORDER BY created_at DESC').all(date);
+        } else {
+          rows = db.prepare('SELECT * FROM tasks ORDER BY date DESC, created_at DESC').all();
+        }
+        const formatted = rows.map(t => ({
+          id: t.id,
+          date: t.date,
+          subject: t.subject,
+          topic: t.topic,
+          durationHours: t.duration_hours || 0,
+          durationMinutes: t.duration_minutes || 0,
+          durationSeconds: t.duration_seconds || 0,
+          priority: t.priority,
+          completed: t.completed === 1,
+          completedAt: t.completed_at,
+          notes: t.notes,
+          createdAt: t.created_at
+        }));
+        return sendJson(200, formatted);
       }
 
       // 2. POST /api/tasks
@@ -118,11 +156,23 @@ export function handleApiRequest(req, res, next) {
             createdAt: now
           };
 
-          if (useMongo) {
-            await Task.findOneAndUpdate({ id: taskId }, taskData, { upsert: true, new: true });
+          // Try MySQL first
+          let createdResult = null;
+          if (useMySQL) {
+            try {
+              createdResult = await mySQLCreateTask(taskData);
+            } catch (e) {
+              console.error('MySQL create task failed:', e.message);
+            }
           }
 
-          // Also mirror in SQLite
+          if (useMongo) {
+            try {
+              await Task.findOneAndUpdate({ id: taskId }, taskData, { upsert: true, new: true });
+            } catch (e) {}
+          }
+
+          // Also mirror in SQLite as safety fallback
           try {
             db.prepare(`
               INSERT OR REPLACE INTO tasks (id, date, subject, topic, duration_hours, duration_minutes, duration_seconds, priority, completed, completed_at, notes, created_at)
@@ -134,7 +184,7 @@ export function handleApiRequest(req, res, next) {
             );
           } catch (e) {}
 
-          return sendJson(201, taskData);
+          return sendJson(201, createdResult || taskData);
         });
       }
 
@@ -143,6 +193,22 @@ export function handleApiRequest(req, res, next) {
         const parts = pathname.split('/');
         const taskId = parts[3];
         const now = new Date().toISOString();
+
+        if (useMySQL) {
+          try {
+            const updated = await mySQLToggleTask(taskId);
+            if (updated) {
+              // Mirror in SQLite
+              try {
+                db.prepare('UPDATE tasks SET completed = ?, completed_at = ?, updated_at = ? WHERE id = ?')
+                  .run(updated.completed ? 1 : 0, updated.completedAt, now, taskId);
+              } catch (e) {}
+              return sendJson(200, updated);
+            }
+          } catch (e) {
+            console.error('MySQL toggle task failed:', e.message);
+          }
+        }
 
         if (useMongo) {
           const current = await Task.findOne({ id: taskId });
@@ -156,7 +222,6 @@ export function handleApiRequest(req, res, next) {
             { new: true }
           );
 
-          // Mirror in SQLite
           try {
             db.prepare('UPDATE tasks SET completed = ?, completed_at = ?, updated_at = ? WHERE id = ?')
               .run(newCompleted ? 1 : 0, completedAt, now, taskId);
@@ -176,34 +241,34 @@ export function handleApiRequest(req, res, next) {
             notes: updated.notes || '',
             createdAt: updated.createdAt
           });
-        } else {
-          // SQLite
-          const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
-          if (!task) return sendJson(404, { error: 'Task not found' });
-
-          const newCompleted = task.completed === 1 ? 0 : 1;
-          const completedAt = newCompleted === 1 ? now : null;
-
-          db.prepare(`
-            UPDATE tasks SET completed = ?, completed_at = ?, updated_at = ? WHERE id = ?
-          `).run(newCompleted, completedAt, now, taskId);
-
-          const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
-          return sendJson(200, {
-            id: updated.id,
-            date: updated.date,
-            subject: updated.subject,
-            topic: updated.topic,
-            durationHours: updated.duration_hours || 0,
-            durationMinutes: updated.duration_minutes || 0,
-            durationSeconds: updated.duration_seconds || 0,
-            priority: updated.priority,
-            completed: updated.completed === 1,
-            completedAt: updated.completed_at,
-            notes: updated.notes,
-            createdAt: updated.created_at
-          });
         }
+
+        // SQLite
+        const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+        if (!task) return sendJson(404, { error: 'Task not found' });
+
+        const newCompleted = task.completed === 1 ? 0 : 1;
+        const completedAt = newCompleted === 1 ? now : null;
+
+        db.prepare(`
+          UPDATE tasks SET completed = ?, completed_at = ?, updated_at = ? WHERE id = ?
+        `).run(newCompleted, completedAt, now, taskId);
+
+        const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+        return sendJson(200, {
+          id: updated.id,
+          date: updated.date,
+          subject: updated.subject,
+          topic: updated.topic,
+          durationHours: updated.duration_hours || 0,
+          durationMinutes: updated.duration_minutes || 0,
+          durationSeconds: updated.duration_seconds || 0,
+          priority: updated.priority,
+          completed: updated.completed === 1,
+          completedAt: updated.completed_at,
+          notes: updated.notes,
+          createdAt: updated.created_at
+        });
       }
 
       // 4. PUT /api/tasks/:id
@@ -225,14 +290,36 @@ export function handleApiRequest(req, res, next) {
             notes: notes || ''
           };
 
+          if (useMySQL) {
+            try {
+              const updated = await mySQLUpdateTask(taskId, updateFields);
+              if (updated) {
+                // Mirror in SQLite
+                try {
+                  db.prepare(`
+                    UPDATE tasks
+                    SET date = ?, subject = ?, topic = ?, duration_hours = ?, duration_minutes = ?, duration_seconds = ?, priority = ?,
+                        completed = ?, completed_at = ?, notes = ?, updated_at = ?
+                    WHERE id = ?
+                  `).run(
+                    date, subject, topic, updateFields.durationHours, updateFields.durationMinutes, updateFields.durationSeconds,
+                    updateFields.priority, updateFields.completed ? 1 : 0, updateFields.completedAt, updateFields.notes, now, taskId
+                  );
+                } catch (e) {}
+                return sendJson(200, updated);
+              }
+            } catch (e) {
+              console.error('MySQL update task failed:', e.message);
+            }
+          }
+
           if (useMongo) {
-            const updated = await Task.findOneAndUpdate(
+            await Task.findOneAndUpdate(
               { id: taskId },
               updateFields,
               { new: true, upsert: true }
             );
 
-            // Mirror SQLite
             try {
               db.prepare(`
                 UPDATE tasks
@@ -246,37 +333,38 @@ export function handleApiRequest(req, res, next) {
             } catch (e) {}
 
             return sendJson(200, { ...updateFields, id: taskId });
-          } else {
-            db.prepare(`
-              UPDATE tasks
-              SET date = ?, subject = ?, topic = ?, duration_hours = ?, duration_minutes = ?, duration_seconds = ?, priority = ?,
-                  completed = ?, completed_at = ?, notes = ?, updated_at = ?
-              WHERE id = ?
-            `).run(
-              date, subject, topic, 
-              updateFields.durationHours, updateFields.durationMinutes, updateFields.durationSeconds, 
-              updateFields.priority,
-              completed ? 1 : 0, completedAt || null, notes || '', now, taskId
-            );
-
-            const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
-            if (!task) return sendJson(404, { error: 'Task not found' });
-
-            return sendJson(200, {
-              id: task.id,
-              date: task.date,
-              subject: task.subject,
-              topic: task.topic,
-              durationHours: task.duration_hours || 0,
-              durationMinutes: task.duration_minutes || 0,
-              durationSeconds: task.duration_seconds || 0,
-              priority: task.priority,
-              completed: task.completed === 1,
-              completedAt: task.completed_at,
-              notes: task.notes,
-              createdAt: task.created_at
-            });
           }
+
+          // SQLite
+          db.prepare(`
+            UPDATE tasks
+            SET date = ?, subject = ?, topic = ?, duration_hours = ?, duration_minutes = ?, duration_seconds = ?, priority = ?,
+                completed = ?, completed_at = ?, notes = ?, updated_at = ?
+            WHERE id = ?
+          `).run(
+            date, subject, topic, 
+            updateFields.durationHours, updateFields.durationMinutes, updateFields.durationSeconds, 
+            updateFields.priority,
+            completed ? 1 : 0, completedAt || null, notes || '', now, taskId
+          );
+
+          const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+          if (!task) return sendJson(404, { error: 'Task not found' });
+
+          return sendJson(200, {
+            id: task.id,
+            date: task.date,
+            subject: task.subject,
+            topic: task.topic,
+            durationHours: task.duration_hours || 0,
+            durationMinutes: task.duration_minutes || 0,
+            durationSeconds: task.duration_seconds || 0,
+            priority: task.priority,
+            completed: task.completed === 1,
+            completedAt: task.completed_at,
+            notes: task.notes,
+            createdAt: task.created_at
+          });
         });
       }
 
@@ -285,6 +373,13 @@ export function handleApiRequest(req, res, next) {
         const parts = pathname.split('/');
         const taskId = parts[3];
 
+        if (useMySQL) {
+          try {
+            await mySQLDeleteTask(taskId);
+          } catch (e) {
+            console.error('MySQL delete task failed:', e.message);
+          }
+        }
         if (useMongo) {
           await Task.deleteOne({ id: taskId });
         }
@@ -297,6 +392,23 @@ export function handleApiRequest(req, res, next) {
 
       // 6. GET /api/daily-track
       if (method === 'GET' && pathname === '/api/daily-track') {
+        if (useMySQL) {
+          try {
+            const track = await mySQLGetDailyTrack();
+            // Attach daily notes for each day
+            const trackWithNotes = await Promise.all(track.map(async item => {
+              const note = await mySQLGetNote(item.date);
+              return {
+                ...item,
+                dailyNote: note ? note.noteText : ''
+              };
+            }));
+            return sendJson(200, trackWithNotes);
+          } catch (e) {
+            console.error('MySQL GET /api/daily-track failed:', e.message);
+          }
+        }
+
         let tasksList = [];
 
         if (useMongo) {
@@ -352,6 +464,14 @@ export function handleApiRequest(req, res, next) {
       // 7. GET /api/notes/:date
       if (method === 'GET' && pathname.startsWith('/api/notes/')) {
         const date = pathname.replace('/api/notes/', '');
+        if (useMySQL) {
+          try {
+            const note = await mySQLGetNote(date);
+            return sendJson(200, note);
+          } catch (e) {
+            console.error('MySQL GET note failed:', e.message);
+          }
+        }
         if (useMongo) {
           const doc = await DailyNote.findOne({ date });
           return sendJson(200, { date, noteText: doc ? doc.noteText : '' });
@@ -367,6 +487,14 @@ export function handleApiRequest(req, res, next) {
         return parseBody(async (body) => {
           const { noteText } = body;
           const now = new Date().toISOString();
+
+          if (useMySQL) {
+            try {
+              await mySQLSaveNote(date, noteText);
+            } catch (e) {
+              console.error('MySQL save note failed:', e.message);
+            }
+          }
 
           if (useMongo) {
             await DailyNote.findOneAndUpdate(
@@ -391,6 +519,15 @@ export function handleApiRequest(req, res, next) {
 
       // 9. GET /api/stats/streak
       if (method === 'GET' && pathname === '/api/stats/streak') {
+        if (useMySQL) {
+          try {
+            const streak = await mySQLGetStreak();
+            return sendJson(200, { streak });
+          } catch (e) {
+            console.error('MySQL streak failed:', e.message);
+          }
+        }
+
         let dates = [];
         if (useMongo) {
           dates = await Task.distinct('date', { completed: true });
@@ -423,6 +560,17 @@ export function handleApiRequest(req, res, next) {
 
       // 10. GET /api/subjects
       if (method === 'GET' && pathname === '/api/subjects') {
+        if (useMySQL) {
+          try {
+            const subs = await mySQLGetSubjects();
+            if (subs && subs.length > 0) {
+              return sendJson(200, subs);
+            }
+          } catch (e) {
+            console.error('MySQL GET subjects failed:', e.message);
+          }
+        }
+
         if (useMongo) {
           const docs = await Subject.find().sort({ createdAt: 1 });
           const formatted = docs.map(d => ({
@@ -449,6 +597,14 @@ export function handleApiRequest(req, res, next) {
           const subName = name.trim();
           const subIcon = icon || '📚';
           const subColor = color || 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700';
+
+          if (useMySQL) {
+            try {
+              await mySQLCreateSubject({ id, name: subName, icon: subIcon, color: subColor });
+            } catch (e) {
+              console.error('MySQL create subject failed:', e.message);
+            }
+          }
 
           if (useMongo) {
             await Subject.findOneAndUpdate(
@@ -487,6 +643,15 @@ export function handleApiRequest(req, res, next) {
             authProvider: 'google',
             createdAt: now
           };
+
+          if (useMySQL) {
+            try {
+              const savedUser = await mySQLLoginUser(userDoc);
+              if (savedUser) userDoc = savedUser;
+            } catch (e) {
+              console.error('MySQL login google user failed:', e.message);
+            }
+          }
 
           if (useMongo) {
             const saved = await User.findOneAndUpdate(
@@ -535,6 +700,15 @@ export function handleApiRequest(req, res, next) {
             authProvider: 'email',
             createdAt: now
           };
+
+          if (useMySQL) {
+            try {
+              const savedUser = await mySQLLoginUser(userDoc);
+              if (savedUser) userDoc = savedUser;
+            } catch (e) {
+              console.error('MySQL login email user failed:', e.message);
+            }
+          }
 
           if (useMongo) {
             const saved = await User.findOneAndUpdate(

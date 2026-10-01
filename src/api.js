@@ -478,3 +478,15 @@ export function logout() {
   setStoredUser(null);
 }
 
+export async function fetchDbStatus() {
+  try {
+    const res = await fetchWithTimeout(`${API_BASE}/db-status`);
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn('DB Status check:', e.message);
+  }
+  return { activeDatabase: 'Local/SQLite' };
+}
+
