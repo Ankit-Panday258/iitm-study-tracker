@@ -9,7 +9,6 @@ import DailyTrack from './components/DailyTrack';
 import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
-import BooksResources from './components/BooksResources';
 import BooksPage from './components/BooksPage';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
@@ -413,9 +412,6 @@ export default function App() {
 
             {/* Daily Notes */}
             <DailyNotes selectedDate={selectedDate} />
-
-            {/* Books & Study Resources Section */}
-            <BooksResources />
 
             {/* Task List Header & Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
