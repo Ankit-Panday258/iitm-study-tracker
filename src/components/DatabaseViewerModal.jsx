@@ -168,6 +168,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-slate-700 text-gray-400 uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3">User (Account)</th>
                       <th className="py-2.5 px-3">Date</th>
                       <th className="py-2.5 px-3">Subject</th>
                       <th className="py-2.5 px-3">Topic</th>
@@ -179,6 +180,17 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                   <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                     {tasks.map((t) => (
                       <tr key={t.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-2.5 px-3 whitespace-nowrap">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                            t.userEmail?.includes('kumar')
+                              ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+                              : t.userEmail?.includes('ankit')
+                              ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'
+                              : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700'
+                          }`}>
+                            {t.userEmail || 'global'}
+                          </span>
+                        </td>
                         <td className="py-2.5 px-3 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
                           {t.date}
                         </td>

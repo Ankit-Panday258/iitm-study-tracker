@@ -6,6 +6,7 @@ import {
   isMySQLConnected,
   getMySQLStatus,
   mySQLGetTasks,
+  mySQLGetAllTasks,
   mySQLCreateTask,
   mySQLUpdateTask,
   mySQLToggleTask,
@@ -32,6 +33,16 @@ app.use(express.json());
 // Initialize MySQL
 initMySQL().catch(err => console.log('MySQL init:', err.message));
 
+// Helper to get active userEmail
+function getUserEmail(req) {
+  return (
+    req.headers['x-user-email'] ||
+    req.query.user_email ||
+    (req.body && req.body.userEmail) ||
+    'kumar@gmail.com'
+  ).toLowerCase().trim();
+}
+
 // DB Status API
 app.get('/api/db-status', (req, res) => {
   const mysqlStatus = getMySQLStatus();
@@ -43,14 +54,16 @@ app.get('/api/db-status', (req, res) => {
 
 // ─── TASKS API ───────────────────────────────────────────────
 
-// GET all tasks (optionally filter by date)
+// GET tasks (scoped to user)
 app.get('/api/tasks', async (req, res) => {
   try {
-    const { date } = req.query;
+    const { date, all_users } = req.query;
+    const userEmail = getUserEmail(req);
+    const allUsers = all_users === 'true';
 
     if (isMySQLConnected()) {
       try {
-        const mysqlTasks = await mySQLGetTasks(date);
+        const mysqlTasks = allUsers ? await mySQLGetAllTasks() : await mySQLGetTasks(date, userEmail);
         return res.json(mysqlTasks);
       } catch (e) {
         console.error('MySQL GET tasks error:', e.message);
@@ -59,11 +72,14 @@ app.get('/api/tasks', async (req, res) => {
 
     // SQLite fallback
     let tasks;
-    if (date) {
-      tasks = db.prepare('SELECT * FROM tasks WHERE date = ? ORDER BY created_at DESC').all(date);
-    } else {
+    if (allUsers) {
       tasks = db.prepare('SELECT * FROM tasks ORDER BY date DESC, created_at DESC').all();
+    } else if (date) {
+      tasks = db.prepare('SELECT * FROM tasks WHERE user_email = ? AND date = ? ORDER BY created_at DESC').all(userEmail, date);
+    } else {
+      tasks = db.prepare('SELECT * FROM tasks WHERE user_email = ? ORDER BY date DESC, created_at DESC').all(userEmail);
     }
+
     const formatted = tasks.map(t => ({
       id: t.id,
       date: t.date,
@@ -76,6 +92,7 @@ app.get('/api/tasks', async (req, res) => {
       completed: t.completed === 1,
       completedAt: t.completed_at,
       notes: t.notes,
+      userEmail: t.user_email || userEmail,
       createdAt: t.created_at
     }));
     res.json(formatted);
@@ -89,6 +106,7 @@ app.get('/api/tasks', async (req, res) => {
 app.post('/api/tasks', async (req, res) => {
   try {
     const { id, date, subject, topic, durationHours, durationMinutes, durationSeconds, priority, notes } = req.body;
+    const userEmail = getUserEmail(req);
     const taskId = id || Date.now().toString();
     const now = new Date().toISOString();
 
@@ -104,6 +122,7 @@ app.post('/api/tasks', async (req, res) => {
       completed: false,
       completedAt: null,
       notes: notes || '',
+      userEmail,
       createdAt: now
     };
 
@@ -119,12 +138,12 @@ app.post('/api/tasks', async (req, res) => {
     // Mirror in SQLite
     try {
       db.prepare(`
-        INSERT OR REPLACE INTO tasks (id, date, subject, topic, duration_hours, duration_minutes, duration_seconds, priority, completed, completed_at, notes, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)
+        INSERT OR REPLACE INTO tasks (id, date, subject, topic, duration_hours, duration_minutes, duration_seconds, priority, completed, completed_at, notes, user_email, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?, ?)
       `).run(
         taskId, taskData.date, taskData.subject, taskData.topic,
         taskData.durationHours, taskData.durationMinutes, taskData.durationSeconds,
-        taskData.priority, taskData.notes, now
+        taskData.priority, taskData.notes, userEmail, now
       );
     } catch (e) {}
 
@@ -200,6 +219,7 @@ app.put('/api/tasks/:id', async (req, res) => {
       completed: task.completed === 1,
       completedAt: task.completed_at,
       notes: task.notes,
+      userEmail: task.user_email,
       createdAt: task.created_at
     });
   } catch (err) {
@@ -252,6 +272,7 @@ app.patch('/api/tasks/:id/toggle', async (req, res) => {
       completed: updated.completed === 1,
       completedAt: updated.completed_at,
       notes: updated.notes,
+      userEmail: updated.user_email,
       createdAt: updated.created_at
     });
   } catch (err) {
@@ -288,11 +309,13 @@ app.delete('/api/tasks/:id', async (req, res) => {
 
 app.get('/api/daily-track', async (req, res) => {
   try {
+    const userEmail = getUserEmail(req);
+
     if (isMySQLConnected()) {
       try {
-        const track = await mySQLGetDailyTrack();
+        const track = await mySQLGetDailyTrack(userEmail);
         const trackWithNotes = await Promise.all(track.map(async item => {
-          const note = await mySQLGetNote(item.date);
+          const note = await mySQLGetNote(item.date, userEmail);
           return {
             ...item,
             dailyNote: note ? note.noteText : ''
@@ -305,11 +328,11 @@ app.get('/api/daily-track', async (req, res) => {
     }
 
     const rows = db.prepare(`
-      SELECT date, subject, topic, duration_hours, duration_minutes, duration_seconds, completed_at, notes, priority
+      SELECT date, subject, topic, duration_hours, duration_minutes, duration_seconds, completed_at, notes, priority, user_email
       FROM tasks
-      WHERE completed = 1
+      WHERE completed = 1 AND user_email = ?
       ORDER BY date DESC, completed_at DESC
-    `).all();
+    `).all(userEmail);
 
     const grouped = {};
     for (const row of rows) {
@@ -322,12 +345,13 @@ app.get('/api/daily-track', async (req, res) => {
         durationSeconds: row.duration_seconds || 0,
         completedAt: row.completed_at,
         notes: row.notes,
-        priority: row.priority
+        priority: row.priority,
+        userEmail: row.user_email
       });
     }
 
     const result = Object.entries(grouped).map(([date, tasks]) => {
-      const noteRow = db.prepare('SELECT note_text FROM daily_notes WHERE date = ?').get(date);
+      const noteRow = db.prepare('SELECT note_text FROM daily_notes WHERE date = ? AND user_email = ?').get(date, userEmail);
       return {
         date,
         totalMinutes: tasks.reduce((acc, t) => acc + (t.durationHours * 60) + t.durationMinutes + (t.durationSeconds / 60), 0),
@@ -349,16 +373,18 @@ app.get('/api/daily-track', async (req, res) => {
 app.get('/api/notes/:date', async (req, res) => {
   try {
     const { date } = req.params;
+    const userEmail = getUserEmail(req);
+
     if (isMySQLConnected()) {
       try {
-        const note = await mySQLGetNote(date);
+        const note = await mySQLGetNote(date, userEmail);
         return res.json(note);
       } catch (e) {
         console.error('MySQL GET note error:', e.message);
       }
     }
 
-    const note = db.prepare('SELECT * FROM daily_notes WHERE date = ?').get(date);
+    const note = db.prepare('SELECT * FROM daily_notes WHERE date = ? AND user_email = ?').get(date, userEmail);
     res.json(note ? { date: note.date, noteText: note.note_text } : { date, noteText: '' });
   } catch (err) {
     console.error('GET /api/notes/:date error:', err);
@@ -370,23 +396,27 @@ app.put('/api/notes/:date', async (req, res) => {
   try {
     const { date } = req.params;
     const { noteText } = req.body;
+    const userEmail = getUserEmail(req);
     const now = new Date().toISOString();
 
     if (isMySQLConnected()) {
       try {
-        await mySQLSaveNote(date, noteText);
+        await mySQLSaveNote(date, noteText, userEmail);
       } catch (e) {
         console.error('MySQL save note error:', e.message);
       }
     }
 
-    db.prepare(`
-      INSERT INTO daily_notes (date, note_text, created_at, updated_at)
-      VALUES (?, ?, ?, ?)
-      ON CONFLICT(date) DO UPDATE SET note_text = ?, updated_at = ?
-    `).run(date, noteText || '', now, now, noteText || '', now);
+    try {
+      const existing = db.prepare('SELECT id FROM daily_notes WHERE date = ? AND user_email = ?').get(date, userEmail);
+      if (existing) {
+        db.prepare('UPDATE daily_notes SET note_text = ?, updated_at = ? WHERE date = ? AND user_email = ?').run(noteText || '', now, date, userEmail);
+      } else {
+        db.prepare('INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)').run(date, noteText || '', userEmail, now, now);
+      }
+    } catch (e) {}
 
-    res.json({ date, noteText: noteText || '' });
+    res.json({ date, noteText: noteText || '', userEmail });
   } catch (err) {
     console.error('PUT /api/notes/:date error:', err);
     res.status(500).json({ error: err.message });
@@ -397,9 +427,11 @@ app.put('/api/notes/:date', async (req, res) => {
 
 app.get('/api/stats/streak', async (req, res) => {
   try {
+    const userEmail = getUserEmail(req);
+
     if (isMySQLConnected()) {
       try {
-        const streak = await mySQLGetStreak();
+        const streak = await mySQLGetStreak(userEmail);
         return res.json({ streak });
       } catch (e) {
         console.error('MySQL streak error:', e.message);
@@ -407,8 +439,8 @@ app.get('/api/stats/streak', async (req, res) => {
     }
 
     const dates = db.prepare(`
-      SELECT DISTINCT date FROM tasks WHERE completed = 1 ORDER BY date DESC
-    `).all().map(r => r.date);
+      SELECT DISTINCT date FROM tasks WHERE completed = 1 AND user_email = ? ORDER BY date DESC
+    `).all(userEmail).map(r => r.date);
 
     const dateSet = new Set(dates);
     let streak = 0;
@@ -658,7 +690,7 @@ app.post('/api/auth/google', async (req, res) => {
 
     let userDoc = {
       id,
-      email,
+      email: email.toLowerCase().trim(),
       name: userName,
       picture: userPic,
       googleId: googleId || id,
@@ -680,7 +712,7 @@ app.post('/api/auth/google', async (req, res) => {
         INSERT INTO users (id, email, name, picture, google_id, auth_provider, created_at)
         VALUES (?, ?, ?, ?, ?, 'google', ?)
         ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, google_id = ?
-      `).run(id, email, userName, userPic, googleId || id, now, userName, userPic, googleId || id);
+      `).run(id, userDoc.email, userName, userPic, googleId || id, now, userName, userPic, googleId || id);
     } catch (e) {}
 
     res.json({ success: true, user: userDoc });

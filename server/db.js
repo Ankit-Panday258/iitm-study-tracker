@@ -68,6 +68,12 @@ try {
     db.exec("ALTER TABLE tasks ADD COLUMN duration_seconds INTEGER DEFAULT 0");
   } catch (e) {}
   try {
+    db.exec("ALTER TABLE tasks ADD COLUMN user_email TEXT DEFAULT 'kumar@gmail.com'");
+  } catch (e) {}
+  try {
+    db.exec("ALTER TABLE daily_notes ADD COLUMN user_email TEXT DEFAULT 'kumar@gmail.com'");
+  } catch (e) {}
+  try {
     db.exec("ALTER TABLE users ADD COLUMN password_hash TEXT");
   } catch (e) {}
 
@@ -80,30 +86,42 @@ try {
     insertSub.run('sub_3', 'System Commands', '⚙️', 'bg-pink-100 text-pink-800 border-pink-300 dark:bg-pink-900/20 dark:text-pink-200 dark:border-pink-800');
   }
 
-  // Seed sample data if empty
-  const taskCount = db.prepare('SELECT COUNT(*) as count FROM tasks').get();
-  if (taskCount.count === 0) {
-    const today = new Date().toISOString().split('T')[0];
-    const now = new Date().toISOString();
+  // Seed Kumar and Ankit sample tasks
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date().toISOString();
 
+  // Seed Kumar
+  const kumarCount = db.prepare("SELECT COUNT(*) as count FROM tasks WHERE user_email = 'kumar@gmail.com'").get();
+  if (kumarCount.count === 0) {
     const insertTask = db.prepare(`
-      INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR REPLACE INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-
-    const seedTasks = db.transaction(() => {
-      insertTask.run('1', today, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, now, 'Focus on CRUD operations and form validation', now);
-      insertTask.run('2', today, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, null, 'Solve assignment questions from Week 5', now);
-      insertTask.run('3', today, 'System Commands', 'Shell scripting: loops, conditionals & file processing', 45, 'Medium', 0, null, 'Practice grep, awk, sed commands', now);
-      insertTask.run('4', today, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, now, 'Completed 10 queries from practice set', now);
-    });
-
-    seedTasks();
+    insertTask.run('kumar_t1', today, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, now, 'Focus on CRUD operations and form validation', 'kumar@gmail.com', now);
+    insertTask.run('kumar_t2', today, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, null, 'Solve assignment questions from Week 5', 'kumar@gmail.com', now);
+    insertTask.run('kumar_t3', today, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, now, 'Completed 10 queries from practice set', 'kumar@gmail.com', now);
 
     db.prepare(`
-      INSERT OR IGNORE INTO daily_notes (date, note_text, created_at)
-      VALUES (?, ?, ?)
-    `).run(today, 'Completed Flask CRUD routes and solved 10 SQL queries today.', now);
+      INSERT OR IGNORE INTO daily_notes (date, note_text, user_email, created_at)
+      VALUES (?, ?, 'kumar@gmail.com', ?)
+    `).run(today, 'Kumar Daily Track: Completed Flask CRUD routes and solved 10 SQL queries.', now);
+  }
+
+  // Seed Ankit
+  const ankitCount = db.prepare("SELECT COUNT(*) as count FROM tasks WHERE user_email = 'ankit@gmail.com'").get();
+  if (ankitCount.count === 0) {
+    const insertTask = db.prepare(`
+      INSERT OR REPLACE INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    insertTask.run('ankit_t1', today, 'System Commands', 'Shell scripting: loops, conditionals & file processing. Book Drive: https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv', 45, 'High', 1, now, 'Practice grep, awk, sed commands. Google Drive book link saved.', 'ankit@gmail.com', now);
+    insertTask.run('ankit_t2', today, 'MAD 1 Project', 'Frontend state management with React & Vite components', 60, 'High', 0, null, 'Build modular UI components with Tailwind CSS', 'ankit@gmail.com', now);
+    insertTask.run('ankit_t3', today, 'DBMS', 'ER Modeling, Relationships and Foreign Keys schema design', 45, 'Medium', 0, null, 'Review entity relationship diagrams from Week 4', 'ankit@gmail.com', now);
+
+    db.prepare(`
+      INSERT OR IGNORE INTO daily_notes (date, note_text, user_email, created_at)
+      VALUES (?, ?, 'ankit@gmail.com', ?)
+    `).run(today, 'Ankit Daily Track: Mastered bash shell commands and completed System Command assignment.', now);
   }
 } catch (err) {
   console.warn('SQLite (better-sqlite3) unavailable or native addon not compiled. Using in-memory fallback.');

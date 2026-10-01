@@ -4,6 +4,7 @@ const API_BASE = '/api';
 const BACKUP_TASKS_KEY = 'iitm_tasks_backup';
 const BACKUP_NOTES_KEY = 'iitm_notes_backup';
 const BACKUP_SUBJECTS_KEY = 'iitm_subjects_backup';
+const USER_STORAGE_KEY = 'iitm_current_user';
 
 export const DEFAULT_SUBJECTS = [
   { id: 'sub_1', name: 'MAD 1 Project', icon: '💻', color: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700' },
@@ -23,7 +24,8 @@ export const DEFAULT_INITIAL_TASKS = [
     priority: 'High',
     completed: true,
     completedAt: new Date().toISOString(),
-    notes: 'Focus on CRUD operations and form validation'
+    notes: 'Focus on CRUD operations and form validation',
+    userEmail: 'kumar@gmail.com'
   },
   {
     id: '2',
@@ -36,7 +38,8 @@ export const DEFAULT_INITIAL_TASKS = [
     priority: 'High',
     completed: false,
     completedAt: null,
-    notes: 'Solve assignment questions from Week 5'
+    notes: 'Solve assignment questions from Week 5',
+    userEmail: 'kumar@gmail.com'
   },
   {
     id: '3',
@@ -49,7 +52,8 @@ export const DEFAULT_INITIAL_TASKS = [
     priority: 'Medium',
     completed: false,
     completedAt: null,
-    notes: 'Practice grep, awk, sed commands'
+    notes: 'Practice grep, awk, sed commands',
+    userEmail: 'kumar@gmail.com'
   },
   {
     id: '4',
@@ -62,33 +66,65 @@ export const DEFAULT_INITIAL_TASKS = [
     priority: 'Medium',
     completed: true,
     completedAt: new Date().toISOString(),
-    notes: 'Completed 10 queries from practice set'
+    notes: 'Completed 10 queries from practice set',
+    userEmail: 'kumar@gmail.com'
   }
 ];
 
-function getBackupTasks() {
+export function getStoredUser() {
   try {
-    const raw = localStorage.getItem(BACKUP_TASKS_KEY);
+    const raw = localStorage.getItem(USER_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function setStoredUser(user) {
+  if (user) {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  }
+}
+
+export function getCurrentUserEmail() {
+  const user = getStoredUser();
+  return user?.email ? user.email.toLowerCase().trim() : 'kumar@gmail.com';
+}
+
+function getBackupTasks(userEmail = getCurrentUserEmail()) {
+  try {
+    const key = `${BACKUP_TASKS_KEY}_${userEmail}`;
+    const raw = localStorage.getItem(key);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
   } catch (e) {}
-  return DEFAULT_INITIAL_TASKS;
+  return [];
 }
 
-function setBackupTasks(tasks) {
+function setBackupTasks(tasks, userEmail = getCurrentUserEmail()) {
   try {
-    localStorage.setItem(BACKUP_TASKS_KEY, JSON.stringify(tasks));
+    const key = `${BACKUP_TASKS_KEY}_${userEmail}`;
+    localStorage.setItem(key, JSON.stringify(tasks));
   } catch (e) {}
 }
 
-// Fetch with strict 1500ms timeout so the UI never hangs
+// Fetch with strict 1500ms timeout and automatic user email header
 async function fetchWithTimeout(url, options = {}, timeout = 1500) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
+  const userEmail = getCurrentUserEmail();
+
+  const headers = {
+    'x-user-email': userEmail,
+    ...(options.headers || {})
+  };
+
   try {
-    const res = await fetch(url, { ...options, credentials: 'omit', signal: controller.signal });
+    const res = await fetch(url, { ...options, headers, credentials: 'omit', signal: controller.signal });
     clearTimeout(id);
     return res;
   } catch (e) {
@@ -97,7 +133,7 @@ async function fetchWithTimeout(url, options = {}, timeout = 1500) {
   }
 }
 
-// Safe JSON parser to handle HTML responses (e.g. Vercel SPA fallbacks) gracefully
+// Safe JSON parser to handle HTML responses gracefully
 async function safeJson(res) {
   if (!res || !res.ok) return null;
   const contentType = res.headers.get('content-type') || '';
@@ -111,30 +147,39 @@ async function safeJson(res) {
   }
 }
 
-// ─── TASKS ───────────────────────────────────────────────────
+// ─── USER-ISOLATED TASKS API ─────────────────────────────────
 
-export async function fetchTasks(date) {
+export async function fetchTasks(date, userEmail = getCurrentUserEmail()) {
   try {
-    const url = date ? `${API_BASE}/tasks?date=${date}` : `${API_BASE}/tasks`;
+    let url = `${API_BASE}/tasks?user_email=${encodeURIComponent(userEmail)}`;
+    if (date) url += `&date=${date}`;
+
     const res = await fetchWithTimeout(url);
     const data = await safeJson(res);
-    if (Array.isArray(data) && data.length > 0) {
-      setBackupTasks(data);
+    if (Array.isArray(data)) {
+      setBackupTasks(data, userEmail);
       return date ? data.filter(t => t.date === date) : data;
     }
   } catch (err) {
     console.warn('Using local cache for tasks:', err.message);
   }
 
-  const backup = getBackupTasks();
+  const backup = getBackupTasks(userEmail);
   return date ? backup.filter(t => t.date === date) : backup;
 }
 
-export async function fetchAllTasks() {
-  return fetchTasks();
+export async function fetchAllTasks(allUsers = false) {
+  try {
+    const userEmail = getCurrentUserEmail();
+    const url = allUsers ? `${API_BASE}/tasks?all_users=true` : `${API_BASE}/tasks?user_email=${encodeURIComponent(userEmail)}`;
+    const res = await fetchWithTimeout(url);
+    const data = await safeJson(res);
+    if (Array.isArray(data)) return data;
+  } catch (err) {}
+  return getBackupTasks();
 }
 
-export async function createTask(taskData) {
+export async function createTask(taskData, userEmail = getCurrentUserEmail()) {
   const newTask = {
     id: taskData.id || Date.now().toString(),
     date: taskData.date,
@@ -147,13 +192,14 @@ export async function createTask(taskData) {
     completed: false,
     completedAt: null,
     notes: taskData.notes || '',
+    userEmail,
     createdAt: new Date().toISOString()
   };
 
   // Immediate local cache update
-  const backup = getBackupTasks();
+  const backup = getBackupTasks(userEmail);
   const updated = [newTask, ...backup.filter(t => t.id !== newTask.id)];
-  setBackupTasks(updated);
+  setBackupTasks(updated, userEmail);
 
   try {
     const res = await fetchWithTimeout(`${API_BASE}/tasks`, {
@@ -163,7 +209,7 @@ export async function createTask(taskData) {
     });
     const data = await safeJson(res);
     if (data && data.id) {
-      setBackupTasks([data, ...backup.filter(t => t.id !== data.id)]);
+      setBackupTasks([data, ...backup.filter(t => t.id !== data.id)], userEmail);
       return data;
     }
   } catch (err) {
@@ -173,11 +219,11 @@ export async function createTask(taskData) {
   return newTask;
 }
 
-export async function updateTask(id, taskData) {
-  const backup = getBackupTasks();
+export async function updateTask(id, taskData, userEmail = getCurrentUserEmail()) {
+  const backup = getBackupTasks(userEmail);
   const existing = backup.find(t => t.id === id) || {};
-  const merged = { ...existing, ...taskData, id };
-  setBackupTasks(backup.map(t => t.id === id ? merged : t));
+  const merged = { ...existing, ...taskData, id, userEmail };
+  setBackupTasks(backup.map(t => t.id === id ? merged : t), userEmail);
 
   try {
     const res = await fetchWithTimeout(`${API_BASE}/tasks/${id}`, {
@@ -187,7 +233,7 @@ export async function updateTask(id, taskData) {
     });
     const data = await safeJson(res);
     if (data && data.id) {
-      setBackupTasks(backup.map(t => t.id === id ? data : t));
+      setBackupTasks(backup.map(t => t.id === id ? data : t), userEmail);
       return data;
     }
   } catch (err) {
@@ -197,8 +243,8 @@ export async function updateTask(id, taskData) {
   return merged;
 }
 
-export async function toggleTask(id) {
-  const backup = getBackupTasks();
+export async function toggleTask(id, userEmail = getCurrentUserEmail()) {
+  const backup = getBackupTasks(userEmail);
   let updatedTask = null;
   const newBackup = backup.map(t => {
     if (t.id === id) {
@@ -211,7 +257,7 @@ export async function toggleTask(id) {
     }
     return t;
   });
-  setBackupTasks(newBackup);
+  setBackupTasks(newBackup, userEmail);
 
   try {
     const res = await fetchWithTimeout(`${API_BASE}/tasks/${id}/toggle`, {
@@ -219,7 +265,7 @@ export async function toggleTask(id) {
     });
     const data = await safeJson(res);
     if (data && data.id) {
-      setBackupTasks(backup.map(t => t.id === id ? data : t));
+      setBackupTasks(backup.map(t => t.id === id ? data : t), userEmail);
       return data;
     }
   } catch (err) {
@@ -229,9 +275,9 @@ export async function toggleTask(id) {
   return updatedTask;
 }
 
-export async function deleteTask(id) {
-  const backup = getBackupTasks();
-  setBackupTasks(backup.filter(t => t.id !== id));
+export async function deleteTask(id, userEmail = getCurrentUserEmail()) {
+  const backup = getBackupTasks(userEmail);
+  setBackupTasks(backup.filter(t => t.id !== id), userEmail);
 
   try {
     await fetchWithTimeout(`${API_BASE}/tasks/${id}`, { method: 'DELETE' });
@@ -240,20 +286,20 @@ export async function deleteTask(id) {
   return { success: true, id };
 }
 
-// ─── DAILY TRACK ─────────────────────────────────────────────
+// ─── DAILY TRACK API ─────────────────────────────────────────
 
-export async function fetchDailyTrack() {
+export async function fetchDailyTrack(userEmail = getCurrentUserEmail()) {
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/daily-track`);
+    const res = await fetchWithTimeout(`${API_BASE}/daily-track?user_email=${encodeURIComponent(userEmail)}`);
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) return data;
+      if (Array.isArray(data)) return data;
     }
   } catch (err) {}
 
   // Fallback to local cache
-  const backup = getBackupTasks().filter(t => t.completed);
-  const notesRaw = localStorage.getItem(BACKUP_NOTES_KEY);
+  const backup = getBackupTasks(userEmail).filter(t => t.completed);
+  const notesRaw = localStorage.getItem(`${BACKUP_NOTES_KEY}_${userEmail}`);
   const notes = notesRaw ? JSON.parse(notesRaw) : {};
 
   const grouped = {};
@@ -275,19 +321,20 @@ export async function fetchDailyTrack() {
   })).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-// ─── NOTES ───────────────────────────────────────────────────
+// ─── NOTES API ───────────────────────────────────────────────
 
-export async function fetchNote(date) {
-  const notesRaw = localStorage.getItem(BACKUP_NOTES_KEY);
+export async function fetchNote(date, userEmail = getCurrentUserEmail()) {
+  const notesKey = `${BACKUP_NOTES_KEY}_${userEmail}`;
+  const notesRaw = localStorage.getItem(notesKey);
   const notes = notesRaw ? JSON.parse(notesRaw) : {};
 
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/notes/${date}`);
+    const res = await fetchWithTimeout(`${API_BASE}/notes/${date}?user_email=${encodeURIComponent(userEmail)}`);
     if (res.ok) {
       const data = await res.json();
       if (data && data.noteText !== undefined) {
         notes[date] = data.noteText;
-        localStorage.setItem(BACKUP_NOTES_KEY, JSON.stringify(notes));
+        localStorage.setItem(notesKey, JSON.stringify(notes));
         return data;
       }
     }
@@ -296,27 +343,28 @@ export async function fetchNote(date) {
   return { date, noteText: notes[date] || '' };
 }
 
-export async function saveNote(date, noteText) {
-  const notesRaw = localStorage.getItem(BACKUP_NOTES_KEY);
+export async function saveNote(date, noteText, userEmail = getCurrentUserEmail()) {
+  const notesKey = `${BACKUP_NOTES_KEY}_${userEmail}`;
+  const notesRaw = localStorage.getItem(notesKey);
   const notes = notesRaw ? JSON.parse(notesRaw) : {};
   notes[date] = noteText;
-  localStorage.setItem(BACKUP_NOTES_KEY, JSON.stringify(notes));
+  localStorage.setItem(notesKey, JSON.stringify(notes));
 
   try {
     await fetchWithTimeout(`${API_BASE}/notes/${date}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ noteText })
+      body: JSON.stringify({ noteText, userEmail })
     });
   } catch (err) {}
 
-  return { date, noteText };
+  return { date, noteText, userEmail };
 }
 
-// ─── STATS ───────────────────────────────────────────────────
+// ─── STATS API ───────────────────────────────────────────────
 
-export async function fetchStreak() {
-  const backup = getBackupTasks().filter(t => t.completed);
+export async function fetchStreak(userEmail = getCurrentUserEmail()) {
+  const backup = getBackupTasks(userEmail).filter(t => t.completed);
   const dates = new Set(backup.map(t => t.date));
   let localStreak = 0;
   const today = new Date();
@@ -334,21 +382,26 @@ export async function fetchStreak() {
   }
 
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/stats/streak`);
+    const res = await fetchWithTimeout(`${API_BASE}/stats/streak?user_email=${encodeURIComponent(userEmail)}`);
     if (res.ok) {
       const data = await res.json();
       if (data && typeof data.streak === 'number') return data;
     }
   } catch (err) {}
 
-  return { streak: localStreak };
+  return { streak: localStreak || 1 };
 }
 
-// ─── SUBJECTS ────────────────────────────────────────────────
+// ─── SUBJECTS API ────────────────────────────────────────────
 
 export async function fetchSubjects() {
   const cached = localStorage.getItem(BACKUP_SUBJECTS_KEY);
-  const fallback = cached ? JSON.parse(cached) : DEFAULT_SUBJECTS;
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {}
+  }
 
   try {
     const res = await fetchWithTimeout(`${API_BASE}/subjects`);
@@ -359,70 +412,38 @@ export async function fetchSubjects() {
         return data;
       }
     }
-  } catch (e) {}
+  } catch (err) {}
 
-  return fallback;
+  return DEFAULT_SUBJECTS;
 }
 
-export async function createSubject({ name, icon, color }) {
-  const newSub = {
-    id: 'sub_' + Date.now(),
-    name: name.trim(),
-    icon: icon || '📚',
-    color: color || 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700'
-  };
-
-  const current = await fetchSubjects();
-  const updated = [...current.filter(s => s.name !== newSub.name), newSub];
-  localStorage.setItem(BACKUP_SUBJECTS_KEY, JSON.stringify(updated));
-
+export async function createSubject(subjectData) {
   try {
     const res = await fetchWithTimeout(`${API_BASE}/subjects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newSub)
+      body: JSON.stringify(subjectData)
     });
     if (res.ok) {
       const data = await res.json();
-      localStorage.setItem(BACKUP_SUBJECTS_KEY, JSON.stringify([...current.filter(s => s.name !== data.name), data]));
       return data;
     }
-  } catch (e) {}
-
-  return newSub;
+  } catch (err) {}
+  return subjectData;
 }
 
-// ─── AUTHENTICATION (GOOGLE & EMAIL) ─────────────────────────
-
-const USER_STORAGE_KEY = 'iitm_auth_user';
-
-export function getStoredUser() {
-  try {
-    const raw = localStorage.getItem(USER_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-export function setStoredUser(user) {
-  if (user) {
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(USER_STORAGE_KEY);
-  }
-}
+// ─── AUTHENTICATION API ──────────────────────────────────────
 
 export async function loginWithGoogle({ email, name, picture, googleId, credential }) {
+  const cleanEmail = email.toLowerCase().trim();
   const userPayload = {
-    email,
-    name: name || email.split('@')[0],
+    email: cleanEmail,
+    name: name || cleanEmail.split('@')[0],
     picture: picture || '',
     googleId: googleId || 'google_' + Date.now(),
     credential
   };
 
-  // Immediate local save
   setStoredUser(userPayload);
 
   try {
@@ -525,4 +546,3 @@ export async function fetchDbStatus() {
   }
   return { activeDatabase: 'Local/SQLite' };
 }
-

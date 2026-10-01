@@ -68,21 +68,25 @@ export async function initMySQL() {
         completed TINYINT(1) DEFAULT 0,
         completed_at VARCHAR(100) NULL,
         notes TEXT NULL,
+        user_email VARCHAR(255) NOT NULL DEFAULT 'kumar@gmail.com',
         created_at VARCHAR(100) NULL,
         updated_at VARCHAR(100) NULL,
         INDEX idx_date (date),
-        INDEX idx_completed (completed)
+        INDEX idx_completed (completed),
+        INDEX idx_user_email (user_email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS daily_notes (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        date VARCHAR(20) UNIQUE NOT NULL,
+        date VARCHAR(20) NOT NULL,
         note_text TEXT NULL,
+        user_email VARCHAR(255) NOT NULL DEFAULT 'kumar@gmail.com',
         created_at VARCHAR(100) NULL,
         updated_at VARCHAR(100) NULL,
-        INDEX idx_date (date)
+        INDEX idx_date (date),
+        INDEX idx_user_email (user_email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
@@ -99,7 +103,19 @@ export async function initMySQL() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // Ensure password_hash column exists on older schema
+    // Schema Migrations for existing tables
+    try {
+      await pool.query('ALTER TABLE tasks ADD COLUMN user_email VARCHAR(255) DEFAULT "kumar@gmail.com";');
+    } catch (e) {}
+    try {
+      await pool.query('ALTER TABLE tasks ADD INDEX idx_user_email (user_email);');
+    } catch (e) {}
+    try {
+      await pool.query('ALTER TABLE daily_notes ADD COLUMN user_email VARCHAR(255) DEFAULT "kumar@gmail.com";');
+    } catch (e) {}
+    try {
+      await pool.query('ALTER TABLE daily_notes ADD INDEX idx_daily_notes_user (user_email);');
+    } catch (e) {}
     try {
       await pool.query('ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL;');
     } catch (e) {}
@@ -116,27 +132,58 @@ export async function initMySQL() {
       console.log('🐬 Default subjects seeded in MySQL');
     }
 
-    // 5. Seed default tasks if empty
-    const [taskCountRows] = await pool.query('SELECT COUNT(*) as count FROM tasks');
-    if (taskCountRows[0].count === 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const now = new Date().toISOString();
+    // 5. Seed Pre-configured Users: kumar@gmail.com and ankit@gmail.com
+    const defaultPasswordHash = hashPassword('password123');
+
+    await pool.query(`
+      INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+      VALUES ('usr_kumar', 'kumar@gmail.com', 'Kumar', 'https://api.dicebear.com/7.x/bottts/svg?seed=Kumar', ?, 'email', NOW())
+      ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = COALESCE(password_hash, VALUES(password_hash))
+    `, [defaultPasswordHash]);
+
+    await pool.query(`
+      INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+      VALUES ('usr_ankit', 'ankit@gmail.com', 'Ankit Pandey', 'https://api.dicebear.com/7.x/bottts/svg?seed=Ankit', ?, 'email', NOW())
+      ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = COALESCE(password_hash, VALUES(password_hash))
+    `, [defaultPasswordHash]);
+
+    // 6. Seed Kumar's tasks if not present
+    const today = new Date().toISOString().split('T')[0];
+    const now = new Date().toISOString();
+
+    const [kumarTasks] = await pool.query('SELECT COUNT(*) as count FROM tasks WHERE user_email = ?', ['kumar@gmail.com']);
+    if (kumarTasks[0].count === 0) {
+      await pool.query(`
+        INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at) VALUES 
+        ('kumar_t1', ?, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, ?, 'Focus on CRUD operations and form validation', 'kumar@gmail.com', ?),
+        ('kumar_t2', ?, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, NULL, 'Solve assignment questions from Week 5', 'kumar@gmail.com', ?),
+        ('kumar_t3', ?, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, ?, 'Completed 10 queries from practice set', 'kumar@gmail.com', ?)
+      `, [today, now, now, today, now, today, now, now]);
 
       await pool.query(`
-        INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, created_at) VALUES 
-        ('1', ?, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, ?, 'Focus on CRUD operations and form validation', ?),
-        ('2', ?, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, NULL, 'Solve assignment questions from Week 5', ?),
-        ('3', ?, 'System Commands', 'Shell scripting: loops, conditionals & file processing', 45, 'Medium', 0, NULL, 'Practice grep, awk, sed commands. Book Drive: https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv', ?),
-        ('4', ?, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, ?, 'Completed 10 queries from practice set', ?)
-      `, [today, now, now, today, now, today, now, today, now, now]);
-
-      await pool.query(`
-        INSERT INTO daily_notes (date, note_text, created_at, updated_at) VALUES 
-        (?, 'Completed Flask CRUD routes and solved 10 SQL queries today.', ?, ?)
-        ON DUPLICATE KEY UPDATE note_text = VALUES(note_text)
+        INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES 
+        (?, 'Kumar Daily Track: Completed Flask CRUD routes and solved 10 SQL queries today.', 'kumar@gmail.com', ?, ?)
       `, [today, now, now]);
 
-      console.log('🐬 Default study tasks seeded in MySQL');
+      console.log('🐬 Kumar user & study tasks seeded in MySQL');
+    }
+
+    // 7. Seed Ankit's tasks if not present
+    const [ankitTasks] = await pool.query('SELECT COUNT(*) as count FROM tasks WHERE user_email = ?', ['ankit@gmail.com']);
+    if (ankitTasks[0].count === 0) {
+      await pool.query(`
+        INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at) VALUES 
+        ('ankit_t1', ?, 'System Commands', 'Shell scripting: loops, conditionals & file processing. Book Drive: https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv', 45, 'High', 1, ?, 'Practice grep, awk, sed commands. Google Drive book link saved.', 'ankit@gmail.com', ?),
+        ('ankit_t2', ?, 'MAD 1 Project', 'Vue.js / React client state management and Vite build setup', 60, 'High', 0, NULL, 'Build modular UI components with Tailwind CSS', 'ankit@gmail.com', ?),
+        ('ankit_t3', ?, 'DBMS', 'ER Modeling, Relationships and Foreign Keys schema design', 45, 'Medium', 0, NULL, 'Review entity relationship diagrams from Week 4', 'ankit@gmail.com', ?)
+      `, [today, now, now, today, now, today, now]);
+
+      await pool.query(`
+        INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES 
+        (?, 'Ankit Daily Track: Mastered bash shell commands and completed System Command assignment.', 'ankit@gmail.com', ?, ?)
+      `, [today, now, now]);
+
+      console.log('🐬 Ankit user & study tasks seeded in MySQL');
     }
 
     isConnected = true;
@@ -167,16 +214,23 @@ export function getMySQLStatus() {
   };
 }
 
-// ─── CRUD OPERATIONS ON MYSQL ────────────────────────────────
+// ─── USER-ISOLATED CRUD OPERATIONS ON MYSQL ──────────────────
 
-export async function mySQLGetTasks(date) {
+export async function mySQLGetTasks(date, userEmail = 'kumar@gmail.com') {
   if (!pool) throw new Error('MySQL pool not ready');
-  let rows;
+  const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
+
+  let query = 'SELECT * FROM tasks WHERE user_email = ?';
+  const params = [cleanEmail];
+
   if (date) {
-    [rows] = await pool.query('SELECT * FROM tasks WHERE date = ? ORDER BY created_at DESC', [date]);
+    query += ' AND date = ? ORDER BY created_at DESC';
+    params.push(date);
   } else {
-    [rows] = await pool.query('SELECT * FROM tasks ORDER BY date DESC, created_at DESC');
+    query += ' ORDER BY date DESC, created_at DESC';
   }
+
+  const [rows] = await pool.query(query, params);
 
   return rows.map(t => ({
     id: t.id,
@@ -190,6 +244,27 @@ export async function mySQLGetTasks(date) {
     completed: t.completed === 1,
     completedAt: t.completed_at,
     notes: t.notes || '',
+    userEmail: t.user_email || cleanEmail,
+    createdAt: t.created_at
+  }));
+}
+
+export async function mySQLGetAllTasks() {
+  if (!pool) throw new Error('MySQL pool not ready');
+  const [rows] = await pool.query('SELECT * FROM tasks ORDER BY date DESC, created_at DESC');
+  return rows.map(t => ({
+    id: t.id,
+    date: t.date,
+    subject: t.subject,
+    topic: t.topic,
+    durationHours: t.duration_hours || 0,
+    durationMinutes: t.duration_minutes || 0,
+    durationSeconds: t.duration_seconds || 0,
+    priority: t.priority,
+    completed: t.completed === 1,
+    completedAt: t.completed_at,
+    notes: t.notes || '',
+    userEmail: t.user_email || 'kumar@gmail.com',
     createdAt: t.created_at
   }));
 }
@@ -198,10 +273,11 @@ export async function mySQLCreateTask(taskData) {
   if (!pool) throw new Error('MySQL pool not ready');
   const taskId = taskData.id || Date.now().toString();
   const now = new Date().toISOString();
+  const cleanEmail = (taskData.userEmail || 'kumar@gmail.com').toLowerCase().trim();
 
   await pool.query(`
-    INSERT INTO tasks (id, date, subject, topic, duration_hours, duration_minutes, duration_seconds, priority, completed, completed_at, notes, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?)
+    INSERT INTO tasks (id, date, subject, topic, duration_hours, duration_minutes, duration_seconds, priority, completed, completed_at, notes, user_email, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, ?, ?, ?)
   `, [
     taskId,
     taskData.date,
@@ -212,6 +288,7 @@ export async function mySQLCreateTask(taskData) {
     taskData.durationSeconds || 0,
     taskData.priority || 'Medium',
     taskData.notes || '',
+    cleanEmail,
     now
   ]);
 
@@ -229,6 +306,7 @@ export async function mySQLCreateTask(taskData) {
     completed: task.completed === 1,
     completedAt: task.completed_at,
     notes: task.notes || '',
+    userEmail: task.user_email || cleanEmail,
     createdAt: task.created_at
   };
 }
@@ -272,6 +350,7 @@ export async function mySQLUpdateTask(id, taskData) {
     completed: task.completed === 1,
     completedAt: task.completed_at,
     notes: task.notes || '',
+    userEmail: task.user_email || 'kumar@gmail.com',
     createdAt: task.created_at
   };
 }
@@ -302,6 +381,7 @@ export async function mySQLToggleTask(id) {
     completed: newCompleted === 1,
     completedAt,
     notes: task.notes || '',
+    userEmail: task.user_email || 'kumar@gmail.com',
     createdAt: task.created_at
   };
 }
@@ -312,14 +392,16 @@ export async function mySQLDeleteTask(id) {
   return result.affectedRows > 0;
 }
 
-export async function mySQLGetDailyTrack() {
+export async function mySQLGetDailyTrack(userEmail = 'kumar@gmail.com') {
   if (!pool) throw new Error('MySQL pool not ready');
+  const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
+
   const [rows] = await pool.query(`
-    SELECT date, subject, topic, duration_minutes, completed_at, notes, priority
+    SELECT date, subject, topic, duration_minutes, duration_hours, duration_seconds, completed_at, notes, priority, user_email
     FROM tasks
-    WHERE completed = 1
+    WHERE completed = 1 AND user_email = ?
     ORDER BY date DESC, completed_at DESC
-  `);
+  `, [cleanEmail]);
 
   const grouped = {};
   for (const row of rows) {
@@ -327,43 +409,52 @@ export async function mySQLGetDailyTrack() {
     grouped[row.date].push({
       subject: row.subject,
       topic: row.topic,
-      durationMinutes: row.duration_minutes,
+      durationMinutes: row.duration_minutes || 0,
+      durationHours: row.duration_hours || 0,
+      durationSeconds: row.duration_seconds || 0,
       completedAt: row.completed_at,
       notes: row.notes,
-      priority: row.priority
+      priority: row.priority,
+      userEmail: row.user_email
     });
   }
 
   return Object.entries(grouped).map(([date, tasks]) => ({
     date,
-    totalMinutes: tasks.reduce((acc, t) => acc + t.durationMinutes, 0),
+    totalMinutes: tasks.reduce((acc, t) => acc + (t.durationHours * 60) + t.durationMinutes + (t.durationSeconds / 60), 0),
     completedCount: tasks.length,
     tasks
   })).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export async function mySQLGetNote(date) {
+export async function mySQLGetNote(date, userEmail = 'kumar@gmail.com') {
   if (!pool) throw new Error('MySQL pool not ready');
-  const [rows] = await pool.query('SELECT * FROM daily_notes WHERE date = ?', [date]);
-  return rows.length > 0 ? { date: rows[0].date, noteText: rows[0].note_text } : { date, noteText: '' };
+  const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
+  const [rows] = await pool.query('SELECT * FROM daily_notes WHERE date = ? AND user_email = ?', [date, cleanEmail]);
+  return rows.length > 0 ? { date: rows[0].date, noteText: rows[0].note_text, userEmail: cleanEmail } : { date, noteText: '', userEmail: cleanEmail };
 }
 
-export async function mySQLSaveNote(date, noteText) {
+export async function mySQLSaveNote(date, noteText, userEmail = 'kumar@gmail.com') {
   if (!pool) throw new Error('MySQL pool not ready');
+  const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
   const now = new Date().toISOString();
-  await pool.query(`
-    INSERT INTO daily_notes (date, note_text, created_at, updated_at)
-    VALUES (?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE note_text = VALUES(note_text), updated_at = VALUES(updated_at)
-  `, [date, noteText || '', now, now]);
-  return { date, noteText: noteText || '' };
+
+  const [existing] = await pool.query('SELECT id FROM daily_notes WHERE date = ? AND user_email = ?', [date, cleanEmail]);
+  if (existing.length > 0) {
+    await pool.query('UPDATE daily_notes SET note_text = ?, updated_at = ? WHERE date = ? AND user_email = ?', [noteText || '', now, date, cleanEmail]);
+  } else {
+    await pool.query('INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)', [date, noteText || '', cleanEmail, now, now]);
+  }
+  return { date, noteText: noteText || '', userEmail: cleanEmail };
 }
 
-export async function mySQLGetStreak() {
+export async function mySQLGetStreak(userEmail = 'kumar@gmail.com') {
   if (!pool) throw new Error('MySQL pool not ready');
+  const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
+
   const [rows] = await pool.query(`
-    SELECT DISTINCT date FROM tasks WHERE completed = 1 ORDER BY date DESC
-  `);
+    SELECT DISTINCT date FROM tasks WHERE completed = 1 AND user_email = ? ORDER BY date DESC
+  `, [cleanEmail]);
 
   const dateSet = new Set(rows.map(r => r.date));
   let streak = 0;
@@ -411,13 +502,15 @@ export async function mySQLCreateSubject(data) {
 export async function mySQLLoginUser(userData) {
   if (!pool) throw new Error('MySQL pool not ready');
   const id = userData.id || 'usr_' + Date.now();
+  const cleanEmail = (userData.email || 'kumar@gmail.com').toLowerCase().trim();
+
   await pool.query(`
     INSERT INTO users (id, email, name, picture, google_id, auth_provider, created_at)
     VALUES (?, ?, ?, ?, ?, ?, NOW())
     ON DUPLICATE KEY UPDATE name = VALUES(name), picture = VALUES(picture)
-  `, [id, userData.email, userData.name, userData.picture || '', userData.googleId || '', userData.authProvider || 'google']);
+  `, [id, cleanEmail, userData.name, userData.picture || '', userData.googleId || '', userData.authProvider || 'google']);
 
-  const [rows] = await pool.query('SELECT id, email, name, picture, google_id, auth_provider, created_at FROM users WHERE email = ?', [userData.email]);
+  const [rows] = await pool.query('SELECT id, email, name, picture, google_id, auth_provider, created_at FROM users WHERE email = ?', [cleanEmail]);
   return rows[0];
 }
 
@@ -497,6 +590,7 @@ export default {
   isMySQLConnected,
   getMySQLStatus,
   getTasks: mySQLGetTasks,
+  getAllTasks: mySQLGetAllTasks,
   createTask: mySQLCreateTask,
   updateTask: mySQLUpdateTask,
   toggleTask: mySQLToggleTask,
