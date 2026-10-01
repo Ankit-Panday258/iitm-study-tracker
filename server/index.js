@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import db from './db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import {
   initMySQL,
   isMySQLConnected,
@@ -720,6 +725,15 @@ app.post('/api/auth/google', async (req, res) => {
     console.error('POST /api/auth/google error:', err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// Serve static frontend from dist in production / fallback
+app.use(express.static(path.join(__dirname, '../dist')));
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(__dirname, '../dist/index.html'), (err) => {
+    if (err) next();
+  });
 });
 
 // ─── START SERVER ────────────────────────────────────────────

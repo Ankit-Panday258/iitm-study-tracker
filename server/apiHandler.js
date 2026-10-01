@@ -1,6 +1,8 @@
 import db from './db.js';
 import url from 'url';
-import { isMongoConnected, getMongoStatus, Task, Subject, DailyNote, User } from './mongodb.js';
+// Stub mongo for clean MySQL + SQLite operation
+const isMongoConnected = () => false;
+const getMongoStatus = () => ({ connected: false, message: 'MySQL is active engine' });
 import {
   initMySQL,
   isMySQLConnected,
