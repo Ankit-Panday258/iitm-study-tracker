@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Flame, Sun, Moon, LogOut, 
-  Download, BookOpen 
+  Download 
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -14,8 +14,7 @@ export default function Navbar({
   onLogout,
   isInstalled,
   isInstallable,
-  onInstallApp,
-  onOpenBooks
+  onInstallApp
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -69,16 +68,6 @@ export default function Navbar({
               className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200"
             >
               {darkMode ? <Sun className="w-3.5 h-3.5 text-yellow-400" /> : <Moon className="w-3.5 h-3.5" />}
-            </button>
-
-            {/* Mobile Books Shortcut */}
-            <button
-              type="button"
-              onClick={onOpenBooks}
-              className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-pink-600 dark:text-pink-400 active:scale-95 cursor-pointer"
-              title="Books & Study Resources"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
             </button>
 
             {/* Mobile Account Button with Avatar Icon */}
@@ -190,17 +179,6 @@ export default function Navbar({
             title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
             {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
-          </button>
-
-          {/* Books & Resources (Desktop) */}
-          <button
-            type="button"
-            onClick={onOpenBooks}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-400 text-gray-700 dark:text-slate-200 hover:text-pink-600 dark:hover:text-pink-400 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
-            title="Books & Study Resources"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
-            <span>Books</span>
           </button>
 
           {/* User Auth & Login Area (Desktop) */}
