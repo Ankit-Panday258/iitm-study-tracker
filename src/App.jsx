@@ -374,10 +374,6 @@ export default function App() {
           setCurrentPage('dailyTrack');
           setActiveBottomTab('track');
         }}
-        onOpenBooks={() => {
-          setCurrentPage('books');
-          setActiveBottomTab('books');
-        }}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
