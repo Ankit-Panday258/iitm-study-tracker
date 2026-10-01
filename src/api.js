@@ -112,8 +112,8 @@ function setBackupTasks(tasks, userEmail = getCurrentUserEmail()) {
   } catch (e) {}
 }
 
-// Fetch with strict 1500ms timeout and automatic user email header
-async function fetchWithTimeout(url, options = {}, timeout = 1500) {
+// Fetch with reasonable 15000ms timeout and automatic user email header
+async function fetchWithTimeout(url, options = {}, timeout = 15000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   const userEmail = getCurrentUserEmail();
@@ -133,15 +133,13 @@ async function fetchWithTimeout(url, options = {}, timeout = 1500) {
   }
 }
 
-// Safe JSON parser to handle HTML responses gracefully
+// Safe JSON parser to handle any response gracefully without crashing
 async function safeJson(res) {
-  if (!res || !res.ok) return null;
-  const contentType = res.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
-    return null;
-  }
+  if (!res) return null;
   try {
-    return await res.json();
+    const text = await res.text();
+    if (!text || !text.trim()) return null;
+    return JSON.parse(text);
   } catch (e) {
     return null;
   }
@@ -470,37 +468,67 @@ export async function registerWithEmail({ email, password, name }) {
   const cleanEmail = email.toLowerCase().trim();
   const userName = (name || cleanEmail.split('@')[0]).trim();
 
-  const res = await fetchWithTimeout(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: cleanEmail, password, name: userName })
-  });
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: cleanEmail, password, name: userName })
+    }, 15000);
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Connection timed out. Please check your network connection.');
+    }
+    throw new Error('Network error. Unable to connect to server.');
+  }
 
-  const data = await res.json();
+  let data = {};
+  try {
+    const text = await res.text();
+    if (text) data = JSON.parse(text);
+  } catch (e) {
+    data = {};
+  }
+
   if (!res.ok) {
-    throw new Error(data.error || 'Registration failed');
+    throw new Error(data.error || 'Registration failed. Please try again.');
   }
 
   if (data.user) {
     setStoredUser(data.user);
     return data.user;
   }
-  throw new Error('Could not create account');
+  throw new Error('Could not create account.');
 }
 
 export async function loginWithEmail({ email, password, name }) {
   const cleanEmail = email.toLowerCase().trim();
   const userName = (name || cleanEmail.split('@')[0]).trim();
 
-  const res = await fetchWithTimeout(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: cleanEmail, password, name: userName })
-  });
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: cleanEmail, password, name: userName })
+    }, 15000);
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Connection timed out. Please check your network connection.');
+    }
+    throw new Error('Network error. Unable to connect to server.');
+  }
 
-  const data = await res.json();
+  let data = {};
+  try {
+    const text = await res.text();
+    if (text) data = JSON.parse(text);
+  } catch (e) {
+    data = {};
+  }
+
   if (!res.ok) {
-    throw new Error(data.error || 'Login failed');
+    throw new Error(data.error || 'Login failed. Please check your password.');
   }
 
   if (data.user) {
