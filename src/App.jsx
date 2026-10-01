@@ -4,7 +4,6 @@ import StatsOverview from './components/StatsOverview';
 import TaskItem from './components/TaskItem';
 import TaskFormModal from './components/TaskFormModal';
 import PomodoroTimer from './components/PomodoroTimer';
-import DailyNotes from './components/DailyNotes';
 import DailyTrack from './components/DailyTrack';
 import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
@@ -409,9 +408,6 @@ export default function App() {
 
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
-
-            {/* Daily Notes */}
-            <DailyNotes selectedDate={selectedDate} />
 
             {/* Task List Header & Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
