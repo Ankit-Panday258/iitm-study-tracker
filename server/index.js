@@ -44,7 +44,7 @@ function getUserEmail(req) {
     req.headers['x-user-email'] ||
     req.query.user_email ||
     (req.body && req.body.userEmail) ||
-    'kumar@gmail.com'
+    'default'
   ).toLowerCase().trim();
 }
 

@@ -73,7 +73,7 @@ export function handleApiRequest(req, res, next) {
       const userEmail = (
         req.headers['x-user-email'] ||
         parsedUrl.query.user_email ||
-        'kumar@gmail.com'
+        'default'
       ).toLowerCase().trim();
 
       // 0. GET /api/db-status
