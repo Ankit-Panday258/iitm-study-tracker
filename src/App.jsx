@@ -9,6 +9,7 @@ import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
+import DailyNotes from './components/DailyNotes';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
@@ -154,37 +155,34 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = getStoredUser();
+    if (saved) return saved;
+    const defaultUser = {
+      id: 'usr_kumar',
+      email: 'kumar@gmail.com',
+      name: 'Kumar',
+      picture: 'https://api.dicebear.com/7.x/bottts/svg?seed=Kumar',
+      authProvider: 'email'
+    };
+    setStoredUser(defaultUser);
+    return defaultUser;
+  });
   const [editingTask, setEditingTask] = useState(null);
   const [activeTimerTask, setActiveTimerTask] = useState(null);
 
-  const handleLogout = () => {
-    logoutAPI();
-    setCurrentUser(null);
-    showToast('Logged out successfully');
-  };
-
-  const handleLoginSuccess = (user) => {
-    setCurrentUser(user);
-    showToast(`Welcome back, ${user.name || user.email}!`);
-  };
-
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
-  };
-
-  // ─── Load tasks from API in background ─────────────────────
-  const loadTasks = useCallback(async () => {
+  // ─── Load tasks from API for active user ───────────────────
+  const loadTasks = useCallback(async (userToLoad = currentUser) => {
     try {
-      const data = await fetchTasks();
-      if (Array.isArray(data) && data.length > 0) {
+      const email = userToLoad?.email || 'kumar@gmail.com';
+      const data = await fetchTasks(undefined, email);
+      if (Array.isArray(data)) {
         setAllTasks(data);
       }
     } catch (err) {
       console.warn('Background loadTasks failed:', err);
     }
-  }, []);
+  }, [currentUser]);
 
   const loadSubjects = useCallback(async () => {
     try {
@@ -197,29 +195,65 @@ export default function App() {
     }
   }, []);
 
-  const loadStreak = useCallback(async () => {
+  const loadStreak = useCallback(async (userToLoad = currentUser) => {
     try {
-      const data = await fetchStreak();
+      const email = userToLoad?.email || 'kumar@gmail.com';
+      const data = await fetchStreak(email);
       if (data && typeof data.streak === 'number') {
         setStreak(data.streak);
       }
     } catch (err) {
       console.warn('Background loadStreak failed:', err);
     }
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
-    loadTasks();
-    loadStreak();
+    loadTasks(currentUser);
+    loadStreak(currentUser);
     loadSubjects();
-  }, [loadTasks, loadStreak, loadSubjects]);
+  }, [currentUser, loadTasks, loadStreak, loadSubjects]);
 
-  // Keep backup in localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('iitm_tasks_backup', JSON.stringify(allTasks));
-    } catch (e) {}
-  }, [allTasks]);
+  const handleLogout = async () => {
+    logoutAPI();
+    const guestUser = {
+      id: 'usr_kumar',
+      email: 'kumar@gmail.com',
+      name: 'Kumar',
+      picture: 'https://api.dicebear.com/7.x/bottts/svg?seed=Kumar',
+      authProvider: 'email'
+    };
+    setCurrentUser(guestUser);
+    setStoredUser(guestUser);
+    showToast('Switched to Kumar account');
+    await Promise.all([loadTasks(guestUser), loadStreak(guestUser)]);
+  };
+
+  const handleLoginSuccess = async (user) => {
+    setCurrentUser(user);
+    setStoredUser(user);
+    showToast(`Welcome back, ${user.name || user.email}!`);
+    await Promise.all([loadTasks(user), loadStreak(user)]);
+  };
+
+  const handleSwitchUser = async (targetEmail, targetName) => {
+    const isAnkit = targetEmail.toLowerCase().includes('ankit');
+    const userObj = {
+      id: isAnkit ? 'usr_ankit' : 'usr_kumar',
+      email: targetEmail.toLowerCase().trim(),
+      name: targetName || (isAnkit ? 'Ankit Pandey' : 'Kumar'),
+      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(targetName || targetEmail)}`,
+      authProvider: 'email'
+    };
+    setCurrentUser(userObj);
+    setStoredUser(userObj);
+    showToast(`Switched account to: ${userObj.name} (${userObj.email})`);
+    await Promise.all([loadTasks(userObj), loadStreak(userObj)]);
+  };
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 3000);
+  };
 
   useEffect(() => {
     try {
@@ -377,6 +411,7 @@ export default function App() {
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
+        onSwitchUser={handleSwitchUser}
         isInstalled={isInstalled}
         isInstallable={isInstallable}
         onInstallApp={handleInstallApp}
@@ -401,6 +436,61 @@ export default function App() {
           />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+
+            {/* Active User Profile & Quick Switcher Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 mb-5 rounded-2xl bg-white dark:bg-slate-900 border border-pink-200 dark:border-pink-900/60 shadow-sm">
+              <div className="flex items-center gap-3">
+                <img
+                  src={currentUser.picture || "/avatar-bot.png"}
+                  alt={currentUser.name}
+                  className="w-9 h-9 rounded-full object-cover border-2 border-pink-500 shadow-sm"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-gray-900 dark:text-white">
+                      {currentUser.name}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 font-bold border border-pink-300 dark:border-pink-700">
+                      Active Account
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-mono">
+                    {currentUser.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Profile Switcher */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] text-gray-400 font-medium hidden md:inline">Switch Profile:</span>
+                <button
+                  onClick={() => handleSwitchUser('kumar@gmail.com', 'Kumar')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    currentUser.email === 'kumar@gmail.com'
+                      ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                      : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  }`}
+                >
+                  Kumar
+                </button>
+                <button
+                  onClick={() => handleSwitchUser('ankit@gmail.com', 'Ankit Pandey')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    currentUser.email === 'ankit@gmail.com'
+                      ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                      : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  }`}
+                >
+                  Ankit
+                </button>
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 hover:bg-pink-100 transition-all"
+                >
+                  + Sign In / Register
+                </button>
+              </div>
+            </div>
 
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
@@ -501,6 +591,9 @@ export default function App() {
                 </button>
               </div>
             )}
+
+            {/* Today's Key Learnings / Summary Note */}
+            <DailyNotes selectedDate={selectedDate} />
 
             {/* App Footer */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
