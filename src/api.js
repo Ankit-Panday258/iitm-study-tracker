@@ -25,7 +25,7 @@ export const DEFAULT_INITIAL_TASKS = [
     completed: true,
     completedAt: new Date().toISOString(),
     notes: 'Focus on CRUD operations and form validation',
-    userEmail: 'kumar@gmail.com'
+    userEmail: 'default'
   },
   {
     id: '2',
@@ -39,7 +39,7 @@ export const DEFAULT_INITIAL_TASKS = [
     completed: false,
     completedAt: null,
     notes: 'Solve assignment questions from Week 5',
-    userEmail: 'kumar@gmail.com'
+    userEmail: 'default'
   },
   {
     id: '3',
@@ -53,7 +53,7 @@ export const DEFAULT_INITIAL_TASKS = [
     completed: false,
     completedAt: null,
     notes: 'Practice grep, awk, sed commands',
-    userEmail: 'kumar@gmail.com'
+    userEmail: 'default'
   },
   {
     id: '4',
@@ -67,7 +67,7 @@ export const DEFAULT_INITIAL_TASKS = [
     completed: true,
     completedAt: new Date().toISOString(),
     notes: 'Completed 10 queries from practice set',
-    userEmail: 'kumar@gmail.com'
+    userEmail: 'default'
   }
 ];
 
@@ -90,7 +90,7 @@ export function setStoredUser(user) {
 
 export function getCurrentUserEmail() {
   const user = getStoredUser();
-  return user?.email ? user.email.toLowerCase().trim() : 'kumar@gmail.com';
+  return user?.email ? user.email.toLowerCase().trim() : 'default';
 }
 
 function getBackupTasks(userEmail = getCurrentUserEmail()) {

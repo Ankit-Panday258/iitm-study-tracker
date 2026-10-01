@@ -132,58 +132,20 @@ export async function initMySQL() {
       console.log('🐬 Default subjects seeded in MySQL');
     }
 
-    // 5. Seed Pre-configured Users: kumar@gmail.com and ankit@gmail.com
-    const defaultPasswordHash = hashPassword('password123');
-
-    await pool.query(`
-      INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
-      VALUES ('usr_kumar', 'kumar@gmail.com', 'Kumar', 'https://api.dicebear.com/7.x/bottts/svg?seed=Kumar', ?, 'email', NOW())
-      ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = COALESCE(password_hash, VALUES(password_hash))
-    `, [defaultPasswordHash]);
-
-    await pool.query(`
-      INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
-      VALUES ('usr_ankit', 'ankit@gmail.com', 'Ankit Pandey', 'https://api.dicebear.com/7.x/bottts/svg?seed=Ankit', ?, 'email', NOW())
-      ON DUPLICATE KEY UPDATE name = VALUES(name), password_hash = COALESCE(password_hash, VALUES(password_hash))
-    `, [defaultPasswordHash]);
-
-    // 6. Seed Kumar's tasks if not present
+    // 5. Seed default starter tasks if empty
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toISOString();
 
-    const [kumarTasks] = await pool.query('SELECT COUNT(*) as count FROM tasks WHERE user_email = ?', ['kumar@gmail.com']);
-    if (kumarTasks[0].count === 0) {
+    const [taskCountRows] = await pool.query('SELECT COUNT(*) as count FROM tasks');
+    if (taskCountRows[0].count === 0) {
       await pool.query(`
         INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at) VALUES 
-        ('kumar_t1', ?, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, ?, 'Focus on CRUD operations and form validation', 'kumar@gmail.com', ?),
-        ('kumar_t2', ?, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, NULL, 'Solve assignment questions from Week 5', 'kumar@gmail.com', ?),
-        ('kumar_t3', ?, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, ?, 'Completed 10 queries from practice set', 'kumar@gmail.com', ?)
+        ('t_1', ?, 'MAD 1 Project', 'Complete Flask routes and Jinja templates for Task Manager', 90, 'High', 1, ?, 'Focus on CRUD operations and form validation', 'default', ?),
+        ('t_2', ?, 'DBMS', 'Normalization: 1NF, 2NF, 3NF & BCNF with examples', 60, 'High', 0, NULL, 'Solve assignment questions from Week 5', 'default', ?),
+        ('t_3', ?, 'DBMS', 'SQL Joins and Subqueries practice problems', 45, 'Medium', 1, ?, 'Completed 10 queries from practice set', 'default', ?)
       `, [today, now, now, today, now, today, now, now]);
 
-      await pool.query(`
-        INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES 
-        (?, 'Kumar Daily Track: Completed Flask CRUD routes and solved 10 SQL queries today.', 'kumar@gmail.com', ?, ?)
-      `, [today, now, now]);
-
-      console.log('🐬 Kumar user & study tasks seeded in MySQL');
-    }
-
-    // 7. Seed Ankit's tasks if not present
-    const [ankitTasks] = await pool.query('SELECT COUNT(*) as count FROM tasks WHERE user_email = ?', ['ankit@gmail.com']);
-    if (ankitTasks[0].count === 0) {
-      await pool.query(`
-        INSERT INTO tasks (id, date, subject, topic, duration_minutes, priority, completed, completed_at, notes, user_email, created_at) VALUES 
-        ('ankit_t1', ?, 'System Commands', 'Shell scripting: loops, conditionals & file processing. Book Drive: https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv', 45, 'High', 1, ?, 'Practice grep, awk, sed commands. Google Drive book link saved.', 'ankit@gmail.com', ?),
-        ('ankit_t2', ?, 'MAD 1 Project', 'Vue.js / React client state management and Vite build setup', 60, 'High', 0, NULL, 'Build modular UI components with Tailwind CSS', 'ankit@gmail.com', ?),
-        ('ankit_t3', ?, 'DBMS', 'ER Modeling, Relationships and Foreign Keys schema design', 45, 'Medium', 0, NULL, 'Review entity relationship diagrams from Week 4', 'ankit@gmail.com', ?)
-      `, [today, now, now, today, now, today, now]);
-
-      await pool.query(`
-        INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES 
-        (?, 'Ankit Daily Track: Mastered bash shell commands and completed System Command assignment.', 'ankit@gmail.com', ?, ?)
-      `, [today, now, now]);
-
-      console.log('🐬 Ankit user & study tasks seeded in MySQL');
+      console.log('🐬 Default starter study tasks seeded in MySQL');
     }
 
     isConnected = true;

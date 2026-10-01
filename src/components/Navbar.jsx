@@ -12,7 +12,6 @@ export default function Navbar({
   currentUser,
   onOpenAuthModal,
   onLogout,
-  onSwitchUser,
   isInstalled,
   isInstallable,
   onInstallApp
@@ -104,51 +103,11 @@ export default function Navbar({
                     </div>
                   </div>
 
-                  {/* Switch User section */}
-                  <div className="py-2 border-b border-gray-100 dark:border-slate-800 space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1">
-                      Switch User Data
-                    </p>
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        onSwitchUser && onSwitchUser('kumar@gmail.com', 'Kumar');
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                        currentUser.email === 'kumar@gmail.com'
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-800'
-                          : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <span>Kumar (kumar@gmail.com)</span>
-                      {currentUser.email === 'kumar@gmail.com' && <span className="text-[10px] text-pink-600 font-bold">Active</span>}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        onSwitchUser && onSwitchUser('ankit@gmail.com', 'Ankit Pandey');
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                        currentUser.email === 'ankit@gmail.com'
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-800'
-                          : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <span>Ankit Pandey (ankit@gmail.com)</span>
-                      {currentUser.email === 'ankit@gmail.com' && <span className="text-[10px] text-pink-600 font-bold">Active</span>}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        onOpenAuthModal && onOpenAuthModal();
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-xl text-xs text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/20 font-medium"
-                    >
-                      + Sign in another account...
-                    </button>
-                  </div>
-
                   <div className="pt-2 space-y-1.5">
+                    <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
+                      ✓ Authenticated
+                    </span>
+
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
@@ -256,51 +215,10 @@ export default function Navbar({
                     </div>
                   </div>
 
-                  {/* Switch User section */}
-                  <div className="py-2 border-b border-gray-100 dark:border-slate-800 space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1">
-                      Switch User Data
-                    </p>
-                    <button
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        onSwitchUser && onSwitchUser('kumar@gmail.com', 'Kumar');
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                        currentUser.email === 'kumar@gmail.com'
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-800'
-                          : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <span>Kumar (kumar@gmail.com)</span>
-                      {currentUser.email === 'kumar@gmail.com' && <span className="text-[10px] text-pink-600 font-bold">Active</span>}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        onSwitchUser && onSwitchUser('ankit@gmail.com', 'Ankit Pandey');
-                      }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                        currentUser.email === 'ankit@gmail.com'
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-800'
-                          : 'text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800'
-                      }`}
-                    >
-                      <span>Ankit Pandey (ankit@gmail.com)</span>
-                      {currentUser.email === 'ankit@gmail.com' && <span className="text-[10px] text-pink-600 font-bold">Active</span>}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        onOpenAuthModal && onOpenAuthModal();
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-xl text-xs text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/20 font-medium"
-                    >
-                      + Sign in another account...
-                    </button>
-                  </div>
-
                   <div className="pt-2 space-y-1.5">
+                    <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
+                      ✓ Authenticated
+                    </span>
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
