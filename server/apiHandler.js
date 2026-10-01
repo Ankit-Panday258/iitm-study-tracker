@@ -16,8 +16,12 @@ import {
   mySQLGetStreak,
   mySQLGetSubjects,
   mySQLCreateSubject,
-  mySQLLoginUser
+  mySQLLoginUser,
+  mySQLRegisterUser,
+  mySQLLoginWithPassword,
+  mySQLGetUsers
 } from './mysql.js';
+import { hashPassword, verifyPassword } from './authUtils.js';
 
 // Auto-initialize MySQL on startup
 initMySQL().catch(err => {
@@ -682,55 +686,161 @@ export function handleApiRequest(req, res, next) {
         });
       }
 
-      // 13. POST /api/auth/login or /api/auth/register
-      if (method === 'POST' && (pathname === '/api/auth/login' || pathname === '/api/auth/register')) {
+      // 13. GET /api/users
+      if (method === 'GET' && pathname === '/api/users') {
+        if (useMySQL) {
+          try {
+            const users = await mySQLGetUsers();
+            return sendJson(200, users);
+          } catch (e) {
+            console.error('MySQL GET users failed:', e.message);
+          }
+        }
+
+        // SQLite fallback
+        try {
+          const rows = db.prepare('SELECT id, email, name, picture, auth_provider, created_at FROM users ORDER BY created_at DESC').all();
+          return sendJson(200, rows.map(u => ({
+            id: u.id,
+            email: u.email,
+            name: u.name,
+            picture: u.picture,
+            authProvider: u.auth_provider,
+            createdAt: u.created_at
+          })));
+        } catch (e) {
+          return sendJson(200, []);
+        }
+      }
+
+      // 14. POST /api/auth/register
+      if (method === 'POST' && pathname === '/api/auth/register') {
         return parseBody(async (body) => {
-          const { email, name } = body;
-          if (!email) return sendJson(400, { error: 'Email is required' });
+          const { email, password, name } = body;
+          if (!email || !email.trim()) return sendJson(400, { error: 'Valid email is required.' });
+          if (!password || password.length < 4) return sendJson(400, { error: 'Password must be at least 4 characters long.' });
 
-          const id = 'user_' + Date.now();
-          const userName = name || email.split('@')[0];
+          const cleanEmail = email.toLowerCase().trim();
+          const userName = (name || cleanEmail.split('@')[0]).trim();
+          const userId = 'usr_' + Date.now();
+          const userPic = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`;
           const now = new Date().toISOString();
+          const passwordHash = hashPassword(password);
 
+          // Try MySQL first
+          if (useMySQL) {
+            try {
+              const newUser = await mySQLRegisterUser({ email: cleanEmail, password, name: userName, picture: userPic });
+              
+              // Mirror in SQLite
+              try {
+                db.prepare(`
+                  INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+                  VALUES (?, ?, ?, ?, ?, 'email', ?)
+                  ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, password_hash = ?
+                `).run(newUser.id, cleanEmail, userName, userPic, passwordHash, now, userName, userPic, passwordHash);
+              } catch (e) {}
+
+              return sendJson(201, { success: true, user: newUser });
+            } catch (err) {
+              return sendJson(err.status || 400, { error: err.message });
+            }
+          }
+
+          // SQLite registration fallback
+          const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
+          if (existing) {
+            return sendJson(409, { error: 'User already exists with this email. Please sign in.' });
+          }
+
+          db.prepare(`
+            INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+            VALUES (?, ?, ?, ?, ?, 'email', ?)
+          `).run(userId, cleanEmail, userName, userPic, passwordHash, now);
+
+          return sendJson(201, {
+            success: true,
+            user: {
+              id: userId,
+              email: cleanEmail,
+              name: userName,
+              picture: userPic,
+              authProvider: 'email',
+              createdAt: now
+            }
+          });
+        });
+      }
+
+      // 15. POST /api/auth/login
+      if (method === 'POST' && pathname === '/api/auth/login') {
+        return parseBody(async (body) => {
+          const { email, password, name } = body;
+          if (!email || !email.trim()) return sendJson(400, { error: 'Email is required.' });
+
+          const cleanEmail = email.toLowerCase().trim();
+
+          // Case A: Password provided (Secure Login)
+          if (password) {
+            if (useMySQL) {
+              try {
+                const loggedInUser = await mySQLLoginWithPassword({ email: cleanEmail, password });
+                return sendJson(200, { success: true, user: loggedInUser });
+              } catch (err) {
+                return sendJson(err.status || 401, { error: err.message });
+              }
+            }
+
+            // SQLite Fallback password verification
+            const userRow = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+            if (!userRow) {
+              return sendJson(404, { error: 'User not found. Please register first.' });
+            }
+            if (!userRow.password_hash) {
+              return sendJson(400, { error: 'This account was created with Google Sign-In. Please use Google Login.' });
+            }
+            if (!verifyPassword(password, userRow.password_hash)) {
+              return sendJson(401, { error: 'Incorrect password. Please try again.' });
+            }
+
+            return sendJson(200, {
+              success: true,
+              user: {
+                id: userRow.id,
+                email: userRow.email,
+                name: userRow.name,
+                picture: userRow.picture,
+                authProvider: userRow.auth_provider,
+                createdAt: userRow.created_at
+              }
+            });
+          }
+
+          // Case B: 1-Click Guest/Email Sign In without password
+          const id = 'usr_' + Date.now();
+          const userName = name || cleanEmail.split('@')[0];
+          const now = new Date().toISOString();
           let userDoc = {
             id,
-            email,
+            email: cleanEmail,
             name: userName,
-            picture: '',
+            picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
             authProvider: 'email',
             createdAt: now
           };
 
           if (useMySQL) {
             try {
-              const savedUser = await mySQLLoginUser(userDoc);
-              if (savedUser) userDoc = savedUser;
-            } catch (e) {
-              console.error('MySQL login email user failed:', e.message);
-            }
+              const saved = await mySQLLoginUser(userDoc);
+              if (saved) userDoc = saved;
+            } catch (e) {}
           }
 
-          if (useMongo) {
-            const saved = await User.findOneAndUpdate(
-              { email },
-              { $setOnInsert: userDoc },
-              { upsert: true, new: true }
-            );
-            userDoc = {
-              id: saved.id,
-              email: saved.email,
-              name: saved.name,
-              picture: saved.picture,
-              authProvider: saved.authProvider
-            };
-          }
-
-          // Mirror SQLite
           try {
             db.prepare(`
               INSERT OR IGNORE INTO users (id, email, name, picture, auth_provider, created_at)
-              VALUES (?, ?, ?, '', 'email', ?)
-            `).run(id, email, userName, now);
+              VALUES (?, ?, ?, ?, 'email', ?)
+            `).run(id, cleanEmail, userName, userDoc.picture, now);
           } catch (e) {}
 
           return sendJson(200, { success: true, user: userDoc });

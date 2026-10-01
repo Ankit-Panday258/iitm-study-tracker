@@ -16,8 +16,12 @@ import {
   mySQLGetStreak,
   mySQLGetSubjects,
   mySQLCreateSubject,
-  mySQLLoginUser
+  mySQLLoginUser,
+  mySQLRegisterUser,
+  mySQLLoginWithPassword,
+  mySQLGetUsers
 } from './mysql.js';
+import { hashPassword, verifyPassword } from './authUtils.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -477,6 +481,211 @@ app.post('/api/subjects', async (req, res) => {
     res.status(201).json({ id, name: subName, icon: subIcon, color: subColor });
   } catch (err) {
     console.error('POST /api/subjects error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── USERS & AUTH API ────────────────────────────────────────
+
+// GET all registered users
+app.get('/api/users', async (req, res) => {
+  try {
+    if (isMySQLConnected()) {
+      try {
+        const users = await mySQLGetUsers();
+        return res.json(users);
+      } catch (e) {
+        console.error('MySQL GET users error:', e.message);
+      }
+    }
+
+    const rows = db.prepare('SELECT id, email, name, picture, auth_provider, created_at FROM users ORDER BY created_at DESC').all();
+    res.json(rows.map(u => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      picture: u.picture,
+      authProvider: u.auth_provider,
+      createdAt: u.created_at
+    })));
+  } catch (err) {
+    console.error('GET /api/users error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST register new user
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !email.trim()) return res.status(400).json({ error: 'Valid email is required.' });
+    if (!password || password.length < 4) return res.status(400).json({ error: 'Password must be at least 4 characters long.' });
+
+    const cleanEmail = email.toLowerCase().trim();
+    const userName = (name || cleanEmail.split('@')[0]).trim();
+    const userId = 'usr_' + Date.now();
+    const userPic = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`;
+    const now = new Date().toISOString();
+    const passwordHash = hashPassword(password);
+
+    if (isMySQLConnected()) {
+      try {
+        const newUser = await mySQLRegisterUser({ email: cleanEmail, password, name: userName, picture: userPic });
+
+        try {
+          db.prepare(`
+            INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+            VALUES (?, ?, ?, ?, ?, 'email', ?)
+            ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, password_hash = ?
+          `).run(newUser.id, cleanEmail, userName, userPic, passwordHash, now, userName, userPic, passwordHash);
+        } catch (e) {}
+
+        return res.status(201).json({ success: true, user: newUser });
+      } catch (err) {
+        return res.status(err.status || 400).json({ error: err.message });
+      }
+    }
+
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
+    if (existing) {
+      return res.status(409).json({ error: 'User already exists with this email. Please sign in.' });
+    }
+
+    db.prepare(`
+      INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+      VALUES (?, ?, ?, ?, ?, 'email', ?)
+    `).run(userId, cleanEmail, userName, userPic, passwordHash, now);
+
+    res.status(201).json({
+      success: true,
+      user: {
+        id: userId,
+        email: cleanEmail,
+        name: userName,
+        picture: userPic,
+        authProvider: 'email',
+        createdAt: now
+      }
+    });
+  } catch (err) {
+    console.error('POST /api/auth/register error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST login with password or email
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !email.trim()) return res.status(400).json({ error: 'Email is required.' });
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    if (password) {
+      if (isMySQLConnected()) {
+        try {
+          const loggedInUser = await mySQLLoginWithPassword({ email: cleanEmail, password });
+          return res.json({ success: true, user: loggedInUser });
+        } catch (err) {
+          return res.status(err.status || 401).json({ error: err.message });
+        }
+      }
+
+      const userRow = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+      if (!userRow) return res.status(404).json({ error: 'User not found. Please register first.' });
+      if (!userRow.password_hash) return res.status(400).json({ error: 'This account was created with Google Sign-In. Please use Google Login.' });
+      if (!verifyPassword(password, userRow.password_hash)) {
+        return res.status(401).json({ error: 'Incorrect password. Please try again.' });
+      }
+
+      return res.json({
+        success: true,
+        user: {
+          id: userRow.id,
+          email: userRow.email,
+          name: userRow.name,
+          picture: userRow.picture,
+          authProvider: userRow.auth_provider,
+          createdAt: userRow.created_at
+        }
+      });
+    }
+
+    // Guest / 1-click fallback
+    const id = 'usr_' + Date.now();
+    const userName = name || cleanEmail.split('@')[0];
+    const now = new Date().toISOString();
+    let userDoc = {
+      id,
+      email: cleanEmail,
+      name: userName,
+      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
+      authProvider: 'email',
+      createdAt: now
+    };
+
+    if (isMySQLConnected()) {
+      try {
+        const saved = await mySQLLoginUser(userDoc);
+        if (saved) userDoc = saved;
+      } catch (e) {}
+    }
+
+    try {
+      db.prepare(`
+        INSERT OR IGNORE INTO users (id, email, name, picture, auth_provider, created_at)
+        VALUES (?, ?, ?, ?, 'email', ?)
+      `).run(id, cleanEmail, userName, userDoc.picture, now);
+    } catch (e) {}
+
+    res.json({ success: true, user: userDoc });
+  } catch (err) {
+    console.error('POST /api/auth/login error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST Google OAuth
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { email, name, picture, googleId } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    const id = googleId || 'user_' + Date.now();
+    const userName = name || email.split('@')[0];
+    const userPic = picture || '';
+    const now = new Date().toISOString();
+
+    let userDoc = {
+      id,
+      email,
+      name: userName,
+      picture: userPic,
+      googleId: googleId || id,
+      authProvider: 'google',
+      createdAt: now
+    };
+
+    if (isMySQLConnected()) {
+      try {
+        const savedUser = await mySQLLoginUser(userDoc);
+        if (savedUser) userDoc = savedUser;
+      } catch (e) {
+        console.error('MySQL login google user error:', e.message);
+      }
+    }
+
+    try {
+      db.prepare(`
+        INSERT INTO users (id, email, name, picture, google_id, auth_provider, created_at)
+        VALUES (?, ?, ?, ?, ?, 'google', ?)
+        ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, google_id = ?
+      `).run(id, email, userName, userPic, googleId || id, now, userName, userPic, googleId || id);
+    } catch (e) {}
+
+    res.json({ success: true, user: userDoc });
+  } catch (err) {
+    console.error('POST /api/auth/google error:', err);
     res.status(500).json({ error: err.message });
   }
 });

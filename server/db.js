@@ -67,6 +67,9 @@ try {
   try {
     db.exec("ALTER TABLE tasks ADD COLUMN duration_seconds INTEGER DEFAULT 0");
   } catch (e) {}
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN password_hash TEXT");
+  } catch (e) {}
 
   // Seed default subjects if empty
   const subjectCount = db.prepare('SELECT COUNT(*) as count FROM subjects').get();

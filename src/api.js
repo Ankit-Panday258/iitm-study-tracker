@@ -445,33 +445,69 @@ export async function loginWithGoogle({ email, name, picture, googleId, credenti
   return userPayload;
 }
 
-export async function loginWithEmail({ email, name }) {
-  const userPayload = {
+export async function registerWithEmail({ email, password, name }) {
+  const cleanEmail = email.toLowerCase().trim();
+  const userName = (name || cleanEmail.split('@')[0]).trim();
+
+  const res = await fetchWithTimeout(`${API_BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: cleanEmail, password, name: userName })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Registration failed');
+  }
+
+  if (data.user) {
+    setStoredUser(data.user);
+    return data.user;
+  }
+  throw new Error('Could not create account');
+}
+
+export async function loginWithEmail({ email, password, name }) {
+  const cleanEmail = email.toLowerCase().trim();
+  const userName = (name || cleanEmail.split('@')[0]).trim();
+
+  const res = await fetchWithTimeout(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: cleanEmail, password, name: userName })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Login failed');
+  }
+
+  if (data.user) {
+    setStoredUser(data.user);
+    return data.user;
+  }
+
+  const fallbackUser = {
     id: 'user_' + Date.now(),
-    email,
-    name: name || email.split('@')[0],
-    picture: '',
+    email: cleanEmail,
+    name: userName,
+    picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
     authProvider: 'email'
   };
+  setStoredUser(fallbackUser);
+  return fallbackUser;
+}
 
-  setStoredUser(userPayload);
-
+export async function fetchUsers() {
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userPayload)
-    });
+    const res = await fetchWithTimeout(`${API_BASE}/users`);
     if (res.ok) {
-      const data = await res.json();
-      if (data && data.user) {
-        setStoredUser(data.user);
-        return data.user;
-      }
+      return await res.json();
     }
-  } catch (e) {}
-
-  return userPayload;
+  } catch (e) {
+    console.warn('Fetch users fallback:', e.message);
+  }
+  return [];
 }
 
 export function logout() {

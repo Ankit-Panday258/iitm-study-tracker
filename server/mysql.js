@@ -2,6 +2,7 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { hashPassword, verifyPassword } from './authUtils.js';
 
 dotenv.config();
 
@@ -92,10 +93,16 @@ export async function initMySQL() {
         name VARCHAR(255) NOT NULL,
         picture TEXT NULL,
         google_id VARCHAR(255) NULL,
+        password_hash VARCHAR(255) NULL,
         auth_provider VARCHAR(50) DEFAULT 'google',
         created_at VARCHAR(100) NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+
+    // Ensure password_hash column exists on older schema
+    try {
+      await pool.query('ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL;');
+    } catch (e) {}
 
     // 4. Seed default subjects if empty
     const [subCountRows] = await pool.query('SELECT COUNT(*) as count FROM subjects');
@@ -410,8 +417,79 @@ export async function mySQLLoginUser(userData) {
     ON DUPLICATE KEY UPDATE name = VALUES(name), picture = VALUES(picture)
   `, [id, userData.email, userData.name, userData.picture || '', userData.googleId || '', userData.authProvider || 'google']);
 
-  const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [userData.email]);
+  const [rows] = await pool.query('SELECT id, email, name, picture, google_id, auth_provider, created_at FROM users WHERE email = ?', [userData.email]);
   return rows[0];
+}
+
+export async function mySQLRegisterUser({ email, password, name, picture }) {
+  if (!pool) throw new Error('MySQL pool not ready');
+  const cleanEmail = email.toLowerCase().trim();
+  const [existing] = await pool.query('SELECT id, email FROM users WHERE email = ?', [cleanEmail]);
+  if (existing.length > 0) {
+    const err = new Error('User already exists with this email. Please sign in.');
+    err.status = 409;
+    throw err;
+  }
+
+  const id = 'usr_' + Date.now();
+  const userName = (name || cleanEmail.split('@')[0]).trim();
+  const userPic = picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`;
+  const passwordHash = password ? hashPassword(password) : null;
+
+  await pool.query(`
+    INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
+    VALUES (?, ?, ?, ?, ?, 'email', NOW())
+  `, [id, cleanEmail, userName, userPic, passwordHash]);
+
+  const [rows] = await pool.query('SELECT id, email, name, picture, auth_provider, created_at FROM users WHERE id = ?', [id]);
+  return rows[0];
+}
+
+export async function mySQLLoginWithPassword({ email, password }) {
+  if (!pool) throw new Error('MySQL pool not ready');
+  const cleanEmail = email.toLowerCase().trim();
+  const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [cleanEmail]);
+  if (rows.length === 0) {
+    const err = new Error('User not found. Please register first.');
+    err.status = 404;
+    throw err;
+  }
+
+  const user = rows[0];
+  if (!user.password_hash) {
+    const err = new Error('This account was registered with Google. Please use Google Sign In.');
+    err.status = 400;
+    throw err;
+  }
+
+  const isValid = verifyPassword(password, user.password_hash);
+  if (!isValid) {
+    const err = new Error('Incorrect password. Please try again.');
+    err.status = 401;
+    throw err;
+  }
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    picture: user.picture,
+    authProvider: user.auth_provider,
+    createdAt: user.created_at
+  };
+}
+
+export async function mySQLGetUsers() {
+  if (!pool) throw new Error('MySQL pool not ready');
+  const [rows] = await pool.query('SELECT id, email, name, picture, auth_provider, created_at FROM users ORDER BY created_at DESC');
+  return rows.map(u => ({
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    picture: u.picture,
+    authProvider: u.auth_provider,
+    createdAt: u.created_at
+  }));
 }
 
 export default {
@@ -429,5 +507,8 @@ export default {
   getStreak: mySQLGetStreak,
   getSubjects: mySQLGetSubjects,
   createSubject: mySQLCreateSubject,
-  loginUser: mySQLLoginUser
+  loginUser: mySQLLoginUser,
+  registerUser: mySQLRegisterUser,
+  loginWithPassword: mySQLLoginWithPassword,
+  getUsers: mySQLGetUsers
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Database, X, RefreshCw, CheckCircle, Clock, Tag, FileText, Code, Table } from 'lucide-react';
-import { fetchAllTasks, fetchSubjects, fetchDailyTrack, fetchDbStatus } from '../api';
+import { Database, X, RefreshCw, CheckCircle, Clock, Tag, FileText, Code, Table, Users as UsersIcon } from 'lucide-react';
+import { fetchAllTasks, fetchSubjects, fetchDailyTrack, fetchDbStatus, fetchUsers } from '../api';
 import { formatTaskDuration } from '../utils/formatTime';
 
 export default function DatabaseViewerModal({ isOpen, onClose }) {
-  const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' | 'subjects' | 'rawJson'
+  const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' | 'subjects' | 'users' | 'rawJson'
   const [tasks, setTasks] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [users, setUsers] = useState([]);
   const [dbStatus, setDbStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -20,14 +21,16 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [tData, sData, status] = await Promise.all([
+      const [tData, sData, status, uData] = await Promise.all([
         fetchAllTasks(),
         fetchSubjects(),
-        fetchDbStatus()
+        fetchDbStatus(),
+        fetchUsers()
       ]);
       setTasks(tData || []);
       setSubjects(sData || []);
       setDbStatus(status);
+      setUsers(uData || []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -38,7 +41,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const copyJson = () => {
-    navigator.clipboard.writeText(JSON.stringify({ tasks, subjects }, null, 2));
+    navigator.clipboard.writeText(JSON.stringify({ tasks, subjects, users }, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -70,7 +73,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               <p className="text-xs text-gray-500 dark:text-slate-400">
                 {dbStatus?.activeDatabase === 'MySQL' 
                   ? 'Connected to local MySQL (127.0.0.1:3306 / iitm_study_tracker)'
-                  : 'Live view of all tasks and subjects stored in the database'}
+                  : 'Live view of all tasks, subjects, and users in database'}
               </p>
             </div>
           </div>
@@ -94,11 +97,11 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
         </div>
 
         {/* Tab Controls */}
-        <div className="flex items-center justify-between px-6 py-2.5 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between px-6 py-2.5 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex-wrap gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab('tasks')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'tasks'
                   ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
                   : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
@@ -108,7 +111,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => setActiveTab('subjects')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'subjects'
                   ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
                   : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
@@ -117,8 +120,19 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               Subjects ({subjects.length})
             </button>
             <button
+              onClick={() => setActiveTab('users')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
+                activeTab === 'users'
+                  ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+              }`}
+            >
+              <UsersIcon className="w-3.5 h-3.5" />
+              <span>Users ({users.length})</span>
+            </button>
+            <button
               onClick={() => setActiveTab('rawJson')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'rawJson'
                   ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
                   : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
@@ -211,9 +225,55 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                 </div>
               ))}
             </div>
+          ) : activeTab === 'users' ? (
+            users.length === 0 ? (
+              <p className="text-center py-12 text-sm text-gray-400">No users registered in database yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-slate-700 text-gray-400 uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3">User</th>
+                      <th className="py-2.5 px-3">Email</th>
+                      <th className="py-2.5 px-3">Provider</th>
+                      <th className="py-2.5 px-3">Created</th>
+                      <th className="py-2.5 px-3">ID</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    {users.map((u) => (
+                      <tr key={u.id || u.email} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="py-2.5 px-3 whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                          <img
+                            src={u.picture || "/avatar-bot.png"}
+                            alt={u.name}
+                            className="w-6 h-6 rounded-full object-cover border border-pink-300"
+                          />
+                          <span>{u.name}</span>
+                        </td>
+                        <td className="py-2.5 px-3 whitespace-nowrap text-gray-600 dark:text-slate-300">
+                          {u.email}
+                        </td>
+                        <td className="py-2.5 px-3 whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-[10px] font-semibold uppercase">
+                            {u.authProvider || u.auth_provider || 'email'}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 whitespace-nowrap text-gray-400 font-mono text-[10px]">
+                          {u.createdAt ? u.createdAt.split('T')[0] : 'Today'}
+                        </td>
+                        <td className="py-2.5 px-3 whitespace-nowrap text-gray-400 font-mono text-[10px]">
+                          {u.id}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )
           ) : (
             <pre className="p-4 rounded-2xl bg-gray-900 text-pink-300 font-mono text-xs overflow-x-auto max-h-[50vh]">
-              {JSON.stringify({ tasks, subjects }, null, 2)}
+              {JSON.stringify({ tasks, subjects, users }, null, 2)}
             </pre>
           )}
 
@@ -222,7 +282,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
         {/* Footer info */}
         <div className="px-6 py-3 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/60 flex items-center justify-between text-xs text-gray-500">
           <span>
-            {dbStatus?.activeDatabase === 'MySQL' ? '🐬 Active DB: MySQL (Fallback: SQLite)' : '📦 Active DB: SQLite'} • {tasks.length} tasks, {subjects.length} subjects
+            {dbStatus?.activeDatabase === 'MySQL' ? '🐬 Active DB: MySQL (Fallback: SQLite)' : '📦 Active DB: SQLite'} • {tasks.length} tasks, {subjects.length} subjects, {users.length} users
           </span>
           <span className="font-mono text-[10px]">Host: 127.0.0.1:3306</span>
         </div>
