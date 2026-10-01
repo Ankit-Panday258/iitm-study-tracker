@@ -9,6 +9,8 @@ import DailyTrack from './components/DailyTrack';
 import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
+import BooksResources from './components/BooksResources';
+import BooksPage from './components/BooksPage';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
@@ -374,6 +376,10 @@ export default function App() {
           setCurrentPage('dailyTrack');
           setActiveBottomTab('track');
         }}
+        onOpenBooks={() => {
+          setCurrentPage('books');
+          setActiveBottomTab('books');
+        }}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
@@ -382,7 +388,7 @@ export default function App() {
         onInstallApp={handleInstallApp}
       />
 
-        {/* View Switch: Daily Track or Main Planner */}
+        {/* View Switch: Daily Track, Books Library, or Main Planner */}
         {currentPage === 'dailyTrack' ? (
           <DailyTrack 
             onBack={() => { 
@@ -392,6 +398,13 @@ export default function App() {
               loadStreak(); 
             }} 
           />
+        ) : currentPage === 'books' ? (
+          <BooksPage
+            onBack={() => {
+              setCurrentPage('home');
+              setActiveBottomTab('tasks');
+            }}
+          />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
 
@@ -400,6 +413,9 @@ export default function App() {
 
             {/* Daily Notes */}
             <DailyNotes selectedDate={selectedDate} />
+
+            {/* Books & Study Resources Section */}
+            <BooksResources />
 
             {/* Task List Header & Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -524,6 +540,8 @@ export default function App() {
           setActiveTab={(tab) => {
             setActiveBottomTab(tab);
             if (tab === 'tasks') setCurrentPage('home');
+            else if (tab === 'books') setCurrentPage('books');
+            else if (tab === 'track') setCurrentPage('dailyTrack');
           }}
           onOpenAddModal={handleOpenAddModal}
           onOpenDailyTrack={() => {
@@ -531,6 +549,14 @@ export default function App() {
             setActiveBottomTab('track');
           }}
           onCloseDailyTrack={() => {
+            setCurrentPage('home');
+            setActiveBottomTab('tasks');
+          }}
+          onOpenBooks={() => {
+            setCurrentPage('books');
+            setActiveBottomTab('books');
+          }}
+          onCloseBooks={() => {
             setCurrentPage('home');
             setActiveBottomTab('tasks');
           }}

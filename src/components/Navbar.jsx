@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Flame, Sun, Moon, LogOut, 
-  Download 
+  Download, BookOpen 
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -14,7 +14,8 @@ export default function Navbar({
   onLogout,
   isInstalled,
   isInstallable,
-  onInstallApp
+  onInstallApp,
+  onOpenBooks
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,6 +71,16 @@ export default function Navbar({
               {darkMode ? <Sun className="w-3.5 h-3.5 text-yellow-400" /> : <Moon className="w-3.5 h-3.5" />}
             </button>
 
+            {/* Mobile Books Shortcut */}
+            <button
+              type="button"
+              onClick={onOpenBooks}
+              className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-pink-600 dark:text-pink-400 active:scale-95 cursor-pointer"
+              title="Books & Study Resources"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+            </button>
+
             {/* Mobile Account Button with Avatar Icon */}
             <div className="relative" ref={mobileMenuRef}>
               <button
@@ -107,6 +118,19 @@ export default function Navbar({
                     <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
                       ✓ Authenticated
                     </span>
+
+                    <a
+                      href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span>⚙️</span>
+                        <span>System Commands Drive</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">↗</span>
+                    </a>
 
                     <button
                       onClick={() => {
@@ -168,6 +192,17 @@ export default function Navbar({
             {darkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4" />}
           </button>
 
+          {/* Books & Resources (Desktop) */}
+          <button
+            type="button"
+            onClick={onOpenBooks}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-400 text-gray-700 dark:text-slate-200 hover:text-pink-600 dark:hover:text-pink-400 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+            title="Books & Study Resources"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+            <span>Books</span>
+          </button>
+
           {/* User Auth & Login Area (Desktop) */}
           {currentUser ? (
             <div className="relative" ref={userMenuRef}>
@@ -206,6 +241,19 @@ export default function Navbar({
                     <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
                       ✓ Authenticated
                     </span>
+
+                    <a
+                      href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span>⚙️</span>
+                        <span>System Commands Drive</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">↗</span>
+                    </a>
 
                     <button
                       onClick={() => {

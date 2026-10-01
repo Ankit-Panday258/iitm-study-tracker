@@ -81,6 +81,19 @@ export default function TaskItem({
               <span>{subjectConfig.icon}</span>
               <span>{task.subject}</span>
             </span>
+            {task.subject === 'System Commands' && (
+              <a
+                href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-pink-100 hover:bg-pink-200 dark:bg-pink-900/40 dark:hover:bg-pink-900/60 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700 inline-flex items-center gap-1 transition-colors active:scale-95"
+                title="Open System Commands Google Drive Folder"
+              >
+                <span>📖 Drive Book</span>
+                <span className="text-[9px]">↗</span>
+              </a>
+            )}
             {getPriorityBadge(task.priority)}
             <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400 flex items-center gap-1">
               <Clock className="w-3 h-3 text-gray-400 dark:text-slate-500" />
