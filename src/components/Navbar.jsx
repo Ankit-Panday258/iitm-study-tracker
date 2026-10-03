@@ -62,7 +62,7 @@ export default function Navbar({
             <button
               onClick={onOpenCourses}
               className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800 active:scale-95 shadow-sm"
-              title="Courses & Syllabus (कोर्स)"
+              title="Courses & Syllabus"
             >
               <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
               <span>Courses</span>
@@ -127,7 +127,7 @@ export default function Navbar({
                     >
                       <span className="flex items-center gap-1.5">
                         <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
-                        <span>Courses & Syllabus (कोर्स)</span>
+                        <span>Courses & Syllabus</span>
                       </span>
                       <span className="text-[10px] text-pink-600 font-bold">→</span>
                     </button>
@@ -178,15 +178,6 @@ export default function Navbar({
         {/* Desktop Right Tools */}
         <div className="hidden sm:flex items-center gap-2 w-auto justify-end flex-wrap">
 
-          {/* Courses & Syllabus (कोर्स) Button */}
-          <button
-            onClick={onOpenCourses}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
-            title="Courses & Syllabus (कोर्स)"
-          >
-            <GraduationCap className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-            <span>Courses (कोर्स)</span>
-          </button>
 
           {/* Install App Button (PWA) - Only shown if NOT already installed */}
           {!isInstalled && isInstallable && (
@@ -262,7 +253,7 @@ export default function Navbar({
                     >
                       <span className="flex items-center gap-1.5">
                         <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
-                        <span>Courses & Syllabus (कोर्स)</span>
+                        <span>Courses & Syllabus</span>
                       </span>
                       <span className="text-[10px] text-pink-600 font-bold">→</span>
                     </button>
