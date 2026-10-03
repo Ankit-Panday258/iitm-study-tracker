@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   GraduationCap, Play, ExternalLink, Copy, Check, ArrowLeft, Plus,
   Trash2, Folder, Sparkles, Search, Video, CheckCircle2,
-  Calendar, Terminal, Cpu, HardDrive, Layers, Globe, Clock, ChevronDown, ChevronUp
+  Calendar, Terminal, Cpu, HardDrive, Layers, Globe, Clock, ChevronDown, ChevronUp,
+  ArrowRight, BookOpen
 } from 'lucide-react';
 
 export const SYSTEM_COMMANDS_DRIVE_URL = 'https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv';
-const STORAGE_KEY_COURSES = 'iitm_courses_syllabus_v4';
+const STORAGE_KEY_COURSES = 'iitm_courses_syllabus_v5';
 const STORAGE_KEY_CHECKLIST = 'iitm_syllabus_checklist_v2';
 
 export const INITIAL_COURSES_DATA = [
@@ -263,22 +264,169 @@ export const INITIAL_COURSES_DATA = [
   {
     id: 'mad_1',
     name: 'MAD 1 Project',
-    hindiName: 'मॉडर्न ऐप डेवलपमेंट 1',
+    hindiName: 'मॉडर्न ऐप डेवलपमेंट 1 (Flask & Web Apps)',
     icon: '💻',
-    description: 'Modern Application Development 1 — Python, Flask Backend, Jinja2 Templates, SQLite & REST APIs.',
-    driveUrl: '',
+    description: 'IIT Madras Modern Application Development 1 — Python, Flask Backend, Jinja2 Templates, SQLite, REST APIs & Deployments.',
+    driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
     badge: 'Development Lab',
     weeks: [
       {
         id: 'mad_w1',
         weekNumber: 1,
-        title: 'Week 1: Flask Setup, Routing & Jinja2 Templates',
-        description: 'Virtual environment configuration, initializing Flask application, dynamic routing, and template inheritance.',
-        topics: ['Virtualenv & pip', 'Flask app factory', 'Dynamic URL routing', 'Jinja2 layout & filters'],
-        video: null,
+        title: 'Week 1: Virtual Environments, Python & Flask Setup',
+        description: 'Virtual environments, pip package management, Flask app factory, and dynamic routing.',
+        topics: ['Virtualenv & pip setup', 'Flask application structure', 'Dynamic URL routing & views', 'HTTP GET & POST request handling'],
+        video: {
+          instructor: 'Corey Schafer / CodeWithHarry',
+          title: 'Flask Tutorial for Beginners — Getting Started & Routing',
+          highlights: 'Virtualenv, Flask setup, routing, request handling',
+          notes: 'Flask framework setup, virtualenv isolation, and first web application routes.',
+          url: 'https://youtu.be/MwZwr5Tvyxo',
+          youtubeId: 'MwZwr5Tvyxo'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
         keyCommands: [
-          { cmd: 'python3 -m venv venv', label: 'Virtual Environment', desc: 'Create isolated Python environment' },
-          { cmd: 'pip install flask', label: 'Package Setup', desc: 'Install Flask web framework' }
+          { cmd: 'python3 -m venv venv', label: 'Virtualenv', desc: 'Create virtual environment' },
+          { cmd: 'pip install flask', label: 'Flask Install', desc: 'Install Flask web framework' },
+          { cmd: 'python app.py', label: 'Run Server', desc: 'Start Flask development server' }
+        ]
+      },
+      {
+        id: 'mad_w2',
+        weekNumber: 2,
+        title: 'Week 2: Jinja2 Templates & Frontend Layouts',
+        description: 'Template inheritance, blocks, variables, loops, filters, and static CSS/JS assets.',
+        topics: ['Jinja2 syntax ({{ var }}, {% block %})', 'Layout base.html inheritance', 'Dynamic lists with loops', 'Custom filters & static file serving'],
+        video: {
+          instructor: 'Corey Schafer',
+          title: 'Flask Tutorial: Templates with Jinja2 & Bootstrap Layouts',
+          highlights: 'Jinja2, template inheritance, loops, conditionals, static files',
+          notes: 'Mastering dynamic HTML templates and base layout inheritance with Jinja2.',
+          url: 'https://youtu.be/QnDWIZuWYW8',
+          youtubeId: 'QnDWIZuWYW8'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: '{% extends "base.html" %}', label: 'Jinja Extends', desc: 'Inherit template from base' },
+          { cmd: 'url_for("static", filename="style.css")', label: 'Static URL', desc: 'Generate URL for static asset' }
+        ]
+      },
+      {
+        id: 'mad_w3',
+        weekNumber: 3,
+        title: 'Week 3: SQLite, SQLAlchemy ORM & Database Models',
+        description: 'Relational database integration, SQLite setup, SQLAlchemy models, and CRUD operations.',
+        topics: ['SQLite embedded database', 'Flask-SQLAlchemy configuration', 'Defining Database Models & Primary Keys', 'CRUD operations (Create, Read, Update, Delete)'],
+        video: {
+          instructor: 'Corey Schafer',
+          title: 'Flask Tutorial: Databases with Flask-SQLAlchemy',
+          highlights: 'SQLite, SQLAlchemy, models, relationships, queries',
+          notes: 'Database schema design and interacting with SQLite using Python SQLAlchemy models.',
+          url: 'https://youtu.be/cYWiDiIUxQc',
+          youtubeId: 'cYWiDiIUxQc'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'db.create_all()', label: 'Create Tables', desc: 'Initialize database schema' },
+          { cmd: 'User.query.filter_by(id=1).first()', label: 'Query ORM', desc: 'Fetch record from database' }
+        ]
+      },
+      {
+        id: 'mad_w4',
+        weekNumber: 4,
+        title: 'Week 4: User Authentication, Passwords & Sessions',
+        description: 'Secure registration, bcrypt password hashing, Flask session management, and login protection.',
+        topics: ['Bcrypt password hashing', 'User session management', 'Login and Logout workflows', 'Route protection decorators (@login_required)'],
+        video: {
+          instructor: 'Corey Schafer',
+          title: 'Flask Tutorial: User Authentication, Registration & Login',
+          highlights: 'Authentication, bcrypt, sessions, cookies, login forms',
+          notes: 'Secure user login system with hashed passwords and session authentication.',
+          url: 'https://youtu.be/CSHx6KKpeTY',
+          youtubeId: 'CSHx6KKpeTY'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'bcrypt.generate_password_hash(pwd)', label: 'Hash Password', desc: 'Securely hash user password' },
+          { cmd: 'session["user_id"] = user.id', label: 'Save Session', desc: 'Store authenticated user ID in session' }
+        ]
+      },
+      {
+        id: 'mad_w5',
+        weekNumber: 5,
+        title: 'Week 5: RESTful APIs, JSON Endpoints & Postman',
+        description: 'Building REST APIs with Flask-RESTful, HTTP status codes, JSON request/response, and Postman testing.',
+        topics: ['REST architectural principles', 'GET, POST, PUT, DELETE endpoints', 'jsonify and request.get_json()', 'API testing with Postman & curl'],
+        video: {
+          instructor: 'FreeCodeCamp',
+          title: 'Flask REST API Tutorial — Build & Test RESTful Endpoints',
+          highlights: 'REST API, JSON, Postman, status codes, endpoints',
+          notes: 'Designing scalable RESTful APIs with clean JSON request and response payloads.',
+          url: 'https://youtu.be/GMppyAPbLYk',
+          youtubeId: 'GMppyAPbLYk'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'jsonify({"status": "success"})', label: 'JSON Response', desc: 'Return JSON serialized HTTP response' },
+          { cmd: 'curl -X POST http://localhost:5000/api', label: 'cURL API', desc: 'Test API endpoint from terminal' }
+        ]
+      },
+      {
+        id: 'mad_w6',
+        weekNumber: 6,
+        title: 'Week 6: Frontend Integration & Fetch API',
+        description: 'Connecting frontend to backend, asynchronous JavaScript fetch(), dynamic DOM manipulation, and CORS.',
+        topics: ['JavaScript Fetch API & async/await', 'Sending JSON POST requests', 'Dynamic UI updates without page reload', 'CORS configuration with Flask-CORS'],
+        video: {
+          instructor: 'Traversy Media',
+          title: 'Fetch API Introduction & Async JavaScript Integration',
+          highlights: 'Fetch API, async/await, DOM updates, AJAX requests',
+          notes: 'Building reactive interfaces by fetching backend JSON APIs asynchronously.',
+          url: 'https://youtu.be/Oive66jrwBs',
+          youtubeId: 'Oive66jrwBs'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'fetch("/api/tasks").then(r => r.json())', label: 'Fetch API', desc: 'Query backend API asynchronously' }
+        ]
+      },
+      {
+        id: 'mad_w7',
+        weekNumber: 7,
+        title: 'Week 7: Celery Background Tasks & Redis Broker',
+        description: 'Asynchronous task workers, Celery setup, Redis in-memory message broker, and background jobs.',
+        topics: ['Synchronous vs Asynchronous execution', 'Redis setup & configuration', 'Celery task definitions (@celery.task)', 'Long-running jobs & periodic scheduling'],
+        video: {
+          instructor: 'Tech With Tim',
+          title: 'Celery & Redis Crash Course — Background Tasks with Python',
+          highlights: 'Celery, Redis, background jobs, worker queues, async',
+          notes: 'Offloading long background tasks and reports using Celery and Redis broker.',
+          url: 'https://youtu.be/THxCy-6EnUM',
+          youtubeId: 'THxCy-6EnUM'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'celery -A app.celery worker --loglevel=info', label: 'Run Worker', desc: 'Start Celery background worker' },
+          { cmd: 'redis-server', label: 'Start Redis', desc: 'Launch Redis message broker' }
+        ]
+      },
+      {
+        id: 'mad_w8',
+        weekNumber: 8,
+        title: 'Week 8: Production Deployment & Best Practices',
+        description: 'Production architecture, WSGI servers (Gunicorn), Nginx reverse proxy, and environment management.',
+        topics: ['Development vs Production servers', 'WSGI with Gunicorn', 'Nginx reverse proxy configuration', 'Environment variables & security hardening'],
+        video: {
+          instructor: 'Corey Schafer',
+          title: 'Deploy Flask Web App on Ubuntu with Gunicorn & Nginx',
+          highlights: 'Gunicorn, Nginx, Ubuntu, production deployment, WSGI',
+          notes: 'Complete production guide for hosting Flask apps using Gunicorn and Nginx.',
+          url: 'https://youtu.be/goTo_Xb11tY',
+          youtubeId: 'goTo_Xb11tY'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'gunicorn -w 4 -b 0.0.0.0:8000 app:app', label: 'Gunicorn WSGI', desc: 'Run multi-worker production WSGI server' }
         ]
       }
     ]
@@ -286,52 +434,197 @@ export const INITIAL_COURSES_DATA = [
   {
     id: 'dbms',
     name: 'DBMS',
-    hindiName: 'डेटाबेस मैनेजमेंट सिस्टम',
+    hindiName: 'डेटाबेस मैनेजमेंट सिस्टम (SQL & Database Design)',
     icon: '🗄️',
-    description: 'Database Management Systems — Relational Algebra, SQL Queries, Schema Normalization (1NF to BCNF).',
-    driveUrl: '',
+    description: 'IIT Madras Database Management Systems — Relational Algebra, SQL Queries, Schema Normalization (1NF to BCNF) & Transactions.',
+    driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
     badge: 'Theory & SQL Lab',
     weeks: [
       {
         id: 'dbms_w1',
         weekNumber: 1,
-        title: 'Week 1: Relational Model & SQL Fundamentals',
-        description: 'Relational data models, ER diagrams to table mapping, SQL DDL/DML statements, basic queries.',
-        topics: ['Relational Data Model', 'Primary & Foreign Keys', 'SQL CREATE, INSERT, SELECT', 'Filtering with WHERE & ORDER BY'],
-        video: null,
+        title: 'Week 1: Relational Model, ER Diagrams & Schema Mapping',
+        description: 'Relational data models, ER diagrams to table mapping, entity types, attributes, and cardinality.',
+        topics: ['Entity-Relationship (ER) model', 'Entity types, weak entities & attributes', 'Primary key, candidate key & foreign key', 'Mapping ER diagram to relational schema'],
+        video: {
+          instructor: 'Gate Smashers (Varun Singla)',
+          title: 'Introduction to DBMS & ER Model in Hindi — Complete Lecture',
+          highlights: 'DBMS intro, 3-tier architecture, ER diagram, keys, mapping',
+          notes: 'Gate Smashers DBMS Hindi Playlist — ER Modeling, Entities, Cardinality and Keys concept.',
+          url: 'https://youtu.be/kBdlM6hNDAE',
+          youtubeId: 'kBdlM6hNDAE'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
         keyCommands: [
-          { cmd: 'SELECT * FROM students WHERE grade = "A";', label: 'SQL Query', desc: 'Filter database table records' },
-          { cmd: 'CREATE TABLE ...', label: 'DDL', desc: 'Define relational schema' }
+          { cmd: 'CREATE TABLE students (id INT PRIMARY KEY);', label: 'Primary Key', desc: 'Define unique entity identifier' }
+        ]
+      },
+      {
+        id: 'dbms_w2',
+        weekNumber: 2,
+        title: 'Week 2: SQL DDL, DML & Schema Constraints',
+        description: 'SQL fundamentals, CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, and column constraints.',
+        topics: ['Data Definition Language (DDL)', 'Data Manipulation Language (DML)', 'NOT NULL, UNIQUE, CHECK, DEFAULT', 'Referential Integrity & FOREIGN KEY ON DELETE CASCADE'],
+        video: {
+          instructor: 'Kudvenkat / Gate Smashers',
+          title: 'SQL DDL vs DML Commands & Constraints in Hindi',
+          highlights: 'DDL, DML, constraints, primary key, foreign key, cascade',
+          notes: 'SQL syntax for creating tables and enforcing integrity constraints.',
+          url: 'https://youtu.be/7Vtl2Wc7d-8',
+          youtubeId: '7Vtl2Wc7d-8'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'ALTER TABLE users ADD COLUMN email VARCHAR(100);', label: 'ALTER Table', desc: 'Add column to existing table' }
+        ]
+      },
+      {
+        id: 'dbms_w3',
+        weekNumber: 3,
+        title: 'Week 3: Complex SQL Queries, Aggregation & Grouping',
+        description: 'Querying tables, aggregate functions (COUNT, SUM, AVG), GROUP BY, HAVING, and filtering with WHERE.',
+        topics: ['SELECT with WHERE clause', 'Aggregate functions: COUNT, SUM, AVG, MIN, MAX', 'GROUP BY clause & grouping semantics', 'HAVING clause vs WHERE clause'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'SQL GROUP BY and HAVING Clause with Examples in Hindi',
+          highlights: 'GROUP BY, HAVING, aggregate functions, filtering',
+          notes: 'Understanding data aggregation and group-level filtering with HAVING.',
+          url: 'https://youtu.be/9k5d5e5bA2E',
+          youtubeId: '9k5d5e5bA2E'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'SELECT dept, AVG(salary) FROM emp GROUP BY dept HAVING AVG(salary) > 50000;', label: 'GROUP BY', desc: 'Aggregate by department' }
+        ]
+      },
+      {
+        id: 'dbms_w4',
+        weekNumber: 4,
+        title: 'Week 4: SQL Joins & Nested Subqueries',
+        description: 'Inner joins, Left outer joins, Right joins, Full joins, Cross joins, and correlated subqueries.',
+        topics: ['INNER JOIN vs OUTER JOIN', 'LEFT JOIN, RIGHT JOIN & FULL JOIN', 'Natural Joins and Self Joins', 'Nested Subqueries (IN, NOT IN, EXISTS, ANY, ALL)'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'SQL Joins Explained in Hindi — Inner, Left, Right & Full Join',
+          highlights: 'INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, subqueries',
+          notes: 'Mastering table joins and multi-table data extraction techniques.',
+          url: 'https://youtu.be/2HVMiPPuPIM',
+          youtubeId: '2HVMiPPuPIM'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'SELECT * FROM A INNER JOIN B ON A.id = B.a_id;', label: 'Inner Join', desc: 'Combine matching records from both tables' }
+        ]
+      },
+      {
+        id: 'dbms_w5',
+        weekNumber: 5,
+        title: 'Week 5: Relational Algebra & Tuple Relational Calculus',
+        description: 'Formal relational query languages, Selection (σ), Projection (π), Cartesian product (×), Join (⨝), Union, Set Difference.',
+        topics: ['Fundamental operators: Selection (σ) & Projection (π)', 'Set operations: Union (∪), Intersection (∩), Difference (−)', 'Cartesian product (×) & Theta Join (⨝)', 'Tuple Relational Calculus (TRC) queries'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'Relational Algebra in DBMS in Hindi — Complete Concept',
+          highlights: 'Relational algebra, sigma, pi, join, cross product, TRC',
+          notes: 'Theoretical foundations of relational queries and algebraic transformations.',
+          url: 'https://youtu.be/4YilEjkNPrQ',
+          youtubeId: '4YilEjkNPrQ'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'π_name (σ_age>20 (Students))', label: 'Relational Algebra', desc: 'Filter age > 20 and project name' }
+        ]
+      },
+      {
+        id: 'dbms_w6',
+        weekNumber: 6,
+        title: 'Week 6: Functional Dependencies & Normalization (1NF to BCNF)',
+        description: 'Database anomalies, closure of functional dependencies, minimal cover, 1NF, 2NF, 3NF, and Boyce-Codd Normal Form (BCNF).',
+        topics: ['Functional Dependencies (FD) & Armstrong Axioms', 'Attribute Closure & Finding Candidate Keys', 'Update, Insertion & Deletion Anomalies', '1NF, 2NF, 3NF and BCNF decomposition rules'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'Normalization in DBMS in Hindi — 1NF, 2NF, 3NF, BCNF Easy Explanation',
+          highlights: 'Normalization, 1NF, 2NF, 3NF, BCNF, functional dependencies',
+          notes: 'Eliminating redundancy and anomalies through step-by-step schema normalization.',
+          url: 'https://youtu.be/5dspsycsm-s',
+          youtubeId: '5dspsycsm-s'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'FD: A -> B, B -> C  => A -> C (Transitivity)', label: 'Armstrong Axiom', desc: 'Transitive functional dependency' }
+        ]
+      },
+      {
+        id: 'dbms_w7',
+        weekNumber: 7,
+        title: 'Week 7: Transactions, ACID Properties & Concurrency Control',
+        description: 'Transaction concepts, ACID properties, serializability, Conflict Serializability, Two-Phase Locking (2PL), and Deadlocks.',
+        topics: ['Transaction states: Active, Partially Committed, Failed, Aborted', 'ACID Properties: Atomicity, Consistency, Isolation, Durability', 'Schedules & Conflict Serializability', 'Concurrency control: Lock-based protocols & 2PL'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'Transactions and Concurrency Control in DBMS in Hindi',
+          highlights: 'ACID, serializability, 2PL, locking, deadlocks',
+          notes: 'Ensuring data integrity under concurrent multi-user database operations.',
+          url: 'https://youtu.be/d4_Jg_l8f4Y',
+          youtubeId: 'd4_Jg_l8f4Y'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'START TRANSACTION; ... COMMIT; / ROLLBACK;', label: 'Transaction SQL', desc: 'Atomic transaction boundaries' }
+        ]
+      },
+      {
+        id: 'dbms_w8',
+        weekNumber: 8,
+        title: 'Week 8: Indexing, B-Trees, B+ Trees & Query Optimization',
+        description: 'File organizations, primary/secondary/clustering indexes, B-Trees, B+ Trees search/insertion, and query execution plans.',
+        topics: ['File organization: Heap vs Ordered files', 'Index structures: Dense vs Sparse, Primary vs Secondary', 'B-Trees and B+ Trees multi-level indexing', 'Query evaluation & EXPLAIN query execution plan'],
+        video: {
+          instructor: 'Gate Smashers',
+          title: 'Indexing in DBMS & B+ Tree Explained in Hindi',
+          highlights: 'Indexing, B-Tree, B+ Tree, search time complexity, EXPLAIN',
+          notes: 'Accelerating query retrieval speed using balanced tree indexes.',
+          url: 'https://youtu.be/aZjYr87r1b8',
+          youtubeId: 'aZjYr87r1b8'
+        },
+        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
+        keyCommands: [
+          { cmd: 'CREATE INDEX idx_user_email ON users(email);', label: 'Create Index', desc: 'Accelerate queries on email column' },
+          { cmd: 'EXPLAIN SELECT * FROM users WHERE email = "...";', label: 'Query Plan', desc: 'Inspect execution plan and index usage' }
         ]
       }
     ]
   }
 ];
 
-export default function CoursesPage({ onBack, onAddTask, showToast }) {
+export default function CoursesPage({ 
+  onBack, 
+  onAddTask, 
+  showToast,
+  initialStep = 'subjects',
+  initialCourseId = 'sys_cmd'
+}) {
+  // Step state matching User Blueprint: 'subjects' (Step 1) or 'weeks' (Step 2)
+  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [selectedWeekFilter, setSelectedWeekFilter] = useState('all');
+
   // Load courses
   const [courses, setCourses] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_COURSES);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // ensure system commands has all 8 weeks with video & notes
-          return parsed.map(c => {
-            if (c.id === 'sys_cmd' && (!c.weeks || c.weeks.length < 8)) {
-              return INITIAL_COURSES_DATA[0];
-            }
-            return c;
-          });
+        if (Array.isArray(parsed) && parsed.length >= 3) {
+          return parsed;
         }
       }
     } catch (e) {}
     return INITIAL_COURSES_DATA;
   });
 
-  const [activeCourseId, setActiveCourseId] = useState('sys_cmd');
+  const [activeCourseId, setActiveCourseId] = useState(initialCourseId);
   const [copiedLink, setCopiedLink] = useState('');
-  const [expandedVideoWeekId, setExpandedVideoWeekId] = useState('sys_w1');
+  const [expandedVideoWeekId, setExpandedVideoWeekId] = useState(null);
   const [completedTopics, setCompletedTopics] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_CHECKLIST);
@@ -496,70 +789,301 @@ export default function CoursesPage({ onBack, onAddTask, showToast }) {
         </div>
       </div>
 
-      {/* Course Selection Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 scrollbar-none">
-        {courses.map(course => {
-          const isActive = course.id === activeCourseId;
-          return (
-            <button
-              key={course.id}
-              onClick={() => setActiveCourseId(course.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap border ${
-                isActive
-                  ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/25 scale-[1.02]'
-                  : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-800'
-              }`}
-            >
-              <span className="text-base">{course.icon}</span>
-              <span>{course.name}</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isActive ? 'bg-pink-700/60 text-pink-100' : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400'}`}>
-                {course.weeks?.length || 0} {course.weeks?.length === 1 ? 'Week' : 'Weeks'}
+      {/* Blueprint Step Navigation Bar matching User's Flow: Courses -> subjects -> Week -> Video & Notes */}
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-3 sm:p-4 mb-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-2.5 border-b border-gray-100 dark:border-slate-800">
+          <span className="text-[11px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 flex items-center gap-1.5">
+            <span>🗺️</span>
+            <span>Blueprint Flow Navigation (ब्लूप्रिंट चरण)</span>
+          </span>
+          <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400">
+            {currentStep === 'subjects' 
+              ? 'चरण 1: विषय का चयन करें' 
+              : `चरण 2: ${activeCourse.name} हफ़्ते एवं वीडियो`}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          {/* Step 1: subjects */}
+          <button
+            onClick={() => setCurrentStep('subjects')}
+            className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+              currentStep === 'subjects'
+                ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30 font-black scale-[1.01]'
+                : 'bg-gray-50 dark:bg-slate-800/80 hover:bg-pink-50/50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
+                currentStep === 'subjects' ? 'bg-white text-pink-600' : 'bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300'
+              }`}>
+                1
               </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Course Overview Header Card */}
-      <div className="bg-gradient-to-br from-pink-50/80 via-white to-pink-50/30 dark:from-pink-950/30 dark:via-slate-900 dark:to-pink-950/20 border-2 border-pink-300 dark:border-pink-800/80 rounded-3xl p-5 sm:p-6 mb-6 shadow-lg shadow-pink-600/5 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="text-xl">{activeCourse.icon}</span>
-              <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                {activeCourse.name}
-              </h2>
-              {activeCourse.hindiName && (
-                <span className="text-xs font-bold text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/40 px-2.5 py-0.5 rounded-full border border-pink-200 dark:border-pink-800">
-                  {activeCourse.hindiName}
-                </span>
-              )}
+              <div>
+                <div className="text-xs font-black">Step 1: Subjects</div>
+                <div className={`text-[10px] ${currentStep === 'subjects' ? 'text-pink-100' : 'text-gray-500 dark:text-slate-400'}`}>
+                  विषय चुनें ({courses.length})
+                </div>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-              {activeCourse.description}
-            </p>
-          </div>
+            <ArrowRight className={`w-4 h-4 ${currentStep === 'subjects' ? 'text-white' : 'text-gray-400'}`} />
+          </button>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {activeCourse.driveUrl && (
-              <a
-                href={activeCourse.driveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/40 border border-pink-200 dark:border-pink-800 font-bold text-xs shadow-sm transition-all active:scale-95"
-              >
-                <Folder className="w-3.5 h-3.5" />
-                <span>Google Drive Materials</span>
-                <ExternalLink className="w-3 h-3 ml-0.5" />
-              </a>
-            )}
+          {/* Step 2: Week */}
+          <button
+            onClick={() => setCurrentStep('weeks')}
+            className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+              currentStep === 'weeks'
+                ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30 font-black scale-[1.01]'
+                : 'bg-gray-50 dark:bg-slate-800/80 hover:bg-pink-50/50 dark:hover:bg-slate-800 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
+                currentStep === 'weeks' ? 'bg-white text-pink-600' : 'bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300'
+              }`}>
+                2
+              </span>
+              <div>
+                <div className="text-xs font-black">Step 2: Week</div>
+                <div className={`text-[10px] ${currentStep === 'weeks' ? 'text-pink-100' : 'text-gray-500 dark:text-slate-400'}`}>
+                  हफ़्ते (Week 1–8)
+                </div>
+              </div>
+            </div>
+            <ArrowRight className={`w-4 h-4 ${currentStep === 'weeks' ? 'text-white' : 'text-gray-400'}`} />
+          </button>
+
+          {/* Step 3: Video & Notes */}
+          <div
+            className={`flex items-center gap-2.5 p-3 rounded-2xl border ${
+              currentStep === 'weeks'
+                ? 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/60 text-rose-800 dark:text-rose-200'
+                : 'bg-gray-50/50 dark:bg-slate-800/40 border-gray-200 dark:border-slate-800 text-gray-400 dark:text-slate-500'
+            }`}
+          >
+            <span className="w-7 h-7 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs font-black shrink-0 shadow-sm shadow-red-600/30">
+              ▶
+            </span>
+            <div>
+              <div className="text-xs font-black">Step 3: Video & Notes</div>
+              <div className="text-[10px] opacity-80">
+                वीडियो एवं ड्राइव नोट्स
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Weeks List / Syllabus Section */}
-      <div className="space-y-6">
-        {activeCourse.weeks && activeCourse.weeks.map((week) => {
+      {/* STEP 1: SUBJECTS VIEW */}
+      {currentStep === 'subjects' ? (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                <span>Select a Subject (कोर्स का विषय चुनें)</span>
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-slate-400">
+                नीचे से कोई भी विषय चुनें और <strong>"Next Step: Select Week"</strong> दबाकर उसके 8 हफ़्तों के वीडियो व नोट्स देखें।
+              </p>
+            </div>
+            <span className="text-xs font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/50 px-3 py-1 rounded-full border border-pink-200 dark:border-pink-800 self-start sm:self-auto">
+              {courses.length} Subjects Available
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {courses.map(course => {
+              const totalWeeks = course.weeks?.length || 0;
+              let totalTopics = 0;
+              let completedTopicsCount = 0;
+              course.weeks?.forEach(w => {
+                totalTopics += w.topics?.length || 0;
+                w.topics?.forEach((_, idx) => {
+                  if (completedTopics[`${w.id}_${idx}`]) completedTopicsCount++;
+                });
+              });
+              const pct = totalTopics > 0 ? Math.round((completedTopicsCount / totalTopics) * 100) : 0;
+
+              return (
+                <div
+                  key={course.id}
+                  className="bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 hover:border-pink-500 dark:hover:border-pink-600 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center text-2xl shadow-md shadow-pink-600/25 group-hover:scale-105 transition-transform">
+                        {course.icon}
+                      </div>
+                      <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                        {course.badge || `${totalWeeks} Weeks`}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-black text-gray-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
+                      {course.name}
+                    </h3>
+                    {course.hindiName && (
+                      <p className="text-xs font-bold text-pink-700 dark:text-pink-400 mt-0.5 mb-2">
+                        {course.hindiName}
+                      </p>
+                    )}
+
+                    <p className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed line-clamp-3 mb-4">
+                      {course.description}
+                    </p>
+
+                    {/* Progress Bar */}
+                    <div className="bg-gray-50 dark:bg-slate-800/80 rounded-2xl p-3 border border-gray-100 dark:border-slate-800 mb-4">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-gray-600 dark:text-slate-400 mb-1.5">
+                        <span>{totalWeeks} Weeks Total</span>
+                        <span>{pct}% Completed</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-pink-600 h-full rounded-full transition-all duration-300"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Next Step Button matching Blueprint Diagram */}
+                  <button
+                    onClick={() => {
+                      setActiveCourseId(course.id);
+                      setSelectedWeekFilter('all');
+                      setCurrentStep('weeks');
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-black text-xs sm:text-sm shadow-md shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer mt-2"
+                  >
+                    <span>Next Step: Select Week (हफ़्ते देखें)</span>
+                    <ArrowRight className="w-4 h-4 stroke-[3]" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        /* STEP 2: WEEKS VIEW */
+        <div className="space-y-6">
+          {/* Course Overview Header Card with Back to Subjects */}
+          <div className="bg-gradient-to-br from-pink-50/80 via-white to-pink-50/30 dark:from-pink-950/30 dark:via-slate-900 dark:to-pink-950/20 border-2 border-pink-300 dark:border-pink-800/80 rounded-3xl p-5 sm:p-6 shadow-lg shadow-pink-600/5 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <button
+                  onClick={() => setCurrentStep('subjects')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800 font-bold text-xs mb-3 shadow-sm active:scale-95 transition-all cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>← Back to Subjects (अन्य विषय चुनें)</span>
+                </button>
+
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="text-2xl">{activeCourse.icon}</span>
+                  <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                    {activeCourse.name}
+                  </h2>
+                  {activeCourse.hindiName && (
+                    <span className="text-xs font-bold text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/40 px-2.5 py-0.5 rounded-full border border-pink-200 dark:border-pink-800">
+                      {activeCourse.hindiName}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                  {activeCourse.description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {activeCourse.driveUrl && (
+                  <a
+                    href={activeCourse.driveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/40 border border-pink-200 dark:border-pink-800 font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Folder className="w-3.5 h-3.5" />
+                    <span>Google Drive Materials</span>
+                    <ExternalLink className="w-3 h-3 ml-0.5" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Subject Tabs to switch subject without leaving */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-xs font-bold text-gray-500 whitespace-nowrap mr-1">Switch Subject:</span>
+            {courses.map(c => {
+              const isSel = c.id === activeCourseId;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => {
+                    setActiveCourseId(c.id);
+                    setSelectedWeekFilter('all');
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap border cursor-pointer ${
+                    isSel
+                      ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                      : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  }`}
+                >
+                  <span>{c.icon}</span>
+                  <span>{c.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Week Filter Selector Pills */}
+          <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-3 shadow-sm">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-slate-400">
+                Select Week (हफ़्ता चुनें):
+              </span>
+              <span className="text-[11px] font-bold text-pink-600 dark:text-pink-400">
+                {selectedWeekFilter === 'all' ? `Showing All ${activeCourse.weeks?.length || 0} Weeks` : `Week ${selectedWeekFilter}`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+              <button
+                onClick={() => setSelectedWeekFilter('all')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
+                  selectedWeekFilter === 'all'
+                    ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                    : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                }`}
+              >
+                All Weeks ({activeCourse.weeks?.length || 0})
+              </button>
+              {activeCourse.weeks?.map(w => {
+                const isSelected = selectedWeekFilter === w.weekNumber;
+                return (
+                  <button
+                    key={w.id}
+                    onClick={() => setSelectedWeekFilter(w.weekNumber)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border cursor-pointer ${
+                      isSelected
+                        ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                        : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                    }`}
+                  >
+                    Week {w.weekNumber}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Weeks List / Syllabus Section */}
+          <div className="space-y-6">
+            {activeCourse.weeks
+              ?.filter(w => selectedWeekFilter === 'all' || w.weekNumber === selectedWeekFilter)
+              .map((week) => {
           const isVideoExpanded = expandedVideoWeekId === week.id;
           const totalTopics = week.topics.length;
           const completedCount = week.topics.filter((_, idx) => completedTopics[`${week.id}_${idx}`]).length;
@@ -821,6 +1345,8 @@ export default function CoursesPage({ onBack, onAddTask, showToast }) {
           );
         })}
       </div>
+    </div>
+  )}
 
       {/* Modal: Add Week / Topic */}
       {isAddWeekModalOpen && (
