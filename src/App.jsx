@@ -9,12 +9,13 @@ import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
+import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage';
 import DailyNotes from './components/DailyNotes';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
 } from './api';
-import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar } from 'lucide-react';
+import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, Play, Folder } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 const STORAGE_KEY_DARK = 'iitm_dark_mode';
@@ -376,6 +377,10 @@ export default function App() {
           setCurrentPage('dailyTrack');
           setActiveBottomTab('track');
         }}
+        onOpenCourses={() => {
+          setCurrentPage('courses');
+          setActiveBottomTab('courses');
+        }}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
@@ -384,7 +389,7 @@ export default function App() {
         onInstallApp={handleInstallApp}
       />
 
-        {/* View Switch: Daily Track, Books Library, or Main Planner */}
+        {/* View Switch: Daily Track, Courses & Syllabus, Books Library, or Main Planner */}
         {currentPage === 'dailyTrack' ? (
           <DailyTrack 
             onBack={() => { 
@@ -393,6 +398,15 @@ export default function App() {
               loadTasks(); 
               loadStreak(); 
             }} 
+          />
+        ) : currentPage === 'courses' ? (
+          <CoursesPage
+            onBack={() => {
+              setCurrentPage('home');
+              setActiveBottomTab('tasks');
+            }}
+            onAddTask={handleSaveTask}
+            showToast={showToast}
           />
         ) : currentPage === 'books' ? (
           <BooksPage
@@ -405,6 +419,63 @@ export default function App() {
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
+
+            {/* Quick Course Syllabus Shortcut Banner */}
+            <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-pink-500/5 dark:from-pink-950/40 dark:via-slate-800/90 dark:to-pink-950/30 border border-pink-200 dark:border-pink-800/60 rounded-2xl p-3 sm:p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-600 to-rose-600 text-white flex items-center justify-center text-lg shadow-sm shrink-0">
+                  ⚙️
+                </span>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
+                      System Commands — 8-Week Course & Hindi Video Classes (सिस्टम कमांड)
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                      Week 1 to 8 Full Syllabus
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-600 dark:text-slate-400 mt-0.5">
+                    M Prashant (Linux, Permissions, Bash, AWK) + Networking + Chai aur Code (Git & GitHub).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+                <a
+                  href="https://youtu.be/Byx4sgLR88E"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-red-600/30 border border-red-700 transition-all cursor-pointer"
+                  title="Watch Week 1 Linux Video Masterclass"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>Video</span>
+                </a>
+
+                <a
+                  href={SYSTEM_COMMANDS_DRIVE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 dark:hover:bg-pink-900/60 active:scale-95 text-pink-700 dark:text-pink-300 font-bold text-xs border border-pink-300 dark:border-pink-700 shadow-sm transition-all cursor-pointer"
+                  title="Open Notes in Google Drive"
+                >
+                  <Folder className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                  <span>Notes</span>
+                </a>
+
+                <button
+                  onClick={() => {
+                    setCurrentPage('courses');
+                    setActiveBottomTab('courses');
+                  }}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-pink-600/30 transition-transform whitespace-nowrap cursor-pointer"
+                >
+                  <span>Open Course (कोर्स)</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </div>
 
             {/* Task List Header & Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -532,7 +603,7 @@ export default function App() {
           setActiveTab={(tab) => {
             setActiveBottomTab(tab);
             if (tab === 'tasks') setCurrentPage('home');
-            else if (tab === 'books') setCurrentPage('books');
+            else if (tab === 'courses' || tab === 'books') setCurrentPage('courses');
             else if (tab === 'track') setCurrentPage('dailyTrack');
           }}
           onOpenAddModal={handleOpenAddModal}
@@ -544,9 +615,17 @@ export default function App() {
             setCurrentPage('home');
             setActiveBottomTab('tasks');
           }}
+          onOpenCourses={() => {
+            setCurrentPage('courses');
+            setActiveBottomTab('courses');
+          }}
+          onCloseCourses={() => {
+            setCurrentPage('home');
+            setActiveBottomTab('tasks');
+          }}
           onOpenBooks={() => {
-            setCurrentPage('books');
-            setActiveBottomTab('books');
+            setCurrentPage('courses');
+            setActiveBottomTab('courses');
           }}
           onCloseBooks={() => {
             setCurrentPage('home');
