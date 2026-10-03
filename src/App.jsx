@@ -476,7 +476,7 @@ export default function App() {
                   }}
                   className="flex items-center gap-1.5 px-3.5 py-1.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-pink-600/30 transition-transform whitespace-nowrap cursor-pointer"
                 >
-                  <span>Open Course (कोर्स)</span>
+                  <span>Open Course</span>
                   <span>→</span>
                 </button>
               </div>
