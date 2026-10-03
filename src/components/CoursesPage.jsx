@@ -14,7 +14,7 @@ export const INITIAL_COURSES_DATA = [
   {
     id: 'sys_cmd',
     name: 'System Commands',
-    hindiName: 'सिस्टम कमांड (Linux & Shell Scripting)',
+    subtitle: 'Linux & Shell Scripting',
     icon: '⚙️',
     description: 'IIT Madras System Commands — Complete 8-Week Curriculum with Recommended Hindi Video Masterclasses and Notes Drive.',
     driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
@@ -36,7 +36,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Linux for Beginners in One Video: 100 Commands',
           highlights: 'System info, memory, packages, processes, networking',
-          notes: 'M Prashant — Linux for Beginners in One Video: 100 Commands — इसमें system info, memory, packages, processes, networking आदि भी हैं; लगभग 2h 48m।',
+          notes: 'M Prashant — Linux for Beginners in One Video: 100 Commands — Covers system info, memory, packages, processes, networking (approx 2h 48m).',
           url: 'https://youtu.be/Byx4sgLR88E',
           youtubeId: 'Byx4sgLR88E'
         },
@@ -65,7 +65,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Linux File Permissions for Beginners — chmod, numeric/symbolic, ownership',
           highlights: 'chmod, permissions, ownership, $HOME, $USER, $PATH',
-          notes: 'M Prashant — Linux File Permissions for Beginners — chmod, numeric/symbolic permissions, ownership अच्छी तरह cover करता है।',
+          notes: 'M Prashant — Linux File Permissions for Beginners — Comprehensive guide to chmod, numeric/symbolic permissions & ownership.',
           url: 'https://youtu.be/4p2zkY8Q-LQ',
           youtubeId: '4p2zkY8Q-LQ'
         },
@@ -94,7 +94,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Hard & Soft Links + Environment Variables + Alias + Process + SSH',
           highlights: 'Hard/soft links, inode, filesystem, aliases, processes, SSH',
-          notes: 'इसी M Prashant Linux course के Hard & Soft Links + Environment Variables + Alias + Process + SSH वाले lessons follow करो; ये topics उसके course curriculum में अलग-अलग Hindi lessons के रूप में मौजूद हैं।',
+          notes: 'M Prashant — Follow lessons for Hard & Soft Links, Environment Variables, Aliases, Processes & SSH remote access.',
           url: 'https://youtu.be/rrw-Pv3rc0E',
           youtubeId: 'rrw-Pv3rc0E'
         },
@@ -124,7 +124,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Shell Scripting Tutorial in One Video — Shell, Scripts, Variables, Loops',
           highlights: 'Shell, scripts, variables, conditions, loops, execution',
-          notes: 'M Prashant — Shell Scripting Tutorial in One Video — shell, scripts, variables, conditions, loops और execution/permissions cover करता है।',
+          notes: 'M Prashant — Shell Scripting Tutorial in One Video — Covers shell, scripts, variables, conditions, loops and execution permissions.',
           url: 'https://youtu.be/M6nZpfIIFEM',
           youtubeId: 'M6nZpfIIFEM'
         },
@@ -153,7 +153,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Shell Scripting Deep Dive & Dedicated Cron Job Lesson',
           highlights: 'Variables, arguments, if/else, loops, functions, Cron job schedule',
-          notes: 'उसी Shell Scripting video को continue करो; इसके बाद Cron Job lesson करो। M Prashant के syllabus में Cron का dedicated Hindi practical भी है।',
+          notes: 'M Prashant — Shell Scripting Tutorial continuation, followed by the dedicated Cron Job practical lesson.',
           url: 'https://youtu.be/M6nZpfIIFEM',
           youtubeId: 'M6nZpfIIFEM'
         },
@@ -182,7 +182,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant',
           title: 'Master Linux AWK: From Basics to Advanced Techniques + Linux SED Command',
           highlights: 'AWK, regex, sed, stream text processing, field extraction',
-          notes: 'M Prashant — Master Linux AWK: From Basics to Advanced Techniques + Linux SED Command। AWK और SED से structured data parsing का complete Hindi practical.',
+          notes: 'M Prashant — Master Linux AWK: From Basics to Advanced Techniques + Linux SED Command for structured data parsing.',
           url: 'https://youtu.be/TtGM9GfBuok',
           youtubeId: 'TtGM9GfBuok'
         },
@@ -210,7 +210,7 @@ export const INITIAL_COURSES_DATA = [
           instructor: 'M Prashant & Networking Guide',
           title: '50 Linux Networking Commands + Tar/Gzip/Zip Archive Tutorial',
           highlights: 'ip, ping, netstat/ss, dig, nslookup, hostname, tar/gzip/zip',
-          notes: 'Linux Networking: 50 Linux Networking Commands You Need to Learn Right Now — इसमें ip, ping, netstat/ss, dig, nslookup, hostname शामिल हैं। साथ ही M Prashant का tar/gzip/zip video भी करें।',
+          notes: 'Linux Networking: 50 Linux Networking Commands (ip, ping, netstat/ss, dig, nslookup) + M Prashant tar/gzip compression tutorial.',
           url: 'https://youtu.be/PCXek0zEVtc',
           youtubeId: 'PCXek0zEVtc',
           extraVideos: [
@@ -264,7 +264,7 @@ export const INITIAL_COURSES_DATA = [
   {
     id: 'mad_1',
     name: 'MAD 1 Project',
-    hindiName: 'मॉडर्न ऐप डेवलपमेंट 1 (Flask & Web Apps)',
+    subtitle: 'Flask & Web Applications',
     icon: '💻',
     description: 'IIT Madras Modern Application Development 1 — Python, Flask Backend, Jinja2 Templates, SQLite, REST APIs & Deployments.',
     driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
@@ -434,7 +434,7 @@ export const INITIAL_COURSES_DATA = [
   {
     id: 'dbms',
     name: 'DBMS',
-    hindiName: 'डेटाबेस मैनेजमेंट सिस्टम (SQL & Database Design)',
+    subtitle: 'SQL & Database Design',
     icon: '🗄️',
     description: 'IIT Madras Database Management Systems — Relational Algebra, SQL Queries, Schema Normalization (1NF to BCNF) & Transactions.',
     driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
@@ -772,7 +772,7 @@ export default function CoursesPage({
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
                 <GraduationCap className="w-6 h-6 text-pink-600 dark:text-pink-400" />
-                <span>Courses & Syllabus (कोर्स एवं सिलेबस)</span>
+                <span>Courses & Syllabus</span>
               </h1>
               <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
                 IIT Madras
@@ -796,166 +796,21 @@ export default function CoursesPage({
       </div>
 
       {/* ========================================================================= */}
-      {/* BLUEPRINT INTERACTIVE STEPPER BAR                                        */}
-      {/* Flow: Courses -> subjects -> Week -> Video | Notes                       */}
-      {/* ========================================================================= */}
-      <div className="bg-white dark:bg-slate-900 border-2 border-pink-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 mb-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/60 text-pink-600 dark:text-pink-300 flex items-center justify-center text-sm font-black">
-              🗺️
-            </span>
-            <div>
-              <div className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400">
-                Course Flow Blueprint (कोर्स नेविगेशन फ्लो)
-              </div>
-              <div className="text-[11px] text-gray-500 dark:text-slate-400">
-                Courses ➔ 1. Subject ➔ 2. Week ➔ 3. Start Video
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setStage('subject');
-                setSelectedWeekNum(1);
-                setActiveVideoSubIndex(0);
-              }}
-              className="px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-pink-100 dark:hover:bg-pink-950/50 text-gray-700 dark:text-slate-300 hover:text-pink-600 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-              title="Reset Flow to Beginning"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Flow</span>
-            </button>
-            <button
-              onClick={() => setShowFullOverview(prev => !prev)}
-              className="px-3 py-1.5 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50/60 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 hover:bg-pink-100 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>{showFullOverview ? 'Hide Full Syllabus' : 'All 8 Weeks Overview'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Stepper Steps Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-          {/* Step 0: Courses */}
-          <div className="flex items-center justify-between p-3 rounded-2xl border bg-gray-50 dark:bg-slate-800/60 border-gray-200 dark:border-slate-700">
-            <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-xl bg-pink-500 text-white flex items-center justify-center text-xs font-black shadow-sm">
-                🎓
-              </span>
-              <div>
-                <div className="text-[10px] uppercase font-bold text-gray-400">Start</div>
-                <div className="text-xs font-black text-gray-800 dark:text-white">Courses</div>
-              </div>
-            </div>
-            <ArrowRight className="w-4 h-4 text-gray-400 hidden sm:block" />
-          </div>
-
-          {/* Step 1: Subjects */}
-          <button
-            onClick={() => setStage('subject')}
-            className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-              stage === 'subject'
-                ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30 font-black scale-[1.02]'
-                : 'bg-white dark:bg-slate-800/90 text-gray-700 dark:text-slate-200 border-gray-200 dark:border-slate-700 hover:border-pink-300'
-            }`}
-          >
-            <div className="flex items-center gap-2.5 truncate">
-              <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-                stage === 'subject' ? 'bg-white text-pink-600' : 'bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300'
-              }`}>
-                1
-              </span>
-              <div className="truncate">
-                <div className={`text-[10px] uppercase font-bold ${stage === 'subject' ? 'text-pink-100' : 'text-gray-400'}`}>Step 1</div>
-                <div className="text-xs font-black truncate">
-                  {stage !== 'subject' ? activeCourse.name : 'Select Subject'}
-                </div>
-              </div>
-            </div>
-            <ArrowRight className={`w-4 h-4 shrink-0 hidden sm:block ${stage === 'subject' ? 'text-white' : 'text-gray-400'}`} />
-          </button>
-
-          {/* Step 2: Week */}
-          <button
-            onClick={() => setStage('week')}
-            className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-              stage === 'week'
-                ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30 font-black scale-[1.02]'
-                : stage === 'video' || stage === 'notes'
-                ? 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border-pink-300 dark:border-pink-800'
-                : 'bg-white dark:bg-slate-800/90 text-gray-400 dark:text-slate-500 border-gray-200 dark:border-slate-700 hover:border-pink-300'
-            }`}
-          >
-            <div className="flex items-center gap-2.5 truncate">
-              <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-                stage === 'week' 
-                  ? 'bg-white text-pink-600' 
-                  : (stage === 'video' || stage === 'notes')
-                  ? 'bg-pink-600 text-white'
-                  : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
-              }`}>
-                2
-              </span>
-              <div className="truncate">
-                <div className={`text-[10px] uppercase font-bold ${stage === 'week' ? 'text-pink-100' : 'text-gray-400'}`}>Step 2</div>
-                <div className="text-xs font-black truncate">
-                  {stage === 'subject' ? 'Select Week' : `Week ${selectedWeekNum}`}
-                </div>
-              </div>
-            </div>
-            <ArrowRight className={`w-4 h-4 shrink-0 hidden sm:block ${stage === 'week' ? 'text-white' : 'text-gray-400'}`} />
-          </button>
-
-          {/* Step 3: Video / Notes Choice */}
-          <div
-            className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${
-              stage === 'video'
-                ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/30'
-                : stage === 'notes'
-                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30'
-                
-                : 'bg-white dark:bg-slate-800/90 text-gray-400 dark:text-slate-500 border-gray-200 dark:border-slate-700'
-            }`}
-          >
-            <div className="flex items-center gap-2.5 truncate">
-              <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-                stage === 'video' || stage === 'notes' ? 'bg-white text-pink-600' : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
-              }`}>
-                3
-              </span>
-              <div className="truncate">
-                <div className={`text-[10px] uppercase font-bold ${(stage === 'video' || stage === 'notes') ? 'text-pink-100' : 'text-gray-400'}`}>
-                  Step 3
-                </div>
-                <div className="text-xs font-black truncate">
-                  {stage === 'video' ? '🎥 Video Playing' : stage === 'notes' ? '📝 Notes Page' : 'Start Video'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* STAGE 1: SELECT SUBJECT (पहला कदम: कौन सा सब्जेक्ट लेना है)              */}
+      {/* STAGE 1: SELECT SUBJECT (Step 1)              */}
       {/* ========================================================================= */}
       {stage === 'subject' && (
         <div className="space-y-6 animate-fadeIn">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <span className="text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/40 px-3 py-1 rounded-full border border-pink-200 dark:border-pink-800 inline-block mb-1.5">
-                पहला कदम (Step 1)
+                Step 1
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-pink-600 dark:text-pink-400" />
-                <span>कौन सा सब्जेक्ट लेना है? (Select Subject)</span>
+                <span>Select a Subject</span>
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mt-1">
-                जिस विषय का अध्ययन करना चाहते हैं उस पर क्लिक करें। इसके बाद आपको हफ़्ता (Week 1–8) चुनने का विकल्प मिलेगा।
+                Choose a subject to view its 8-week curriculum and start video lectures.
               </p>
             </div>
             <span className="text-xs font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/50 px-3.5 py-1.5 rounded-full border border-pink-200 dark:border-pink-800 self-start sm:self-auto">
@@ -999,9 +854,9 @@ export default function CoursesPage({
                     <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
                       {course.name}
                     </h3>
-                    {course.hindiName && (
+                    {course.subtitle && (
                       <p className="text-xs font-bold text-pink-600 dark:text-pink-400 mt-1 mb-3">
-                        {course.hindiName}
+                        {course.subtitle}
                       </p>
                     )}
 
@@ -1012,8 +867,8 @@ export default function CoursesPage({
                     {/* Progress */}
                     <div className="bg-gray-50 dark:bg-slate-800/70 rounded-2xl p-3.5 border border-gray-100 dark:border-slate-800 mb-5">
                       <div className="flex items-center justify-between text-[11px] font-bold text-gray-600 dark:text-slate-400 mb-1.5">
-                        <span>{totalWeeks} हफ़्ते (Full 8 Weeks)</span>
-                        <span>{pct}% पूर्ण</span>
+                        <span>{totalWeeks} Weeks Total</span>
+                        <span>{pct}% Completed</span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                         <div
@@ -1034,7 +889,7 @@ export default function CoursesPage({
                     }}
                     className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-black text-sm shadow-lg shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer"
                   >
-                    <span>Select {course.name} (हफ़्ते देखें)</span>
+                    <span>Select {course.name}</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </button>
                 </div>
@@ -1045,7 +900,7 @@ export default function CoursesPage({
       )}
 
       {/* ========================================================================= */}
-      {/* STAGE 2: SELECT WEEK (दूसरा कदम: कौन सा वीक सेलेक्ट करना है)               */}
+      {/* STAGE 2: SELECT WEEK (Step 2)               */}
       {/* ========================================================================= */}
       {stage === 'week' && (
         <div className="space-y-6 animate-fadeIn">
@@ -1058,18 +913,18 @@ export default function CoursesPage({
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 border border-pink-200 dark:border-pink-800 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>← Back to Subjects (अन्य विषय)</span>
+                  <span>← Back to Subjects</span>
                 </button>
                 <span className="text-xs font-black uppercase tracking-wider text-pink-700 dark:text-pink-300 bg-pink-100 dark:bg-pink-900/50 px-2.5 py-0.5 rounded-full">
-                  दूसरा कदम (Step 2)
+                  Step 2
                 </span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                 <span>{activeCourse.icon}</span>
-                <span>{activeCourse.name} — कौन सा वीक सेलेक्ट करना है?</span>
+                <span>{activeCourse.name} — Select Week</span>
               </h2>
               <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">
-                नीचे से Week 1 से Week 8 में से किसी भी वीक पर क्लिक करें। अगले कदम में आप वीडियो या नोट्स चुन सकेंगे।
+                Select any week from Week 1 to 8 and click Start to launch the video lecture.
               </p>
             </div>
 
@@ -1176,7 +1031,7 @@ export default function CoursesPage({
       )}
 
       {/* ========================================================================= */}
-      {/* STAGE 3: VIDEO PAGE VIEW (जैसे ही Start पर क्लिक करेगा वीडियो चालू होगा)   */}
+      {/* STAGE 3: VIDEO PAGE VIEW (Launches on Start)   */}
       {/* ========================================================================= */}
       {stage === 'video' && activeWeek && (
         <div className="space-y-6 animate-fadeIn">
@@ -1188,13 +1043,13 @@ export default function CoursesPage({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-pink-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>← Back to Weeks (हफ़्ते बदलें)</span>
+                <span>← Back to Weeks</span>
               </button>
               <button
                 onClick={() => setStage('subject')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 hover:bg-pink-100 font-bold text-xs border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95"
               >
-                <span>विषय बदलें (Subjects)</span>
+                <span>Change Subject</span>
               </button>
               <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
                 {activeCourse.name} • Week {activeWeek.weekNumber}
@@ -1208,7 +1063,7 @@ export default function CoursesPage({
                 className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-sm"
               >
                 <FileText className="w-3.5 h-3.5" />
-                <span>📝 Switch to Notes (नोट्स देखें)</span>
+                <span>📝 View Notes & Materials</span>
               </button>
               <button
                 onClick={() => handleAddWeekToToday(activeWeek)}
@@ -1332,7 +1187,7 @@ export default function CoursesPage({
       )}
 
       {/* ========================================================================= */}
-      {/* STAGE 5: NOTES PAGE VIEW (अगर नोट्स सेलेक्ट करें तो नोट्स खुलेगा)          */}
+      {/* STAGE 4: NOTES PAGE VIEW          */}
       {/* ========================================================================= */}
       {stage === 'notes' && activeWeek && (
         <div className="space-y-6 animate-fadeIn">
@@ -1344,13 +1199,13 @@ export default function CoursesPage({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-indigo-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>← Back to Weeks (हफ़्ते बदलें)</span>
+                <span>← Back to Weeks</span>
               </button>
               <button
                 onClick={() => setStage('subject')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-bold text-xs border border-indigo-200 dark:border-indigo-800 transition-all cursor-pointer active:scale-95"
               >
-                <span>विषय बदलें (Subjects)</span>
+                <span>Change Subject</span>
               </button>
               <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
                 {activeCourse.name} • Week {activeWeek.weekNumber}
@@ -1364,7 +1219,7 @@ export default function CoursesPage({
                 className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-red-50 dark:bg-red-950/40 hover:bg-red-100 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-sm"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>🎥 Switch to Video (वीडियो देखें)</span>
+                <span>🎥 Watch Video Lecture</span>
               </button>
               <button
                 onClick={() => handleAddWeekToToday(activeWeek)}
@@ -1411,7 +1266,7 @@ export default function CoursesPage({
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-slate-300 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>Syllabus Topics Checklist (चेकलिस्ट पर टिक करें)</span>
+                  <span>Syllabus Topics Checklist</span>
                 </h4>
                 <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
                   {activeWeek.topics?.filter((_, idx) => completedTopics[`${activeWeek.id}_${idx}`]).length || 0} / {activeWeek.topics?.length || 0} Done
@@ -1453,7 +1308,7 @@ export default function CoursesPage({
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
                 <h4 className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-slate-300 flex items-center gap-1.5 mb-3">
                   <Terminal className="w-4 h-4 text-pink-600" />
-                  <span>Essential Commands & Syntax Reference (महत्वपूर्ण कमांड्स)</span>
+                  <span>Essential Commands & Syntax Reference</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                   {activeWeek.keyCommands.map((item, idx) => (
