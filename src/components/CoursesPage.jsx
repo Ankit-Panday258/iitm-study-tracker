@@ -619,7 +619,7 @@ export default function CoursesPage({
   });
 
   // Stage matching User's Blueprint:
-  // 'subject' -> 'week' -> 'action_choice' -> 'video' | 'notes'
+  // 'subject' -> 'week' -> 'video' | 'notes'
   const [stage, setStage] = useState(initialStep === 'weeks' ? 'week' : 'subject');
   const [activeCourseId, setActiveCourseId] = useState(initialCourseId || 'sys_cmd');
   const [selectedWeekNum, setSelectedWeekNum] = useState(1);
@@ -810,7 +810,7 @@ export default function CoursesPage({
                 Course Flow Blueprint (कोर्स नेविगेशन फ्लो)
               </div>
               <div className="text-[11px] text-gray-500 dark:text-slate-400">
-                Courses ➔ 1. Subject ➔ 2. Week ➔ 3. Video / Notes
+                Courses ➔ 1. Subject ➔ 2. Week ➔ 3. Start Video
               </div>
             </div>
           </div>
@@ -885,7 +885,7 @@ export default function CoursesPage({
             className={`flex items-center justify-between p-3 rounded-2xl border text-left transition-all cursor-pointer ${
               stage === 'week'
                 ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30 font-black scale-[1.02]'
-                : stage === 'action_choice' || stage === 'video' || stage === 'notes'
+                : stage === 'video' || stage === 'notes'
                 ? 'bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 border-pink-300 dark:border-pink-800'
                 : 'bg-white dark:bg-slate-800/90 text-gray-400 dark:text-slate-500 border-gray-200 dark:border-slate-700 hover:border-pink-300'
             }`}
@@ -894,7 +894,7 @@ export default function CoursesPage({
               <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
                 stage === 'week' 
                   ? 'bg-white text-pink-600' 
-                  : (stage === 'action_choice' || stage === 'video' || stage === 'notes')
+                  : (stage === 'video' || stage === 'notes')
                   ? 'bg-pink-600 text-white'
                   : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
               }`}>
@@ -917,23 +917,22 @@ export default function CoursesPage({
                 ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-600/30'
                 : stage === 'notes'
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30'
-                : stage === 'action_choice'
-                ? 'bg-pink-600 text-white border-pink-600 shadow-md shadow-pink-600/30'
+                
                 : 'bg-white dark:bg-slate-800/90 text-gray-400 dark:text-slate-500 border-gray-200 dark:border-slate-700'
             }`}
           >
             <div className="flex items-center gap-2.5 truncate">
               <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${
-                stage === 'video' || stage === 'notes' || stage === 'action_choice' ? 'bg-white text-pink-600' : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
+                stage === 'video' || stage === 'notes' ? 'bg-white text-pink-600' : 'bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-400'
               }`}>
                 3
               </span>
               <div className="truncate">
-                <div className={`text-[10px] uppercase font-bold ${(stage === 'video' || stage === 'notes' || stage === 'action_choice') ? 'text-pink-100' : 'text-gray-400'}`}>
+                <div className={`text-[10px] uppercase font-bold ${(stage === 'video' || stage === 'notes') ? 'text-pink-100' : 'text-gray-400'}`}>
                   Step 3
                 </div>
                 <div className="text-xs font-black truncate">
-                  {stage === 'video' ? '🎥 Video Page' : stage === 'notes' ? '📝 Notes Page' : 'Video or Notes'}
+                  {stage === 'video' ? '🎥 Video Playing' : stage === 'notes' ? '📝 Notes Page' : 'Start Video'}
                 </div>
               </div>
             </div>
@@ -1145,18 +1144,30 @@ export default function CoursesPage({
                     </div>
                   </div>
 
-                  {/* Button to select this week and go to Step 3 */}
-                  <button
-                    onClick={() => {
-                      setSelectedWeekNum(w.weekNumber);
-                      setActiveVideoSubIndex(0);
-                      setStage('action_choice');
-                    }}
-                    className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-black text-xs shadow-md shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer"
-                  >
-                    <span>Select Week {w.weekNumber} (अगला कदम)</span>
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
-                  </button>
+                  {/* Buttons: Start (Direct Video) & Notes */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setSelectedWeekNum(w.weekNumber);
+                        setActiveVideoSubIndex(0);
+                        setStage('video');
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 active:scale-95 text-white font-black text-sm shadow-md shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      <span>Start</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedWeekNum(w.weekNumber);
+                        setStage('notes');
+                      }}
+                      className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all cursor-pointer active:scale-95"
+                      title="Read Notes & Syllabus"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -1165,122 +1176,7 @@ export default function CoursesPage({
       )}
 
       {/* ========================================================================= */}
-      {/* STAGE 3: ACTION CHOICE (तीसरा कदम: वीडियो सेलेक्ट करना है या नोट्स?)        */}
-      {/* ========================================================================= */}
-      {stage === 'action_choice' && (
-        <div className="space-y-6 animate-fadeIn max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="bg-white dark:bg-slate-900 border-2 border-pink-300 dark:border-pink-800 rounded-3xl p-6 text-center shadow-lg shadow-pink-600/5">
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={() => setStage('week')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-pink-600 font-bold text-xs transition-all cursor-pointer"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>← Back to Weeks (अन्य हफ़्ता चुनें)</span>
-              </button>
-              <span className="text-xs font-black uppercase tracking-wider text-pink-700 dark:text-pink-300 bg-pink-100 dark:bg-pink-900/50 px-3 py-1 rounded-full">
-                तीसरा कदम (Step 3: Decision)
-              </span>
-            </div>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 font-bold text-xs border border-pink-200 dark:border-pink-800 mb-2">
-              <span>{activeCourse.icon} {activeCourse.name}</span>
-              <span>•</span>
-              <span>Week {activeWeek?.weekNumber}: {activeWeek?.title}</span>
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mt-1 mb-2">
-              अब आप क्या देखना चाहते हैं?
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 max-w-lg mx-auto">
-              ब्लूप्रिंट के अनुसार आप <strong>वीडियो लेक्चर</strong> देख सकते हैं या <strong>नोट्स एवं ड्राइव मटेरियल</strong> पढ़ सकते हैं। नीचे से चुनें:
-            </p>
-          </div>
-
-          {/* Two Big Decision Choice Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* CHOICE 1: VIDEO */}
-            <div
-              onClick={() => setStage('video')}
-              className="bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-rose-950/30 dark:via-slate-900 dark:to-pink-950/20 border-2 border-red-300 hover:border-red-500 dark:border-red-900/60 dark:hover:border-red-500 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-2xl transition-all cursor-pointer flex flex-col justify-between group active:scale-[0.99]"
-            >
-              <div>
-                <div className="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center text-3xl shadow-lg shadow-red-600/30 mb-6 group-hover:scale-110 transition-transform">
-                  ▶
-                </div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-3 py-1 rounded-full border border-red-200 dark:border-red-800 inline-block mb-2">
-                  Option 1: Video Lecture
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mb-2">
-                  🎥 Video (वीडियो देखें)
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-4 leading-relaxed">
-                  {activeWeek?.video ? (
-                    <>
-                      <strong>{activeWeek.video.instructor}</strong> का वीडियो लेक्चर: {activeWeek.video.title}। इनबिल्ट प्लेयर और टाइमस्टैम्प्स।
-                    </>
-                  ) : (
-                    'इस हफ़्ते के लिए अनुशंसित वीडियो लेक्चर मास्टरक्लास खोलें।'
-                  )}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-rose-200 dark:border-rose-900/40">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setStage('video');
-                  }}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black text-sm shadow-lg shadow-red-600/30 transition-all cursor-pointer"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>Video Page खोलें (Watch Video)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* CHOICE 2: NOTES */}
-            <div
-              onClick={() => setStage('notes')}
-              className="bg-gradient-to-br from-indigo-50 via-white to-pink-50 dark:from-indigo-950/30 dark:via-slate-900 dark:to-pink-950/20 border-2 border-indigo-300 hover:border-indigo-500 dark:border-indigo-900/60 dark:hover:border-indigo-500 rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-2xl transition-all cursor-pointer flex flex-col justify-between group active:scale-[0.99]"
-            >
-              <div>
-                <div className="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-3xl shadow-lg shadow-indigo-600/30 mb-6 group-hover:scale-110 transition-transform">
-                  📝
-                </div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/40 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-800 inline-block mb-2">
-                  Option 2: Notes & Syllabus
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-2">
-                  📝 Notes (नोट्स एवं सिलेबस)
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400 mb-4 leading-relaxed">
-                  Google Drive आधिकारिक नोट्स फोल्डर, {activeWeek?.topics?.length || 0} सिलेबस टॉपिक्स की इंटरैक्टिव चेकलिस्ट और महत्वपूर्ण कमांड्स।
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-indigo-200 dark:border-indigo-900/40">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setStage('notes');
-                  }}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Notes Page खोलें (Read Notes)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* STAGE 4: VIDEO PAGE VIEW (अगर वीडियो सेलेक्ट करेगा तो वीडियो पेज खुलेगा)  */}
+      {/* STAGE 3: VIDEO PAGE VIEW (जैसे ही Start पर क्लिक करेगा वीडियो चालू होगा)   */}
       {/* ========================================================================= */}
       {stage === 'video' && activeWeek && (
         <div className="space-y-6 animate-fadeIn">
@@ -1288,17 +1184,17 @@ export default function CoursesPage({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border-2 border-pink-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => setStage('action_choice')}
+                onClick={() => setStage('week')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-pink-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>← Back (विकल्प बदलें)</span>
+                <span>← Back to Weeks (हफ़्ते बदलें)</span>
               </button>
               <button
-                onClick={() => setStage('week')}
+                onClick={() => setStage('subject')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 hover:bg-pink-100 font-bold text-xs border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95"
               >
-                <span>Week 1–8 सूची</span>
+                <span>विषय बदलें (Subjects)</span>
               </button>
               <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
                 {activeCourse.name} • Week {activeWeek.weekNumber}
@@ -1376,7 +1272,7 @@ export default function CoursesPage({
             {currentVideoObj?.youtubeId ? (
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-xl border border-gray-200 dark:border-slate-800 mb-6">
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${currentVideoObj.youtubeId}?rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${currentVideoObj.youtubeId}?autoplay=1&rel=0`}
                   title={currentVideoObj.title}
                   className="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1444,17 +1340,17 @@ export default function CoursesPage({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border-2 border-indigo-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => setStage('action_choice')}
+                onClick={() => setStage('week')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-indigo-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>← Back (विकल्प बदलें)</span>
+                <span>← Back to Weeks (हफ़्ते बदलें)</span>
               </button>
               <button
-                onClick={() => setStage('week')}
+                onClick={() => setStage('subject')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-bold text-xs border border-indigo-200 dark:border-indigo-800 transition-all cursor-pointer active:scale-95"
               >
-                <span>Week 1–8 सूची</span>
+                <span>विषय बदलें (Subjects)</span>
               </button>
               <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
                 {activeCourse.name} • Week {activeWeek.weekNumber}
