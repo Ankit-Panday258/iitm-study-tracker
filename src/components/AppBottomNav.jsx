@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Trophy, Plus, BookOpen, User as UserIcon, Flame } from 'lucide-react';
+import { Calendar, Trophy, Plus, BookOpen, GraduationCap, User as UserIcon, Flame } from 'lucide-react';
 
 export default function AppBottomNav({
   activeTab,
@@ -9,6 +9,8 @@ export default function AppBottomNav({
   onCloseDailyTrack,
   onOpenBooks,
   onCloseBooks,
+  onOpenCourses,
+  onCloseCourses,
   onOpenDatabaseViewer,
   onOpenAuthModal,
   currentUser,
@@ -25,13 +27,16 @@ export default function AppBottomNav({
     if (tabKey === 'tasks') {
       if (typeof onCloseDailyTrack === 'function') onCloseDailyTrack();
       if (typeof onCloseBooks === 'function') onCloseBooks();
+      if (typeof onCloseCourses === 'function') onCloseCourses();
       setActiveTab('tasks');
-    } else if (tabKey === 'books') {
+    } else if (tabKey === 'courses' || tabKey === 'books') {
       if (typeof onCloseDailyTrack === 'function') onCloseDailyTrack();
-      if (typeof onOpenBooks === 'function') onOpenBooks();
-      setActiveTab('books');
+      if (typeof onOpenCourses === 'function') onOpenCourses();
+      else if (typeof onOpenBooks === 'function') onOpenBooks();
+      setActiveTab('courses');
     } else if (tabKey === 'track') {
       if (typeof onCloseBooks === 'function') onCloseBooks();
+      if (typeof onCloseCourses === 'function') onCloseCourses();
       if (typeof onOpenDailyTrack === 'function') onOpenDailyTrack();
       setActiveTab('track');
     } else if (tabKey === 'profile') {
@@ -64,19 +69,19 @@ export default function AppBottomNav({
           <span className="text-[10px] tracking-tight">Today</span>
         </button>
 
-        {/* Tab 2: Books / Study Materials */}
+        {/* Tab 2: Courses & Syllabus */}
         <button
-          onClick={() => handleTabClick('books')}
+          onClick={() => handleTabClick('courses')}
           className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all py-1 active:scale-95 ${
-            activeTab === 'books'
+            activeTab === 'courses' || activeTab === 'books'
               ? 'text-pink-600 dark:text-pink-400 font-bold'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 font-medium'
           }`}
         >
-          <div className={`p-1 rounded-xl transition-all ${activeTab === 'books' ? 'bg-pink-50 dark:bg-pink-950/40 ring-1 ring-pink-500' : ''}`}>
-            <BookOpen className="w-5 h-5" />
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'courses' || activeTab === 'books' ? 'bg-pink-50 dark:bg-pink-950/40 ring-1 ring-pink-500' : ''}`}>
+            <GraduationCap className="w-5 h-5" />
           </div>
-          <span className="text-[10px] tracking-tight">Books</span>
+          <span className="text-[10px] tracking-tight">Courses</span>
         </button>
 
         {/* Center Primary Action Button: Elevated Pink Plus (+) */}

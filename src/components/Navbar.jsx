@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Flame, Sun, Moon, LogOut, 
-  Download 
+  Download, GraduationCap 
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -14,7 +14,8 @@ export default function Navbar({
   onLogout,
   isInstalled,
   isInstallable,
-  onInstallApp
+  onInstallApp,
+  onOpenCourses
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,8 +57,17 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* Mobile Right Controls: Streak, Dark Mode & Account Icon */}
-          <div className="flex sm:hidden items-center gap-2">
+          {/* Mobile Right Controls: Courses, Streak, Dark Mode & Account Icon */}
+          <div className="flex sm:hidden items-center gap-1.5">
+            <button
+              onClick={onOpenCourses}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800 active:scale-95 shadow-sm"
+              title="Courses & Syllabus (कोर्स)"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+              <span>Courses</span>
+            </button>
+
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800">
               <Flame className="w-3.5 h-3.5 fill-pink-500 text-pink-600 animate-pulse" />
               <span>{streak}d</span>
@@ -108,6 +118,20 @@ export default function Navbar({
                       ✓ Authenticated
                     </span>
 
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (typeof onOpenCourses === 'function') onOpenCourses();
+                      }}
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <span>Courses & Syllabus (कोर्स)</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">→</span>
+                    </button>
+
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
@@ -153,6 +177,16 @@ export default function Navbar({
 
         {/* Desktop Right Tools */}
         <div className="hidden sm:flex items-center gap-2 w-auto justify-end flex-wrap">
+
+          {/* Courses & Syllabus (कोर्स) Button */}
+          <button
+            onClick={onOpenCourses}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+            title="Courses & Syllabus (कोर्स)"
+          >
+            <GraduationCap className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+            <span>Courses (कोर्स)</span>
+          </button>
 
           {/* Install App Button (PWA) - Only shown if NOT already installed */}
           {!isInstalled && isInstallable && (
@@ -219,6 +253,20 @@ export default function Navbar({
                     <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block mb-1">
                       ✓ Authenticated
                     </span>
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        if (typeof onOpenCourses === 'function') onOpenCourses();
+                      }}
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <span>Courses & Syllabus (कोर्स)</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">→</span>
+                    </button>
+
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
