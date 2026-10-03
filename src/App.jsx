@@ -106,6 +106,7 @@ export default function App() {
   // ─── Page navigation ──────────────────────────────────────
   const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'dailyTrack'
   const [activeBottomTab, setActiveBottomTab] = useState('tasks');
+  const [coursesInitialStep, setCoursesInitialStep] = useState('subjects');
 
   // ─── State: Immediate initial values from localStorage cache ──
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -378,6 +379,7 @@ export default function App() {
           setActiveBottomTab('track');
         }}
         onOpenCourses={() => {
+          setCoursesInitialStep('subjects');
           setCurrentPage('courses');
           setActiveBottomTab('courses');
         }}
@@ -407,6 +409,8 @@ export default function App() {
             }}
             onAddTask={handleSaveTask}
             showToast={showToast}
+            initialStep={coursesInitialStep}
+            initialCourseId="sys_cmd"
           />
         ) : currentPage === 'books' ? (
           <BooksPage
@@ -466,6 +470,7 @@ export default function App() {
 
                 <button
                   onClick={() => {
+                    setCoursesInitialStep('weeks');
                     setCurrentPage('courses');
                     setActiveBottomTab('courses');
                   }}
@@ -616,6 +621,7 @@ export default function App() {
             setActiveBottomTab('tasks');
           }}
           onOpenCourses={() => {
+            setCoursesInitialStep('subjects');
             setCurrentPage('courses');
             setActiveBottomTab('courses');
           }}
