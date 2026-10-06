@@ -59,22 +59,8 @@ export default function Navbar({
             </div>
           </div>
 
-          {/* Mobile Right Controls: Courses, Streak, Dark Mode & Account Icon */}
+          {/* Mobile Right Controls: Dark Mode & Menu Icon */}
           <div className="flex sm:hidden items-center gap-1.5">
-            <button
-              onClick={onOpenCourses}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800 active:scale-95 shadow-sm"
-              title="Courses & Syllabus"
-            >
-              <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
-              <span>Courses</span>
-            </button>
-
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold border border-pink-200 dark:border-pink-800">
-              <Flame className="w-3.5 h-3.5 fill-pink-500 text-pink-600 animate-pulse" />
-              <span>{streak}d</span>
-            </div>
-            
             <button
               onClick={toggleDarkMode}
               className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200"
