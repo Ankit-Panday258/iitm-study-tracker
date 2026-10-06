@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Flame, Sun, Moon, LogOut, 
   Download, GraduationCap,
-  Menu, X
+  Menu, X, Calendar
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -16,7 +16,8 @@ export default function Navbar({
   isInstalled,
   isInstallable,
   onInstallApp,
-  onOpenCourses
+  onOpenCourses,
+  onOpenCalendar
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -156,6 +157,20 @@ export default function Navbar({
                       <span className="text-[10px] text-pink-600 font-bold">→</span>
                     </button>
 
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (typeof onOpenCalendar === 'function') onOpenCalendar();
+                      }}
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <span>Assignment Calendar (T3)</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">📅</span>
+                    </button>
+
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
@@ -216,6 +231,16 @@ export default function Navbar({
               <span>Install App</span>
             </button>
           )}
+
+          {/* Assignment Calendar Button (Desktop) */}
+          <button
+            onClick={onOpenCalendar}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+            title="IITM Term 3 Assignment Calendar & Deadlines"
+          >
+            <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+            <span>Assignments Calendar</span>
+          </button>
 
           {/* Desktop Streak Counter */}
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300 text-xs font-bold shadow-sm" title="Study Streak">
@@ -283,6 +308,20 @@ export default function Navbar({
                         <span>Courses & Syllabus</span>
                       </span>
                       <span className="text-[10px] text-pink-600 font-bold">→</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        if (typeof onOpenCalendar === 'function') onOpenCalendar();
+                      }}
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <span>Assignment Calendar (T3)</span>
+                      </span>
+                      <span className="text-[10px] text-pink-600 font-bold">📅</span>
                     </button>
 
                     <a

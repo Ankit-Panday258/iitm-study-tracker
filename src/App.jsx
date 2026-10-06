@@ -11,6 +11,7 @@ import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
 import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage';
 import DailyNotes from './components/DailyNotes';
+import AssignmentCalendar from './components/AssignmentCalendar';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
@@ -383,6 +384,10 @@ export default function App() {
           setCurrentPage('courses');
           setActiveBottomTab('courses');
         }}
+        onOpenCalendar={() => {
+          setCurrentPage('calendar');
+          setActiveBottomTab('calendar');
+        }}
         currentUser={currentUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
@@ -391,7 +396,7 @@ export default function App() {
         onInstallApp={handleInstallApp}
       />
 
-        {/* View Switch: Daily Track, Courses & Syllabus, Books Library, or Main Planner */}
+        {/* View Switch: Daily Track, Courses & Syllabus, Books Library, Assignment Calendar, or Main Planner */}
         {currentPage === 'dailyTrack' ? (
           <DailyTrack 
             onBack={() => { 
@@ -419,10 +424,55 @@ export default function App() {
               setActiveBottomTab('tasks');
             }}
           />
+        ) : currentPage === 'calendar' ? (
+          <AssignmentCalendar
+            onBack={() => {
+              setCurrentPage('home');
+              setActiveBottomTab('tasks');
+            }}
+            onAddTask={handleSaveTask}
+            showToast={showToast}
+          />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
+
+            {/* IIT Madras Term 3 Assignment Calendar & Deadlines Banner */}
+            <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-pink-950/80 text-white rounded-2xl p-3.5 sm:p-4 mb-4 border border-indigo-500/30 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="flex items-center gap-3 relative z-10">
+                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-lg shadow-md shrink-0">
+                  📅
+                </span>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
+                      <span>Term 3 Assignment Deadlines Calendar (Oct – Dec 2026)</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        Week 1 to 12
+                      </span>
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    12-Week Assignment Releases, Deadlines, OPPE 1 &amp; 2 Gates, GAA Closes &amp; Monthly Calendar View.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-start md:self-auto relative z-10">
+                <button
+                  onClick={() => {
+                    setCurrentPage('calendar');
+                    setActiveBottomTab('calendar');
+                  }}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-pink-600/30 transition-all cursor-pointer"
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Open Calendar</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </div>
 
             {/* Quick Course Syllabus Shortcut Banner */}
             <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-pink-500/5 dark:from-pink-950/40 dark:via-slate-800/90 dark:to-pink-950/30 border border-pink-200 dark:border-pink-800/60 rounded-2xl p-3 sm:p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
