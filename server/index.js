@@ -28,6 +28,14 @@ import {
   mySQLGetUsers
 } from './mysql.js';
 import { hashPassword, verifyPassword } from './authUtils.js';
+import {
+  getWhatsAppConfig,
+  saveWhatsAppConfig,
+  sendWhatsAppMessage,
+  checkAndSendScheduledAlerts,
+  startWhatsAppScheduler,
+  getWhatsAppLogs
+} from './whatsappService.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -727,6 +735,56 @@ app.post('/api/auth/google', async (req, res) => {
   }
 });
 
+// ─── WHATSAPP NOTIFICATION API ───────────────────────────────
+
+app.get('/api/whatsapp/config', (req, res) => {
+  try {
+    const config = getWhatsAppConfig();
+    res.json(config);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/whatsapp/config', (req, res) => {
+  try {
+    const saved = saveWhatsAppConfig(req.body);
+    res.json({ success: true, config: saved });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/whatsapp/test', async (req, res) => {
+  try {
+    const { phone, apiKey } = req.body;
+    const testMsg = `🎉 *IIT Madras Study Tracker Alert*\n\nनमस्ते! आपका WhatsApp Notification सिस्टम सफलतापूर्वक एक्टिवेट हो गया है!\n\nअब जब भी:\n• कोई नया असाइनमेंट रिलीज़ होगा\n• या असाइनमेंट की डेडलाइन नज़दीक होगी (24h पहले)\n• या OPPE / GAA गेट्स होंगे\n\nआपको तुरंत इसी चैट पर अलर्ट मिल जाएगा! 🚀\nPortal: http://localhost:3000`;
+    
+    const result = await sendWhatsAppMessage(testMsg, phone, apiKey);
+    res.json({ success: true, result });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/whatsapp/check-now', async (req, res) => {
+  try {
+    const result = await checkAndSendScheduledAlerts();
+    res.json({ success: true, result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/whatsapp/logs', (req, res) => {
+  try {
+    const logs = getWhatsAppLogs();
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Serve static frontend from dist in production / fallback
 app.use(express.static(path.join(__dirname, '../dist')));
 app.get('*', (req, res, next) => {
@@ -742,4 +800,5 @@ app.listen(PORT, () => {
   console.log(`✅ Backend server running on http://localhost:${PORT}`);
   console.log(`🐬 MySQL status: ${isMySQLConnected() ? 'CONNECTED' : 'STANDBY/FALLBACK'}`);
   console.log(`📦 SQLite database ready as fallback`);
+  startWhatsAppScheduler();
 });

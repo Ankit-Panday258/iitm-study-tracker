@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { 
   Calendar as CalendarIcon, ArrowLeft, Clock, AlertTriangle, CheckCircle2, 
   ChevronLeft, ChevronRight, Plus, ExternalLink, Flag, Sparkles, Filter, 
-  Layers, Check, Bell, BookOpen
+  Layers, Check, Bell, BookOpen, MessageCircle
 } from 'lucide-react';
+import WhatsAppModal from './WhatsAppModal';
 
 export const ASSIGNMENT_SCHEDULE = [
   {
@@ -147,6 +148,22 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
   const [selectedMonth, setSelectedMonth] = useState(9); // 9 = October (0-indexed), 10 = Nov, 11 = Dec
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [filterType, setFilterType] = useState('all'); // 'all' | 'milestones' | 'submitted' | 'pending'
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+  const [whatsAppConfig, setWhatsAppConfig] = useState(null);
+
+  const checkWhatsAppStatus = async () => {
+    try {
+      const res = await fetch('/api/whatsapp/config');
+      if (res.ok) {
+        const data = await res.json();
+        setWhatsAppConfig(data);
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    checkWhatsAppStatus();
+  }, []);
 
   // Saved submissions
   const [submittedWeeks, setSubmittedWeeks] = useState(() => {
@@ -271,8 +288,23 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
           </div>
         </div>
 
-        {/* View Switcher Toggle */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        {/* View Switcher Toggle & WhatsApp Alerts Button */}
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setIsWhatsAppModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/80 font-bold text-xs shadow-sm transition-all cursor-pointer active:scale-95"
+            title="Configure WhatsApp Assignment Alerts"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline">WhatsApp Alerts</span>
+            <span className="sm:hidden">WhatsApp</span>
+            {whatsAppConfig?.enabled && whatsAppConfig?.phone ? (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            ) : (
+              <span className="text-[10px] text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40 px-1 rounded font-bold">New</span>
+            )}
+          </button>
+
           <div className="bg-gray-100 dark:bg-slate-800/80 p-1 rounded-2xl border border-gray-200 dark:border-slate-700 flex items-center">
             <button
               onClick={() => setViewMode('calendar')}
@@ -298,6 +330,43 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* WhatsApp Alerts Notification Status Banner */}
+      <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/5 dark:from-emerald-950/40 dark:via-slate-800/90 dark:to-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-3 sm:p-4 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 text-white flex items-center justify-center text-lg shadow-sm shrink-0">
+            💬
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
+                WhatsApp Assignment Alerts & Deadlines (व्हाट्सएप नोटिफिकेशन)
+              </h4>
+              {whatsAppConfig?.enabled && whatsAppConfig?.phone ? (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Active for {whatsAppConfig.phone}
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                  Setup in 1 Minute
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-gray-600 dark:text-slate-400 mt-0.5">
+              कंटेंट रिलीज़ (हर शुक्रवार) और डेडलाइन से 24 घंटे पहले सीधे आपके WhatsApp पर ऑटोमैटिक मैसेज प्राप्त करें।
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIsWhatsAppModalOpen(true)}
+          className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-emerald-600/30 transition-transform whitespace-nowrap cursor-pointer self-start sm:self-auto"
+        >
+          <span>{whatsAppConfig?.enabled && whatsAppConfig?.phone ? '⚙️ Manage Alerts' : '⚡ Setup WhatsApp Alerts'}</span>
+          <span>→</span>
+        </button>
       </div>
 
       {/* Hero Countdown & Key Milestones Alert Banner */}
@@ -784,6 +853,16 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
           </div>
         </div>
       )}
+
+      {/* WhatsApp Alerts Configuration Modal */}
+      <WhatsAppModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => {
+          setIsWhatsAppModalOpen(false);
+          checkWhatsAppStatus();
+        }}
+        showToast={showToast}
+      />
 
     </div>
   );
