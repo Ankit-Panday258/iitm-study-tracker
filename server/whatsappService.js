@@ -108,6 +108,30 @@ export const ASSIGNMENT_SCHEDULE = [
   }
 ];
 
+export const OFFICIAL_EXAMS = [
+  {
+    id: 'quiz1',
+    name: 'Quiz 1',
+    dateStr: 'Sunday, November 15, 2026',
+    date: '2026-11-15',
+    scope: 'Weeks 1 to 4 Content'
+  },
+  {
+    id: 'quiz2',
+    name: 'Quiz 2',
+    dateStr: 'Saturday, December 5, 2026',
+    date: '2026-12-05',
+    scope: 'Weeks 5 to 8 Content'
+  },
+  {
+    id: 'endterm',
+    name: 'End Term Exam',
+    dateStr: 'Sunday, January 10, 2027',
+    date: '2027-01-10',
+    scope: 'All Weeks 1 to 12'
+  }
+];
+
 // Helper to load settings
 export function getWhatsAppConfig() {
   try {
@@ -311,6 +335,64 @@ If you haven't submitted yet, please submit immediately!`;
           results.push({ type: 'TODAY_DEADLINE', week: item.label, success: true });
         } catch (e) {
           results.push({ type: 'TODAY_DEADLINE', week: item.label, success: false, error: e.message });
+        }
+      }
+    }
+  }
+
+  // 4. Check Official Exams Alerts (Today, 1 day before, 7 days before)
+  const in7Days = new Date();
+  in7Days.setDate(in7Days.getDate() + 7);
+  const in7DaysStr = in7Days.toISOString().split('T')[0];
+
+  for (const exam of OFFICIAL_EXAMS) {
+    if (exam.date === todayStr) {
+      const key = `[EXAM-TODAY-${exam.id}]`;
+      if (!alreadySent(key)) {
+        const msg = 
+`🏆 *IIT Madras - Official Exam TODAY!* ${key}
+
+📝 *${exam.name}* is taking place TODAY (*${exam.dateStr}*)!
+📚 Scope: ${exam.scope}
+Wishing you the very best of luck! You've prepared well! 🚀`;
+        try {
+          await sendWhatsAppMessage(msg);
+          results.push({ type: 'EXAM_TODAY', exam: exam.name, success: true });
+        } catch (e) {
+          results.push({ type: 'EXAM_TODAY', exam: exam.name, success: false, error: e.message });
+        }
+      }
+    } else if (exam.date === tomorrowStr) {
+      const key = `[EXAM-TOMORROW-${exam.id}]`;
+      if (!alreadySent(key)) {
+        const msg = 
+`⚠️ *IIT Madras - Official Exam Tomorrow!* ${key}
+
+📝 *${exam.name}* takes place TOMORROW (*${exam.dateStr}*)!
+📚 Scope: ${exam.scope}
+Please verify your hall ticket / admit card & exam center or portal link. Best of luck!`;
+        try {
+          await sendWhatsAppMessage(msg);
+          results.push({ type: 'EXAM_TOMORROW', exam: exam.name, success: true });
+        } catch (e) {
+          results.push({ type: 'EXAM_TOMORROW', exam: exam.name, success: false, error: e.message });
+        }
+      }
+    } else if (exam.date === in7DaysStr) {
+      const key = `[EXAM-7DAYS-${exam.id}]`;
+      if (!alreadySent(key)) {
+        const msg = 
+`📅 *IIT Madras - 7-Day Exam Alert!* ${key}
+
+📝 *${exam.name}* is in exactly 7 days (*${exam.dateStr}*)!
+📚 Scope: ${exam.scope}
+Start your final revision topics on your Study Tracker portal!
+Portal: http://localhost:3000`;
+        try {
+          await sendWhatsAppMessage(msg);
+          results.push({ type: 'EXAM_7DAYS', exam: exam.name, success: true });
+        } catch (e) {
+          results.push({ type: 'EXAM_7DAYS', exam: exam.name, success: false, error: e.message });
         }
       }
     }

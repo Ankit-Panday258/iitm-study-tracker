@@ -141,15 +141,63 @@ export const ASSIGNMENT_SCHEDULE = [
   }
 ];
 
+export const OFFICIAL_EXAMS = [
+  {
+    id: 'quiz1',
+    name: 'Quiz 1',
+    dateStr: 'Sunday, November 15, 2026',
+    date: '2026-11-15',
+    type: 'exam',
+    badgeColor: 'amber',
+    icon: '📝',
+    scope: 'Weeks 1 to 4 Content',
+    description: 'First Major In-Person / Proctored Assessment (Weeks 1 to 4 Content)'
+  },
+  {
+    id: 'quiz2',
+    name: 'Quiz 2',
+    dateStr: 'Saturday, December 5, 2026',
+    date: '2026-12-05',
+    type: 'exam',
+    badgeColor: 'purple',
+    icon: '📝',
+    scope: 'Weeks 5 to 8 Content',
+    description: 'Second Major In-Person / Proctored Assessment (Weeks 5 to 8 Content)'
+  },
+  {
+    id: 'endterm',
+    name: 'End Term Exam',
+    dateStr: 'Sunday, January 10, 2027',
+    date: '2027-01-10',
+    type: 'exam',
+    badgeColor: 'rose',
+    icon: '🏆',
+    scope: 'Full Term (Weeks 1 to 12 Content)',
+    description: 'Comprehensive Term Final Exam (All 12 Weeks)'
+  }
+];
+
+export const AVAILABLE_MONTHS = [
+  { year: 2026, month: 9, label: 'October 2026', shortLabel: 'October' },
+  { year: 2026, month: 10, label: 'November 2026', shortLabel: 'November' },
+  { year: 2026, month: 11, label: 'December 2026', shortLabel: 'December' },
+  { year: 2027, month: 0, label: 'January 2027', shortLabel: 'January 2027' }
+];
+
 const STORAGE_KEY_SUBMITTED = 'iitm_assignments_submitted_v1';
 
 export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'list'
-  const [selectedMonth, setSelectedMonth] = useState(9); // 9 = October (0-indexed), 10 = Nov, 11 = Dec
+  const [currentMonthIdx, setCurrentMonthIdx] = useState(0); // 0 = Oct 2026, 1 = Nov, 2 = Dec, 3 = Jan 2027
   const [selectedWeek, setSelectedWeek] = useState(1);
-  const [filterType, setFilterType] = useState('all'); // 'all' | 'milestones' | 'submitted' | 'pending'
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [filterType, setFilterType] = useState('all'); // 'all' | 'milestones' | 'exams' | 'submitted' | 'pending'
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const [whatsAppConfig, setWhatsAppConfig] = useState(null);
+
+  const activeMonthObj = AVAILABLE_MONTHS[currentMonthIdx] || AVAILABLE_MONTHS[0];
+  const selectedMonth = activeMonthObj.month;
+  const monthYear = activeMonthObj.year;
 
   const checkWhatsAppStatus = async () => {
     try {
@@ -205,6 +253,21 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
     }
   };
 
+  const handleAddExamTask = (exam) => {
+    if (!onAddTask) return;
+    const taskData = {
+      subject: 'IITM Exam',
+      topic: `${exam.name} Exam (${exam.scope})`,
+      durationMinutes: 180,
+      priority: 'High',
+      notes: `Official Exam Date: ${exam.dateStr}\nScope: ${exam.scope}\nDetails: ${exam.description}`
+    };
+    onAddTask(taskData);
+    if (showToast) {
+      showToast(`Added ${exam.name} exam prep to tasks! 🎯`);
+    }
+  };
+
   // Find the next upcoming deadline from today
   const todayStr = '2026-10-06';
   const upcomingAssignments = ASSIGNMENT_SCHEDULE.filter(a => a.deadlineDate >= todayStr);
@@ -219,9 +282,8 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
     return diffDays;
   };
 
-  // Calendar Grid builder for October, November, December 2026
+  // Calendar Grid builder
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const monthYear = 2026;
 
   const getDaysInMonth = (year, monthIndex) => {
     return new Date(year, monthIndex + 1, 0).getDate();
@@ -236,17 +298,18 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
 
   // Month navigation
   const prevMonth = () => {
-    if (selectedMonth > 9) setSelectedMonth(selectedMonth - 1);
+    if (currentMonthIdx > 0) setCurrentMonthIdx(prev => prev - 1);
   };
   const nextMonth = () => {
-    if (selectedMonth < 11) setSelectedMonth(selectedMonth + 1);
+    if (currentMonthIdx < AVAILABLE_MONTHS.length - 1) setCurrentMonthIdx(prev => prev + 1);
   };
 
   // Events lookup by date string "YYYY-MM-DD"
   const getEventsForDate = (dateStr) => {
     const releases = ASSIGNMENT_SCHEDULE.filter(a => a.releaseDate === dateStr);
     const deadlines = ASSIGNMENT_SCHEDULE.filter(a => a.deadlineDate === dateStr);
-    return { releases, deadlines };
+    const exams = OFFICIAL_EXAMS.filter(e => e.date === dateStr);
+    return { releases, deadlines, exams };
   };
 
   const filteredList = ASSIGNMENT_SCHEDULE.filter(item => {
@@ -496,6 +559,91 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
         </div>
       </div>
 
+      {/* Official Examinations Schedule (Quiz 1, Quiz 2, End Term) */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-rose-500/10 dark:from-amber-950/30 dark:via-purple-950/30 dark:to-rose-950/30 border-2 border-amber-300 dark:border-amber-700/60 rounded-3xl p-5 mb-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2.5">
+            <span className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center font-bold text-base shadow-sm">
+              📝
+            </span>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-gray-900 dark:text-white flex items-center gap-2">
+                <span>Official Term 3 Examination Schedule</span>
+                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                  Quiz 1 • Quiz 2 • End Term
+                </span>
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-slate-400">
+                Mandatory in-person proctored quizzes and final comprehensive term evaluations
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-xl border border-amber-200 dark:border-amber-800 self-start sm:self-auto">
+            3 Official Exams Scheduled
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          {OFFICIAL_EXAMS.map(exam => {
+            const daysLeft = getDaysRemaining(exam.date);
+            const isSelected = selectedExam?.id === exam.id;
+            return (
+              <div
+                key={exam.id}
+                onClick={() => setSelectedExam(exam)}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  exam.id === 'quiz1'
+                    ? 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800/80 hover:border-amber-400'
+                    : exam.id === 'quiz2'
+                    ? 'bg-purple-50/80 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800/80 hover:border-purple-400'
+                    : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800/80 hover:border-rose-400'
+                } ${isSelected ? 'ring-2 ring-pink-500 shadow-md' : 'shadow-xs'}`}
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-gray-900 dark:text-white">
+                      <span>{exam.icon}</span>
+                      <span>{exam.name}</span>
+                    </span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                      daysLeft > 0
+                        ? 'bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700'
+                        : 'bg-rose-600 text-white'
+                    }`}>
+                      {daysLeft > 0 ? `${daysLeft}d left` : 'Today!'}
+                    </span>
+                  </div>
+
+                  <div className="text-sm font-black text-gray-900 dark:text-white mb-1">
+                    {exam.dateStr}
+                  </div>
+                  <p className="text-[11px] text-gray-600 dark:text-slate-400 leading-snug mb-3">
+                    {exam.description}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-gray-200/60 dark:border-slate-700/60 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">
+                    {exam.scope}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddExamTask(exam);
+                    }}
+                    className="px-2.5 py-1 rounded-xl bg-white dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-800 dark:text-slate-200 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 cursor-pointer"
+                    title={`Add ${exam.name} prep to study tasks`}
+                  >
+                    <Plus className="w-3 h-3 stroke-[2.5]" />
+                    <span>Prep Task</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ========================================================================= */}
       {/* MODE 1: MONTHLY CALENDAR GRID VIEW                                        */}
       {/* ========================================================================= */}
@@ -507,22 +655,22 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={prevMonth}
-                  disabled={selectedMonth <= 9}
+                  disabled={currentMonthIdx === 0}
                   className={`p-2 rounded-xl border border-gray-200 dark:border-slate-700 transition-all ${
-                    selectedMonth <= 9 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer active:scale-95'
+                    currentMonthIdx === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer active:scale-95'
                   }`}
                   title="Previous Month"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <h2 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">
-                  {monthNames[selectedMonth]} {monthYear}
+                  {activeMonthObj.label}
                 </h2>
                 <button
                   onClick={nextMonth}
-                  disabled={selectedMonth >= 11}
+                  disabled={currentMonthIdx === AVAILABLE_MONTHS.length - 1}
                   className={`p-2 rounded-xl border border-gray-200 dark:border-slate-700 transition-all ${
-                    selectedMonth >= 11 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer active:scale-95'
+                    currentMonthIdx === AVAILABLE_MONTHS.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer active:scale-95'
                   }`}
                   title="Next Month"
                 >
@@ -530,25 +678,25 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                 </button>
               </div>
 
-              {/* Month Quick Tabs */}
-              <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-800/70 p-1 rounded-2xl">
-                {[9, 10, 11].map(mIdx => (
+              {/* Month Quick Tabs (October, November, December 2026, January 2027) */}
+              <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-slate-800/70 p-1 rounded-2xl flex-wrap">
+                {AVAILABLE_MONTHS.map((mObj, idx) => (
                   <button
-                    key={mIdx}
-                    onClick={() => setSelectedMonth(mIdx)}
+                    key={mObj.label}
+                    onClick={() => setCurrentMonthIdx(idx)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      selectedMonth === mIdx
+                      currentMonthIdx === idx
                         ? 'bg-pink-600 text-white shadow-sm'
                         : 'text-gray-600 dark:text-slate-300 hover:text-pink-600'
                     }`}
                   >
-                    {monthNames[mIdx]}
+                    {mObj.shortLabel}
                   </button>
                 ))}
               </div>
 
               {/* Legend */}
-              <div className="flex items-center gap-3 text-[11px] font-bold text-gray-500 dark:text-slate-400">
+              <div className="flex items-center gap-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 flex-wrap">
                 <span className="flex items-center gap-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Release
                 </span>
@@ -556,7 +704,10 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Deadline
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> Milestone
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" /> Gate
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Exam
                 </span>
               </div>
             </div>
@@ -585,9 +736,9 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                 const dateMonthStr = String(selectedMonth + 1).padStart(2, '0');
                 const dayStr = String(dayNum).padStart(2, '0');
                 const fullDateStr = `${monthYear}-${dateMonthStr}-${dayStr}`;
-                const { releases, deadlines } = getEventsForDate(fullDateStr);
+                const { releases, deadlines, exams } = getEventsForDate(fullDateStr);
                 const isToday = fullDateStr === todayStr;
-                const hasEvents = releases.length > 0 || deadlines.length > 0;
+                const hasEvents = releases.length > 0 || deadlines.length > 0 || exams.length > 0;
 
                 return (
                   <div
@@ -617,6 +768,27 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
 
                     {/* Events Badge Stack */}
                     <div className="space-y-1 mt-1">
+                      {/* Official Exam Event */}
+                      {exams.map(exam => (
+                        <div
+                          key={`exam-${exam.id}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedExam(exam);
+                          }}
+                          className={`rounded-lg p-1 text-[10px] font-black truncate cursor-pointer hover:scale-102 transition-transform border shadow-xs ${
+                            exam.id === 'quiz1'
+                              ? 'bg-amber-100 dark:bg-amber-950/90 text-amber-950 dark:text-amber-200 border-amber-400 dark:border-amber-600'
+                              : exam.id === 'quiz2'
+                              ? 'bg-purple-100 dark:bg-purple-950/90 text-purple-950 dark:text-purple-200 border-purple-400 dark:border-purple-600'
+                              : 'bg-rose-100 dark:bg-rose-950/90 text-rose-950 dark:text-rose-200 border-rose-400 dark:border-rose-600'
+                          }`}
+                          title={`Official Exam: ${exam.name} (${exam.dateStr}) - ${exam.scope}`}
+                        >
+                          {exam.icon} {exam.name}
+                        </div>
+                      ))}
+
                       {/* Release Event */}
                       {releases.map(item => (
                         <div
@@ -651,6 +823,62 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               })}
             </div>
           </div>
+
+          {/* Selected Exam Inspector Card */}
+          {selectedExam && (
+            <div className={`border-2 rounded-3xl p-5 sm:p-6 shadow-sm animate-fadeIn ${
+              selectedExam.id === 'quiz1'
+                ? 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700'
+                : selectedExam.id === 'quiz2'
+                ? 'bg-purple-50/80 dark:bg-purple-950/30 border-purple-300 dark:border-purple-700'
+                : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-300 dark:border-rose-700'
+            }`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span className="text-xl">{selectedExam.icon}</span>
+                    <h3 className="text-lg font-black text-gray-900 dark:text-white">
+                      {selectedExam.name}
+                    </h3>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-200 border border-gray-200 dark:border-slate-700">
+                      Official Exam
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-600 text-white">
+                      {getDaysRemaining(selectedExam.date) > 0 ? `${getDaysRemaining(selectedExam.date)} Days Left` : 'Exam Today!'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-slate-400 mb-2">
+                    {selectedExam.description}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-gray-700 dark:text-slate-300">
+                    <span>
+                      <strong>Date:</strong> {selectedExam.dateStr}
+                    </span>
+                    <span>•</span>
+                    <span>
+                      <strong>Scope:</strong> {selectedExam.scope}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleAddExamTask(selectedExam)}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-md shadow-pink-600/30 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4 stroke-[2.5]" />
+                    <span>Add Prep Task</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedExam(null)}
+                    className="px-3 py-2 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 hover:bg-gray-100 text-xs font-bold cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Selected Week Inspector Card */}
           {activeWeekObj && (
@@ -737,6 +965,65 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
             <span className="text-xs font-bold text-gray-500 self-end sm:self-auto">
               Showing {filteredList.length} of 12 Assignments
             </span>
+          </div>
+
+          {/* Official Exams Table */}
+          <div className="bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-amber-700/60 rounded-3xl overflow-hidden shadow-sm">
+            <div className="px-5 py-3.5 bg-gradient-to-r from-amber-50 to-rose-50 dark:from-amber-950/40 dark:to-rose-950/40 border-b border-amber-200 dark:border-amber-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📝</span>
+                <h4 className="font-black text-sm text-gray-900 dark:text-white">
+                  Official Term 3 Exams (Quiz 1, Quiz 2, End Term)
+                </h4>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
+                Official Assessments
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-gray-50/50 dark:bg-slate-800/40 text-gray-600 dark:text-slate-400 uppercase font-black tracking-wider text-[10px] border-b border-gray-100 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3 px-4">Exam Name</th>
+                    <th className="py-3 px-4">Official Date</th>
+                    <th className="py-3 px-4">Syllabus Scope</th>
+                    <th className="py-3 px-4">Countdown</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                  {OFFICIAL_EXAMS.map(exam => {
+                    const daysLeft = getDaysRemaining(exam.date);
+                    return (
+                      <tr key={exam.id} className="hover:bg-amber-50/30 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3.5 px-4 font-black text-gray-900 dark:text-white whitespace-nowrap">
+                          <span className="mr-1.5">{exam.icon}</span>
+                          <span>{exam.name}</span>
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-gray-800 dark:text-slate-200 whitespace-nowrap">
+                          {exam.dateStr}
+                        </td>
+                        <td className="py-3.5 px-4 text-gray-600 dark:text-slate-400 font-medium">
+                          {exam.scope}
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-pink-600 whitespace-nowrap">
+                          {daysLeft > 0 ? `${daysLeft} days remaining` : daysLeft === 0 ? 'Exam Today!' : 'Completed'}
+                        </td>
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <button
+                            onClick={() => handleAddExamTask(exam)}
+                            className="px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800 transition-all font-bold text-xs inline-flex items-center gap-1 active:scale-95 cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>Prep Task</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Table Container */}

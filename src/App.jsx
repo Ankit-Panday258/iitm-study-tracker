@@ -446,15 +446,18 @@ export default function App() {
                 </span>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
-                      <span>Term 3 Assignment Deadlines Calendar (Oct – Dec 2026)</span>
+                    <h4 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 flex-wrap">
+                      <span>Term 3 Deadlines &amp; Exam Calendar (Oct 2026 – Jan 2027)</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                         Week 1 to 12
+                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        Quiz 1, 2 &amp; End Term
                       </span>
                     </h4>
                   </div>
                   <p className="text-[11px] text-slate-300 mt-0.5">
-                    12-Week Assignment Releases, Deadlines, OPPE 1 &amp; 2 Gates, GAA Closes &amp; Monthly Calendar View.
+                    12-Week Assignment Deadlines, Quiz 1 (15 Nov), Quiz 2 (05 Dec), End Term (10 Jan 2027) &amp; Eligibility Gates.
                   </p>
                 </div>
               </div>
