@@ -483,7 +483,7 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
-                      System Commands — 8-Week Course & Hindi Video Classes (सिस्टम कमांड)
+                      System Commands — 8-Week Course & Video Classes
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
                       Week 1 to 8 Full Syllabus

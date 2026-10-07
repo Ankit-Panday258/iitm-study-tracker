@@ -341,7 +341,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
-                WhatsApp Assignment Alerts & Deadlines (व्हाट्सएप नोटिफिकेशन)
+                WhatsApp Assignment Alerts & Deadlines
               </h4>
               {whatsAppConfig?.enabled && whatsAppConfig?.phone ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
@@ -355,7 +355,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               )}
             </div>
             <p className="text-[11px] text-gray-600 dark:text-slate-400 mt-0.5">
-              कंटेंट रिलीज़ (हर शुक्रवार) और डेडलाइन से 24 घंटे पहले सीधे आपके WhatsApp पर ऑटोमैटिक मैसेज प्राप्त करें।
+              Receive automated WhatsApp alerts for content releases (every Friday) and 24 hours before deadlines.
             </p>
           </div>
         </div>
@@ -414,7 +414,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Flag className="w-4 h-4 text-pink-600" />
-                <span>Term 3 Critical Eligibility Milestones (महत्वपूर्ण पड़ाव)</span>
+                <span>Term 3 Critical Eligibility Milestones</span>
               </span>
               <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/50 px-2 py-0.5 rounded-full border border-pink-200 dark:border-pink-800">
                 4 Official Gates

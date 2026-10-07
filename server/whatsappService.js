@@ -260,10 +260,10 @@ export async function checkAndSendScheduledAlerts() {
 `🔔 *IIT Madras - Assignment Released!* ${key}
 
 📚 *${item.label} (${item.termWeek})*
-आज कंटेंट रिलीज हो गया है!
-📅 सबमिशन डेडलाइन: *${item.deadlineDate}*
-${item.comment ? `⚠️ गेट नोट: *${item.comment}*\n` : ''}
-अपनी पढ़ाई शुरू करें: http://localhost:3000`;
+Content has been released today!
+📅 Submission Deadline: *${item.deadlineDate}*
+${item.comment ? `⚠️ Milestone Gate: *${item.comment}*\n` : ''}
+Start studying now: http://localhost:3000`;
 
         try {
           await sendWhatsAppMessage(msg);
@@ -281,9 +281,9 @@ ${item.comment ? `⚠️ गेट नोट: *${item.comment}*\n` : ''}
         const msg = 
 `⚠️ *IIT Madras - Assignment Due Tomorrow!* ${key}
 
-⏰ *${item.label}* असाइनमेंट सबमिट करने की आखिरी तारीख कल (*${item.deadlineDate}*) है!
-${item.comment ? `🚩 *महत्वपूर्ण गेट:* ${item.comment}\n` : ''}
-कृपया समय से पहले असाइनमेंट सबमिट कर दें ताकि आपका स्कोर सुरक्षित रहे।
+⏰ *${item.label}* assignment submission deadline is tomorrow (*${item.deadlineDate}*)!
+${item.comment ? `🚩 *Important Gate:* ${item.comment}\n` : ''}
+Please submit before the deadline to protect your score!
 Portal: http://localhost:3000`;
 
         try {
@@ -302,9 +302,9 @@ Portal: http://localhost:3000`;
         const msg = 
 `🚨 *IIT Madras - Deadline TODAY!* ${key}
 
-⏳ *${item.label}* असाइनमेंट का सबमिशन आज रात समाप्त हो रहा है!
-${item.comment ? `🚩 *महत्वपूर्ण:* ${item.comment}\n` : ''}
-अगर आपने अभी तक सबमिट नहीं किया है, तो तुरंत सबमिट करें!`;
+⏳ *${item.label}* assignment submission closes tonight!
+${item.comment ? `🚩 *Important:* ${item.comment}\n` : ''}
+If you haven't submitted yet, please submit immediately!`;
 
         try {
           await sendWhatsAppMessage(msg);

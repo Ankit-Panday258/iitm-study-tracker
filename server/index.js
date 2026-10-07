@@ -758,7 +758,7 @@ app.post('/api/whatsapp/config', (req, res) => {
 app.post('/api/whatsapp/test', async (req, res) => {
   try {
     const { phone, apiKey } = req.body;
-    const testMsg = `🎉 *IIT Madras Study Tracker Alert*\n\nनमस्ते! आपका WhatsApp Notification सिस्टम सफलतापूर्वक एक्टिवेट हो गया है!\n\nअब जब भी:\n• कोई नया असाइनमेंट रिलीज़ होगा\n• या असाइनमेंट की डेडलाइन नज़दीक होगी (24h पहले)\n• या OPPE / GAA गेट्स होंगे\n\nआपको तुरंत इसी चैट पर अलर्ट मिल जाएगा! 🚀\nPortal: http://localhost:3000`;
+    const testMsg = `🎉 *IIT Madras Study Tracker Alert*\n\nHello! Your WhatsApp Notification system has been activated successfully!\n\nFrom now on, you will receive instant alerts for:\n• New assignment releases (Every Friday)\n• Urgent deadline warnings (24h before submission)\n• Key eligibility milestones (OPPE 1, OPPE 2, GAA gates)\n\nPortal: http://localhost:3000`;
     
     const result = await sendWhatsAppMessage(testMsg, phone, apiKey);
     res.json({ success: true, result });

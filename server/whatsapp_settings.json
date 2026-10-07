@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "provider": "callmebot",
+  "phone": "918102439392",
+  "apiKey": "",
+  "notifyOnRelease": true,
+  "notifyOnDayBeforeDeadline": true,
+  "notifyOnDeadlineDay": true,
+  "notifyOnMilestones": true,
+  "lastCheckedDate": null
+}

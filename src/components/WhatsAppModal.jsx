@@ -92,7 +92,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
 
   const handleSendTest = async () => {
     if (!phone || !apiKey) {
-      alert('कृपया पहले अपना फ़ोन नंबर और CallMeBot API Key भरें!');
+      alert('Please enter your phone number and CallMeBot API Key first!');
       return;
     }
 
@@ -114,7 +114,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
         loadLogs();
       } else {
         setTestSuccess(false);
-        setTestError(data.error || 'संदेश भेजने में त्रुटि हुई। कृपया नंबर और API Key जांचें।');
+        setTestError(data.error || 'Failed to send message. Please verify your phone number and API Key.');
       }
     } catch (err) {
       setTestSuccess(false);
@@ -152,7 +152,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
                 )}
               </h3>
               <p className="text-xs text-gray-500 dark:text-slate-400">
-                IIT Madras असाइनमेंट रिलीज़ व डेडलाइन सीधे आपके WhatsApp पर
+                Direct WhatsApp alerts for IIT Madras assignment releases &amp; deadlines
               </p>
             </div>
           </div>
@@ -172,24 +172,24 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
           <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-3.5 space-y-2">
             <h4 className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5 text-xs">
               <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>मुफ़्त CallMeBot API Key कैसे प्राप्त करें (सिर्फ 1 मिनट):</span>
+              <span>How to get your free CallMeBot API Key (takes 1 minute):</span>
             </h4>
             <ol className="list-decimal list-inside space-y-1 text-[11px] sm:text-xs text-emerald-800 dark:text-emerald-300/90 leading-relaxed">
               <li>
-                WhatsApp पर इस नंबर को सेव करें या चैट खोलें: 
+                Save this contact or open chat on WhatsApp: 
                 <a 
-                  href="https://wa.me/34644444946?text=I%20allow%20callmebot%20to%20send%20me%20messages" 
+                  href="https://wa.me/34623758418?text=I%20allow%20callmebot%20to%20send%20me%20messages" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="font-bold underline ml-1 text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 inline-flex items-center gap-0.5"
                 >
-                  <span>+34 644 44 49 46</span>
+                  <span>+34 623 75 84 18</span>
                   <ExternalLink className="w-3 h-3 inline" />
                 </a>
               </li>
-              <li>चैट में यह मैसेज भेजें: <code className="bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.5 rounded font-mono font-bold text-emerald-900 dark:text-emerald-200">I allow callmebot to send me messages</code></li>
-              <li>CallMeBot आपको तुरंत आपकी <strong>API Key</strong> का रिप्लाई भेज देगा।</li>
-              <li>उसे नीचे पेस्ट करें और <strong>"Send Test WhatsApp Message"</strong> दबाकर टेस्ट करें!</li>
+              <li>Send this message in the chat: <code className="bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.5 rounded font-mono font-bold text-emerald-900 dark:text-emerald-200">I allow callmebot to send me messages</code></li>
+              <li>CallMeBot will immediately reply with your <strong>API Key</strong>.</li>
+              <li>Paste it below and click <strong>"Send Test WhatsApp Message"</strong> to test!</li>
             </ol>
           </div>
 
@@ -198,13 +198,13 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
             <div>
               <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                 <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>आपका WhatsApp मोबाइल नंबर (With Country Code)</span>
+                <span>Your WhatsApp Mobile Number (With Country Code)</span>
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="उदा. +91 9876543210 या 919876543210"
+                placeholder="e.g. +91 9876543210 or 919876543210"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 font-medium"
               />
             </div>
@@ -218,7 +218,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
                 type="text"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="उदा. 1234567"
+                placeholder="e.g. 1234567"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 font-medium font-mono"
               />
             </div>
@@ -226,11 +226,11 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
 
           {/* Notification Preferences */}
           <div className="pt-2 border-t border-gray-100 dark:border-slate-800 space-y-2">
-            <h5 className="font-bold text-gray-900 dark:text-white text-xs mb-2">अलर्ट प्राथमिकताएँ (Notification Triggers):</h5>
+            <h5 className="font-bold text-gray-900 dark:text-white text-xs mb-2">Notification Triggers:</h5>
 
             <label className="flex items-center justify-between p-2 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-800 cursor-pointer">
               <span className="text-xs text-gray-700 dark:text-slate-300">
-                🔔 <strong>Content Release Day Alert</strong> (हर शुक्रवार असाइनमेंट आते ही)
+                🔔 <strong>Content Release Day Alert</strong> (Every Friday upon release)
               </span>
               <input
                 type="checkbox"
@@ -242,7 +242,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
 
             <label className="flex items-center justify-between p-2 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-800 cursor-pointer">
               <span className="text-xs text-gray-700 dark:text-slate-300">
-                ⚠️ <strong>24 Hours Before Deadline</strong> (डेडलाइन से 1 दिन पहले चेतावनी)
+                ⚠️ <strong>24 Hours Before Deadline</strong> (Warning 1 day before deadline)
               </span>
               <input
                 type="checkbox"
@@ -254,7 +254,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
 
             <label className="flex items-center justify-between p-2 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-800 cursor-pointer">
               <span className="text-xs text-gray-700 dark:text-slate-300">
-                🚨 <strong>Deadline Day Alert</strong> (सबमिशन के अंतिम दिन)
+                🚨 <strong>Deadline Day Alert</strong> (On final submission day)
               </span>
               <input
                 type="checkbox"
@@ -282,7 +282,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
             <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span className="text-xs font-semibold">
-                सफलता! टेस्ट मैसेज आपके WhatsApp पर भेज दिया गया है। अपने फ़ोन में चेक करें! 🎉
+                Success! Test message delivered to your WhatsApp. Please check your phone! 🎉
               </span>
             </div>
           )}
@@ -291,7 +291,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
             <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
               <span className="text-xs font-semibold">
-                त्रुटि: {testError || 'मैसेज नहीं भेजा जा सका। कृपया नंबर व API Key जांचें।'}
+                Error: {testError || 'Could not send message. Please verify your number & API Key.'}
               </span>
             </div>
           )}
@@ -299,8 +299,8 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
           {/* Active Status Switch */}
           <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-gray-900 dark:text-white">ऑटोमैटिक WhatsApp नोटिफिकेशन सक्रिय करें</p>
-              <p className="text-[11px] text-gray-500 dark:text-slate-400">रोज़ाना बैकएंड शेड्यूलर ऑटोमैटिक अलर्ट भेजेगा</p>
+              <p className="text-xs font-bold text-gray-900 dark:text-white">Enable Automated WhatsApp Notifications</p>
+              <p className="text-[11px] text-gray-500 dark:text-slate-400">Daily backend scheduler will automatically dispatch alerts</p>
             </div>
             <input
               type="checkbox"
@@ -325,7 +325,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
             ) : (
               <Send className="w-3.5 h-3.5" />
             )}
-            <span>{isTesting ? 'भेजा जा रहा है...' : 'Test WhatsApp Message'}</span>
+            <span>{isTesting ? 'Sending...' : 'Test WhatsApp Message'}</span>
           </button>
 
           <div className="flex items-center gap-2 ml-auto">
@@ -342,7 +342,7 @@ export default function WhatsAppModal({ isOpen, onClose, showToast }) {
               disabled={isLoading}
               className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-md shadow-emerald-600/30 transition-all cursor-pointer"
             >
-              {isLoading ? 'सहेज रहे हैं...' : 'Save Settings'}
+              {isLoading ? 'Saving...' : 'Save Settings'}
             </button>
           </div>
         </div>

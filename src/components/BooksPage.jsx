@@ -187,7 +187,7 @@ export default function BooksPage({ onBack }) {
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-600 text-white font-black text-xs shadow-sm shadow-pink-600/30">
               <span>⚙️</span>
-              <span>System Commands (सिस्टम कमांड)</span>
+              <span>System Commands</span>
             </span>
 
             <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 shadow-sm flex items-center gap-1.5">
