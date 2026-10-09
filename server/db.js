@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -6,9 +7,12 @@ const __dirname = path.dirname(__filename);
 
 let db = null;
 
-try {
+if (process.env.DATABASE_DRIVER !== 'sqlite') {
+  // MySQL mode never requires a local SQLite file or native addon.
+  db = { prepare() { throw new Error('SQLite disabled in MySQL mode'); } };
+} else try {
   const { default: Database } = await import('better-sqlite3');
-  const dbPath = path.join(__dirname, 'study_tracker.db');
+  const dbPath = process.env.SQLITE_PATH || path.join(__dirname, 'study_tracker.db');
   db = new Database(dbPath);
 
   // Enable WAL mode for better performance
@@ -77,6 +81,16 @@ try {
     db.exec("ALTER TABLE users ADD COLUMN password_hash TEXT");
   } catch (e) {}
 
+  if (db.prepare("SELECT sql FROM sqlite_master WHERE name = 'daily_notes'").get().sql.includes('date TEXT UNIQUE')) {
+    db.transaction(() => {
+      db.exec(`ALTER TABLE daily_notes RENAME TO daily_notes_legacy;
+        CREATE TABLE daily_notes (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL,
+          note_text TEXT DEFAULT '', user_email TEXT NOT NULL DEFAULT 'default', created_at TEXT, updated_at TEXT,
+          UNIQUE(date, user_email));
+        INSERT INTO daily_notes SELECT id,date,note_text,user_email,created_at,updated_at FROM daily_notes_legacy;
+        DROP TABLE daily_notes_legacy;`);
+    })();
+  }
   // Seed default subjects if empty
   const subjectCount = db.prepare('SELECT COUNT(*) as count FROM subjects').get();
   if (subjectCount.count === 0) {
@@ -102,17 +116,7 @@ try {
   }
 } catch (err) {
   console.warn('SQLite (better-sqlite3) unavailable or native addon not compiled. Using in-memory fallback.');
-  // Fallback in-memory dummy database
-  const memoryStore = { tasks: [], subjects: [], daily_notes: [], users: [] };
-  db = {
-    prepare: () => ({
-      get: () => ({ count: 0 }),
-      all: () => [],
-      run: () => ({ changes: 0 })
-    }),
-    exec: () => {},
-    transaction: (fn) => fn
-  };
+  throw new Error('SQLite unavailable: install dependencies and rebuild better-sqlite3.', { cause: err });
 }
 
 export default db;

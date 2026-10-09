@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const MYSQL_HOST = process.env.MYSQL_HOST || '127.0.0.1';
 const MYSQL_PORT = parseInt(process.env.MYSQL_PORT || '3306', 10);
 const MYSQL_USER = process.env.MYSQL_USER || 'root';
-const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || 'password';
+const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || '';
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE || 'iitm_study_tracker';
 
 let pool = null;
@@ -20,13 +20,16 @@ let isConnected = false;
 let connectionError = null;
 
 export async function initMySQL() {
+  if (process.env.DATABASE_DRIVER === 'sqlite') return false;
   try {
+    if (!/^[a-zA-Z0-9_]+$/.test(MYSQL_DATABASE)) throw new Error('Invalid database name');
     // 1. Initial connection without database to ensure database exists
     const rootConn = await mysql.createConnection({
       host: MYSQL_HOST,
       port: MYSQL_PORT,
       user: MYSQL_USER,
-      password: MYSQL_PASSWORD
+      password: MYSQL_PASSWORD,
+      connectTimeout: 5000
     });
 
     await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
@@ -155,8 +158,8 @@ export async function initMySQL() {
   } catch (err) {
     isConnected = false;
     connectionError = err.message;
-    console.error(`🐬 MySQL connection error: ${err.message}. (Falling back to SQLite)`);
-    return false;
+    console.error(`🐬 MySQL connection error: ${err.message}. (Requests will fail until MySQL is available)`);
+    throw new Error('MySQL unavailable. Check MYSQL_* settings.');
   }
 }
 
@@ -246,7 +249,7 @@ export async function mySQLCreateTask(taskData) {
     taskData.subject,
     taskData.topic,
     taskData.durationHours || 0,
-    taskData.durationMinutes || 45,
+    taskData.durationMinutes ?? 45,
     taskData.durationSeconds || 0,
     taskData.priority || 'Medium',
     taskData.notes || '',
@@ -287,7 +290,7 @@ export async function mySQLUpdateTask(id, taskData) {
     taskData.subject,
     taskData.topic,
     taskData.durationHours || 0,
-    taskData.durationMinutes || 45,
+    taskData.durationMinutes ?? 45,
     taskData.durationSeconds || 0,
     taskData.priority || 'Medium',
     taskData.completed ? 1 : 0,
@@ -568,3 +571,13 @@ export default {
   loginWithPassword: mySQLLoginWithPassword,
   getUsers: mySQLGetUsers
 };
+
+export const databaseReady = initMySQL();
+databaseReady.catch(() => {});
+export async function authQuery(sql, params) {
+  if (!isMySQLConnected()) throw new Error("MySQL unavailable");
+  const [rows] = await pool.execute(sql, params || []);
+  return rows;
+}
+
+export async function closeMySQL() { if (pool) await pool.end(); }

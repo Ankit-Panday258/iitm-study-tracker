@@ -88,7 +88,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!topic.trim()) return;
 
@@ -98,7 +98,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
 
     const computedTotalMins = Math.round(((hrs * 60) + mins + (secs / 60)) * 100) / 100;
 
-    onSaveTask({
+    const saved = await onSaveTask({
       id: editingTask ? editingTask.id : Date.now().toString(),
       date: targetDate,
       subject,
@@ -113,7 +113,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
       notes: notes.trim()
     });
 
-    onClose();
+    if (saved) onClose();
   };
 
   return (

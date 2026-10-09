@@ -1,3 +1,4 @@
+import { restoreSession } from './api';
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import StatsOverview from './components/StatsOverview';
@@ -14,7 +15,7 @@ import DailyNotes from './components/DailyNotes';
 import AssignmentCalendar from './components/AssignmentCalendar';
 import { 
   fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
-  DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, logout as logoutAPI
+  DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI
 } from './api';
 import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, Play, Folder } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -158,10 +159,16 @@ export default function App() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(['/login', '/register'].includes(window.location.pathname));
   const [currentUser, setCurrentUser] = useState(() => {
-    return getStoredUser() || null;
+    return null;
   });
+  useEffect(() => {
+    restoreSession().then(setCurrentUser).catch(error => { console.warn(error.message); setCurrentUser(null); });
+    const onPop = () => setIsAuthModalOpen(['/login', '/register'].includes(window.location.pathname));
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
   const [editingTask, setEditingTask] = useState(null);
   const [activeTimerTask, setActiveTimerTask] = useState(null);
 
@@ -208,7 +215,7 @@ export default function App() {
   }, [currentUser, loadTasks, loadStreak, loadSubjects]);
 
   const handleLogout = async () => {
-    logoutAPI();
+    try { await logoutAPI(); } catch (error) { showToast(error.message); return; }
     setCurrentUser(null);
     setStoredUser(null);
     showToast('Logged out successfully');
@@ -251,67 +258,24 @@ export default function App() {
 
   // ─── Task Actions ──────────────────────────────────────────
   const handleToggleTask = async (taskId) => {
-    const target = allTasks.find(t => t.id === taskId);
-    if (!target) return;
-    const willBeCompleted = !target.completed;
-
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-
-    setAllTasks(prev => {
-      const updated = prev.map(t => {
-        if (t.id === taskId) {
-          return { 
-            ...t, 
-            completed: willBeCompleted,
-            completedAt: willBeCompleted ? (t.completedAt || new Date().toISOString()) : null
-          };
-        }
-        return t;
-      });
-      try {
-        localStorage.setItem('iitm_tasks_backup', JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-
-    if (willBeCompleted) {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.8 },
-        colors: ['#db2777', '#f43f5e', '#ec4899', '#ffffff']
-      });
-      showToast('Topic marked completed! 🎉');
-    }
-
     try {
-      await toggleTask(taskId);
+      const updated = await toggleTask(taskId);
+      setAllTasks(prev => prev.map(t => t.id === taskId ? updated : t));
+      if (updated.completed) confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+      showToast(updated.completed ? 'Topic marked completed!' : 'Topic marked pending');
       loadStreak();
-    } catch (err) {
-      console.error('Failed to toggle task:', err);
-    }
+    } catch (error) { showToast(error.message); }
   };
-
   const handleDeleteTask = async (taskId) => {
-    setAllTasks(prev => {
-      const updated = prev.filter(t => t.id !== taskId);
-      try {
-        localStorage.setItem('iitm_tasks_backup', JSON.stringify(updated));
-      } catch (e) {}
-      return updated;
-    });
-    showToast('Topic deleted');
     try {
       await deleteTask(taskId);
-      loadStreak();
-    } catch (err) {
-      console.error('Failed to delete task:', err);
-    }
+      setAllTasks(prev => prev.filter(t => t.id !== taskId));
+      showToast('Topic deleted');loadStreak();
+    } catch (error) { showToast(error.message); }
   };
 
   const handleOpenAddModal = () => {
+    if (!currentUser) { setIsAuthModalOpen(true); return; }
     setEditingTask(null);
     setIsModalOpen(true);
   };
@@ -322,37 +286,12 @@ export default function App() {
   };
 
   const handleSaveTask = async (taskData) => {
-    if (editingTask) {
-      const updated = { ...editingTask, ...taskData };
-      setAllTasks(prev => prev.map(t => t.id === editingTask.id ? updated : t));
-      showToast('Topic updated successfully!');
-      try {
-        await updateTask(editingTask.id, taskData);
-        loadStreak();
-      } catch (err) {
-        console.error('Failed to update task:', err);
-      }
-    } else {
-      const tempId = Date.now().toString();
-      const newTask = {
-        id: tempId,
-        completed: false,
-        ...taskData,
-        date: taskData.date || selectedDate
-      };
-      setAllTasks(prev => [newTask, ...prev.filter(t => t.id !== tempId)]);
-      showToast('Topic added successfully!');
-
-      try {
-        const created = await createTask(taskData);
-        if (created) {
-          setAllTasks(prev => [created, ...prev.filter(t => t.id !== tempId && t.id !== created.id)]);
-        }
-        loadStreak();
-      } catch (err) {
-        console.error('Failed to create task:', err);
-      }
-    }
+    try {
+      const saved = editingTask ? await updateTask(editingTask.id, taskData) : await createTask(taskData);
+      setAllTasks(prev => editingTask ? prev.map(t => t.id === saved.id ? saved : t) : [saved, ...prev]);
+      showToast(editingTask ? 'Topic updated successfully!' : 'Topic added successfully!');
+      loadStreak();return true;
+    } catch (error) { showToast(error.message);return false; }
   };
 
   // List of all distinct dates in tasks
@@ -634,7 +573,7 @@ export default function App() {
             )}
 
             {/* Today's Key Learnings / Summary Note */}
-            <DailyNotes selectedDate={selectedDate} />
+            <DailyNotes key={currentUser?.id || "guest"} selectedDate={selectedDate} />
 
             {/* App Footer */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
@@ -648,7 +587,7 @@ export default function App() {
                 </button>
                 <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 font-semibold text-[11px]">
                   <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse" />
-                  <span>Sync Active</span>
+                  <span>{currentUser ? 'Signed in' : 'Sign in to sync'}</span>
                 </span>
               </div>
             </div>
@@ -706,7 +645,7 @@ export default function App() {
         {/* Auth Modal */}
         <AuthModal
           isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
+          onClose={() => { window.history.pushState({}, '', '/'); setIsAuthModalOpen(false); }}
           onLoginSuccess={handleLoginSuccess}
         />
 

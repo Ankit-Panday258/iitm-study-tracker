@@ -5,6 +5,7 @@ import { fetchNote, saveNote as saveNoteAPI } from '../api';
 export default function DailyNotes({ selectedDate }) {
   const [noteText, setNoteText] = useState('');
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadNote();
@@ -22,12 +23,13 @@ export default function DailyNotes({ selectedDate }) {
   };
 
   const handleSave = async () => {
+    setError('');
     try {
       await saveNoteAPI(selectedDate, noteText);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      console.error('Failed to save note:', err);
+      setError(err.message);
     }
   };
 
@@ -56,6 +58,7 @@ export default function DailyNotes({ selectedDate }) {
         </button>
       </div>
 
+      {error && <p role="alert" className="text-red-600 text-sm mb-2">{error}</p>}
       <textarea
         rows="3"
         value={noteText}

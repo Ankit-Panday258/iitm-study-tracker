@@ -23,8 +23,8 @@
   <body class="antialiased font-sans select-none touch-manipulation overscroll-none">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      if ('serviceWorker' in navigator && !window.location.host.includes('localhost:5173')) {
+    <script type="module">
+      if (import.meta.env.PROD && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch(() => {});
         });

@@ -1,5 +1,5 @@
 // IIT Madras Study Tracker Service Worker
-const CACHE_NAME = 'iitm-study-v1';
+const CACHE_NAME = 'iitm-study-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

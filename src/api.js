@@ -124,8 +124,12 @@ async function fetchWithTimeout(url, options = {}, timeout = 15000) {
   };
 
   try {
-    const res = await fetch(url, { ...options, headers, credentials: 'omit', signal: controller.signal });
+    const res = await fetch(url, { ...options, headers, credentials: 'same-origin', signal: controller.signal });
     clearTimeout(id);
+    if (!res.ok && options.method && options.method !== 'GET' && !url.includes('/auth/')) {
+      const data = await safeJson(res);
+      throw new Error(data?.error || 'Your changes could not be saved.');
+    }
     return res;
   } catch (e) {
     clearTimeout(id);
@@ -177,114 +181,21 @@ export async function fetchAllTasks(allUsers = false) {
   return getBackupTasks();
 }
 
-export async function createTask(taskData, userEmail = getCurrentUserEmail()) {
-  const newTask = {
-    id: taskData.id || Date.now().toString(),
-    date: taskData.date,
-    subject: taskData.subject,
-    topic: taskData.topic,
-    durationHours: Number(taskData.durationHours) || 0,
-    durationMinutes: Number(taskData.durationMinutes) || 0,
-    durationSeconds: Number(taskData.durationSeconds) || 0,
-    priority: taskData.priority || 'Medium',
-    completed: false,
-    completedAt: null,
-    notes: taskData.notes || '',
-    userEmail,
-    createdAt: new Date().toISOString()
-  };
-
-  // Immediate local cache update
-  const backup = getBackupTasks(userEmail);
-  const updated = [newTask, ...backup.filter(t => t.id !== newTask.id)];
-  setBackupTasks(updated, userEmail);
-
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/tasks`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newTask)
-    });
-    const data = await safeJson(res);
-    if (data && data.id) {
-      setBackupTasks([data, ...backup.filter(t => t.id !== data.id)], userEmail);
-      return data;
-    }
-  } catch (err) {
-    console.warn('Local save only for createTask:', err.message);
-  }
-
-  return newTask;
+export async function createTask(taskData) {
+  return writeRecord('/tasks', 'POST', taskData);
 }
 
-export async function updateTask(id, taskData, userEmail = getCurrentUserEmail()) {
-  const backup = getBackupTasks(userEmail);
-  const existing = backup.find(t => t.id === id) || {};
-  const merged = { ...existing, ...taskData, id, userEmail };
-  setBackupTasks(backup.map(t => t.id === id ? merged : t), userEmail);
-
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/tasks/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(merged)
-    });
-    const data = await safeJson(res);
-    if (data && data.id) {
-      setBackupTasks(backup.map(t => t.id === id ? data : t), userEmail);
-      return data;
-    }
-  } catch (err) {
-    console.warn('Local update only for updateTask:', err.message);
-  }
-
-  return merged;
+export async function updateTask(id, taskData) {
+  return writeRecord(`/tasks/${encodeURIComponent(id)}`, 'PUT', taskData);
 }
 
-export async function toggleTask(id, userEmail = getCurrentUserEmail()) {
-  const backup = getBackupTasks(userEmail);
-  let updatedTask = null;
-  const newBackup = backup.map(t => {
-    if (t.id === id) {
-      updatedTask = {
-        ...t,
-        completed: !t.completed,
-        completedAt: !t.completed ? new Date().toISOString() : null
-      };
-      return updatedTask;
-    }
-    return t;
-  });
-  setBackupTasks(newBackup, userEmail);
-
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/tasks/${id}/toggle`, {
-      method: 'PATCH'
-    });
-    const data = await safeJson(res);
-    if (data && data.id) {
-      setBackupTasks(backup.map(t => t.id === id ? data : t), userEmail);
-      return data;
-    }
-  } catch (err) {
-    console.warn('Local toggle only for toggleTask:', err.message);
-  }
-
-  return updatedTask;
+export async function toggleTask(id) {
+  return writeRecord(`/tasks/${encodeURIComponent(id)}/toggle`, 'PATCH', {});
 }
 
-export async function deleteTask(id, userEmail = getCurrentUserEmail()) {
-  const backup = getBackupTasks(userEmail);
-  setBackupTasks(backup.filter(t => t.id !== id), userEmail);
-
-  try {
-    await fetchWithTimeout(`${API_BASE}/tasks/${id}`, { method: 'DELETE' });
-  } catch (err) {}
-
-  return { success: true, id };
+export async function deleteTask(id) {
+  return writeRecord(`/tasks/${encodeURIComponent(id)}`, 'DELETE');
 }
-
-// ─── DAILY TRACK API ─────────────────────────────────────────
 
 export async function fetchDailyTrack(userEmail = getCurrentUserEmail()) {
   try {
@@ -341,25 +252,9 @@ export async function fetchNote(date, userEmail = getCurrentUserEmail()) {
   return { date, noteText: notes[date] || '' };
 }
 
-export async function saveNote(date, noteText, userEmail = getCurrentUserEmail()) {
-  const notesKey = `${BACKUP_NOTES_KEY}_${userEmail}`;
-  const notesRaw = localStorage.getItem(notesKey);
-  const notes = notesRaw ? JSON.parse(notesRaw) : {};
-  notes[date] = noteText;
-  localStorage.setItem(notesKey, JSON.stringify(notes));
-
-  try {
-    await fetchWithTimeout(`${API_BASE}/notes/${date}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ noteText, userEmail })
-    });
-  } catch (err) {}
-
-  return { date, noteText, userEmail };
+export async function saveNote(date, noteText) {
+  return writeRecord(`/notes/${date}`, 'PUT', { noteText });
 }
-
-// ─── STATS API ───────────────────────────────────────────────
 
 export async function fetchStreak(userEmail = getCurrentUserEmail()) {
   const backup = getBackupTasks(userEmail).filter(t => t.completed);
@@ -416,135 +311,32 @@ export async function fetchSubjects() {
 }
 
 export async function createSubject(subjectData) {
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/subjects`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subjectData)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      return data;
-    }
-  } catch (err) {}
-  return subjectData;
+  return writeRecord('/subjects', 'POST', subjectData);
 }
 
-// ─── AUTHENTICATION API ──────────────────────────────────────
-
-export async function loginWithGoogle({ email, name, picture, googleId, credential }) {
-  const cleanEmail = email.toLowerCase().trim();
-  const userPayload = {
-    email: cleanEmail,
-    name: name || cleanEmail.split('@')[0],
-    picture: picture || '',
-    googleId: googleId || 'google_' + Date.now(),
-    credential
-  };
-
-  setStoredUser(userPayload);
-
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userPayload)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.user) {
-        setStoredUser(data.user);
-        return data.user;
-      }
-    }
-  } catch (e) {
-    console.warn('Auth API fallback to local user:', e.message);
-  }
-
-  return userPayload;
+async function authRequest(path, body) {
+  const res = await fetchWithTimeout(`${API_BASE}/auth/${path}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  });
+  const data = await safeJson(res);
+  if (!res.ok || !data?.user) throw new Error(data?.error || 'Unable to sign in. Please try again.');
+  setStoredUser(data.user);return data.user;
 }
-
-export async function registerWithEmail({ email, password, name }) {
-  const cleanEmail = email.toLowerCase().trim();
-  const userName = (name || cleanEmail.split('@')[0]).trim();
-
-  let res;
-  try {
-    res = await fetchWithTimeout(`${API_BASE}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: cleanEmail, password, name: userName })
-    }, 15000);
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw new Error('Connection timed out. Please check your network connection.');
-    }
-    throw new Error('Network error. Unable to connect to server.');
-  }
-
-  let data = {};
-  try {
-    const text = await res.text();
-    if (text) data = JSON.parse(text);
-  } catch (e) {
-    data = {};
-  }
-
-  if (!res.ok) {
-    throw new Error(data.error || 'Registration failed. Please try again.');
-  }
-
-  if (data.user) {
-    setStoredUser(data.user);
-    return data.user;
-  }
-  throw new Error('Could not create account.');
+export const loginWithGoogle = ({ credential }) => authRequest('google', { credential });
+export const registerWithEmail = ({ email, password, name }) => authRequest('register', { email, password, name });
+export const loginWithEmail = ({ email, password }) => authRequest('login', { email, password });
+export async function fetchAuthConfig() {
+  const res = await fetchWithTimeout(`${API_BASE}/auth/config`);
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data?.error || 'Sign-in service unavailable.');
+  return data;
 }
-
-export async function loginWithEmail({ email, password, name }) {
-  const cleanEmail = email.toLowerCase().trim();
-  const userName = (name || cleanEmail.split('@')[0]).trim();
-
-  let res;
-  try {
-    res = await fetchWithTimeout(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: cleanEmail, password, name: userName })
-    }, 15000);
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw new Error('Connection timed out. Please check your network connection.');
-    }
-    throw new Error('Network error. Unable to connect to server.');
-  }
-
-  let data = {};
-  try {
-    const text = await res.text();
-    if (text) data = JSON.parse(text);
-  } catch (e) {
-    data = {};
-  }
-
-  if (!res.ok) {
-    throw new Error(data.error || 'Login failed. Please check your password.');
-  }
-
-  if (data.user) {
-    setStoredUser(data.user);
-    return data.user;
-  }
-
-  const fallbackUser = {
-    id: 'user_' + Date.now(),
-    email: cleanEmail,
-    name: userName,
-    picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
-    authProvider: 'email'
-  };
-  setStoredUser(fallbackUser);
-  return fallbackUser;
+export async function restoreSession() {
+  const res = await fetchWithTimeout(`${API_BASE}/auth/me`);
+  const data = await safeJson(res);
+  if (res.status === 401) { setStoredUser(null); return null; }
+  if (!res.ok) throw new Error(data?.error || 'Session service unavailable.');
+  setStoredUser(data.user);return data.user;
 }
 
 export async function fetchUsers() {
@@ -559,7 +351,9 @@ export async function fetchUsers() {
   return [];
 }
 
-export function logout() {
+export async function logout() {
+  const res = await fetchWithTimeout(`${API_BASE}/auth/logout`, { method: 'POST' });
+  if (!res.ok) throw new Error('Could not sign out. Please try again.');
   setStoredUser(null);
 }
 
@@ -573,4 +367,12 @@ export async function fetchDbStatus() {
     console.warn('DB Status check:', e.message);
   }
   return { activeDatabase: 'Local/SQLite' };
+}
+
+async function writeRecord(path, method, body) {
+  const res = await fetchWithTimeout(`${API_BASE}${path}`, { method,
+    headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const data = await safeJson(res);
+  if (!res.ok || !data) throw new Error(data?.error || 'Your changes could not be saved.');
+  return data;
 }

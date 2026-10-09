@@ -1,3 +1,4 @@
+import { authMiddleware } from './auth.js';
 import db from './db.js';
 import url from 'url';
 // Stub mongo for clean MySQL + SQLite operation
@@ -26,12 +27,11 @@ import {
 } from './mysql.js';
 import { hashPassword, verifyPassword } from './authUtils.js';
 
-// Auto-initialize MySQL on startup
-initMySQL().catch(err => {
-  console.log('🐬 MySQL init notice:', err.message);
-});
-
 export function handleApiRequest(req, res, next) {
+  return authMiddleware(req, res, () => handleAuthenticatedRequest(req, res, next));
+}
+
+function handleAuthenticatedRequest(req, res, next) {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
   const method = req.method;
@@ -48,23 +48,14 @@ export function handleApiRequest(req, res, next) {
     res.end(JSON.stringify(data));
   };
 
-  const parseBody = (callback) => {
-    if (req.body) {
-      return callback(req.body);
-    }
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
-      try {
-        const json = body ? JSON.parse(body) : {};
-        callback(json);
-      } catch (e) {
-        callback({});
-      }
-    });
+  const parseBody = async (callback) => {
+    if (req.body) return callback(req.body);
+    let raw = '';
+    for await (const chunk of req) { raw += chunk; if (raw.length > 100000) throw new Error('Request too large'); }
+    return callback(raw ? JSON.parse(raw) : {});
   };
 
-  (async () => {
+  return (async () => {
     try {
       const useMySQL = isMySQLConnected();
       const useMongo = !useMySQL && isMongoConnected();
@@ -102,6 +93,7 @@ export function handleApiRequest(req, res, next) {
             return sendJson(200, mysqlTasks);
           } catch (e) {
             console.error('MySQL GET /api/tasks failed, falling back:', e.message);
+            throw e;
           }
         }
 
@@ -157,11 +149,11 @@ export function handleApiRequest(req, res, next) {
 
       // 2. POST /api/tasks
       if (method === 'POST' && pathname === '/api/tasks') {
-        return parseBody(async (body) => {
+        return await parseBody(async (body) => {
           const { id, date, subject, topic, durationHours, durationMinutes, durationSeconds, priority, notes } = body;
           const taskId = id || Date.now().toString();
           const now = new Date().toISOString();
-          const taskUser = (body.userEmail || userEmail || 'kumar@gmail.com').toLowerCase().trim();
+          const taskUser = userEmail;
 
           const taskData = {
             id: taskId,
@@ -186,13 +178,14 @@ export function handleApiRequest(req, res, next) {
               createdResult = await mySQLCreateTask(taskData);
             } catch (e) {
               console.error('MySQL create task failed:', e.message);
+            throw e;
             }
           }
 
           if (useMongo) {
             try {
               await Task.findOneAndUpdate({ id: taskId }, taskData, { upsert: true, new: true });
-            } catch (e) {}
+            } catch (e) { if (!useMySQL) throw e; }
           }
 
           // Mirror SQLite
@@ -205,7 +198,7 @@ export function handleApiRequest(req, res, next) {
               taskData.durationHours, taskData.durationMinutes, taskData.durationSeconds, 
               taskData.priority, taskData.notes, taskUser, now
             );
-          } catch (e) {}
+          } catch (e) { if (!useMySQL) throw e; }
 
           return sendJson(201, createdResult || taskData);
         });
@@ -224,11 +217,12 @@ export function handleApiRequest(req, res, next) {
               try {
                 db.prepare('UPDATE tasks SET completed = ?, completed_at = ?, updated_at = ? WHERE id = ?')
                   .run(updated.completed ? 1 : 0, updated.completedAt, now, taskId);
-              } catch (e) {}
+              } catch (e) { if (!useMySQL) throw e; }
               return sendJson(200, updated);
             }
           } catch (e) {
             console.error('MySQL toggle task failed:', e.message);
+            throw e;
           }
         }
 
@@ -265,7 +259,7 @@ export function handleApiRequest(req, res, next) {
       if (method === 'PUT' && pathname.startsWith('/api/tasks/')) {
         const parts = pathname.split('/');
         const taskId = parts[3];
-        return parseBody(async (body) => {
+        return await parseBody(async (body) => {
           const { date, subject, topic, durationHours, durationMinutes, durationSeconds, priority, completed, completedAt, notes } = body;
           const now = new Date().toISOString();
 
@@ -294,11 +288,12 @@ export function handleApiRequest(req, res, next) {
                     date, subject, topic, updateFields.durationHours, updateFields.durationMinutes, updateFields.durationSeconds,
                     updateFields.priority, updateFields.completed ? 1 : 0, updateFields.completedAt, updateFields.notes, now, taskId
                   );
-                } catch (e) {}
+                } catch (e) { if (!useMySQL) throw e; }
                 return sendJson(200, updated);
               }
             } catch (e) {
               console.error('MySQL update task failed:', e.message);
+            throw e;
             }
           }
 
@@ -346,11 +341,12 @@ export function handleApiRequest(req, res, next) {
             await mySQLDeleteTask(taskId);
           } catch (e) {
             console.error('MySQL delete task failed:', e.message);
+            throw e;
           }
         }
         try {
           db.prepare('DELETE FROM tasks WHERE id = ?').run(taskId);
-        } catch (e) {}
+        } catch (e) { if (!useMySQL) throw e; }
 
         return sendJson(200, { success: true, id: taskId });
       }
@@ -370,6 +366,7 @@ export function handleApiRequest(req, res, next) {
             return sendJson(200, trackWithNotes);
           } catch (e) {
             console.error('MySQL GET /api/daily-track failed:', e.message);
+            throw e;
           }
         }
 
@@ -420,6 +417,7 @@ export function handleApiRequest(req, res, next) {
             return sendJson(200, note);
           } catch (e) {
             console.error('MySQL GET note failed:', e.message);
+            throw e;
           }
         }
         
@@ -431,9 +429,9 @@ export function handleApiRequest(req, res, next) {
       // 8. PUT /api/notes/:date
       if (method === 'PUT' && pathname.startsWith('/api/notes/')) {
         const date = pathname.replace('/api/notes/', '');
-        return parseBody(async (body) => {
+        return await parseBody(async (body) => {
           const { noteText } = body;
-          const noteUser = (body.userEmail || userEmail || 'kumar@gmail.com').toLowerCase().trim();
+          const noteUser = userEmail;
           const now = new Date().toISOString();
 
           if (useMySQL) {
@@ -441,6 +439,7 @@ export function handleApiRequest(req, res, next) {
               await mySQLSaveNote(date, noteText, noteUser);
             } catch (e) {
               console.error('MySQL save note failed:', e.message);
+            throw e;
             }
           }
 
@@ -452,7 +451,7 @@ export function handleApiRequest(req, res, next) {
             } else {
               db.prepare('INSERT INTO daily_notes (date, note_text, user_email, created_at, updated_at) VALUES (?, ?, ?, ?, ?)').run(date, noteText || '', noteUser, now, now);
             }
-          } catch (e) {}
+          } catch (e) { if (!useMySQL) throw e; }
 
           return sendJson(200, { date, noteText: noteText || '', userEmail: noteUser });
         });
@@ -466,6 +465,7 @@ export function handleApiRequest(req, res, next) {
             return sendJson(200, { streak });
           } catch (e) {
             console.error('MySQL streak failed:', e.message);
+            throw e;
           }
         }
 
@@ -504,6 +504,7 @@ export function handleApiRequest(req, res, next) {
             }
           } catch (e) {
             console.error('MySQL GET subjects failed:', e.message);
+            throw e;
           }
         }
 
@@ -513,7 +514,7 @@ export function handleApiRequest(req, res, next) {
 
       // 11. POST /api/subjects
       if (method === 'POST' && pathname === '/api/subjects') {
-        return parseBody(async (body) => {
+        return await parseBody(async (body) => {
           const { name, icon, color } = body;
           if (!name || !name.trim()) {
             return sendJson(400, { error: 'Subject name is required' });
@@ -528,222 +529,22 @@ export function handleApiRequest(req, res, next) {
               await mySQLCreateSubject({ id, name: subName, icon: subIcon, color: subColor });
             } catch (e) {
               console.error('MySQL create subject failed:', e.message);
+            throw e;
             }
           }
 
           try {
             db.prepare('INSERT OR IGNORE INTO subjects (id, name, icon, color) VALUES (?, ?, ?, ?)').run(id, subName, subIcon, subColor);
-          } catch (e) {}
+          } catch (e) { if (!useMySQL) throw e; }
 
           return sendJson(201, { id, name: subName, icon: subIcon, color: subColor });
-        });
-      }
-
-      // 12. POST /api/auth/google
-      if (method === 'POST' && pathname === '/api/auth/google') {
-        return parseBody(async (body) => {
-          const { email, name, picture, googleId } = body;
-          if (!email) return sendJson(400, { error: 'Email is required' });
-
-          const id = googleId || 'user_' + Date.now();
-          const userName = name || email.split('@')[0];
-          const userPic = picture || '';
-          const now = new Date().toISOString();
-
-          let userDoc = {
-            id,
-            email: email.toLowerCase().trim(),
-            name: userName,
-            picture: userPic,
-            googleId: googleId || id,
-            authProvider: 'google',
-            createdAt: now
-          };
-
-          if (useMySQL) {
-            try {
-              const savedUser = await mySQLLoginUser(userDoc);
-              if (savedUser) userDoc = savedUser;
-            } catch (e) {
-              console.error('MySQL login google user failed:', e.message);
-            }
-          }
-
-          try {
-            db.prepare(`
-              INSERT INTO users (id, email, name, picture, google_id, auth_provider, created_at)
-              VALUES (?, ?, ?, ?, ?, 'google', ?)
-              ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, google_id = ?
-            `).run(id, userDoc.email, userName, userPic, googleId || id, now, userName, userPic, googleId || id);
-          } catch (e) {}
-
-          return sendJson(200, { success: true, user: userDoc });
-        });
-      }
-
-      // 13. GET /api/users
-      if (method === 'GET' && pathname === '/api/users') {
-        if (useMySQL) {
-          try {
-            const users = await mySQLGetUsers();
-            return sendJson(200, users);
-          } catch (e) {
-            console.error('MySQL GET users failed:', e.message);
-          }
-        }
-
-        try {
-          const rows = db.prepare('SELECT id, email, name, picture, auth_provider, created_at FROM users ORDER BY created_at DESC').all();
-          return sendJson(200, rows.map(u => ({
-            id: u.id,
-            email: u.email,
-            name: u.name,
-            picture: u.picture,
-            authProvider: u.auth_provider,
-            createdAt: u.created_at
-          })));
-        } catch (e) {
-          return sendJson(200, []);
-        }
-      }
-
-      // 14. POST /api/auth/register
-      if (method === 'POST' && pathname === '/api/auth/register') {
-        return parseBody(async (body) => {
-          const { email, password, name } = body;
-          if (!email || !email.trim()) return sendJson(400, { error: 'Valid email is required.' });
-          if (!password || password.length < 4) return sendJson(400, { error: 'Password must be at least 4 characters long.' });
-
-          const cleanEmail = email.toLowerCase().trim();
-          const userName = (name || cleanEmail.split('@')[0]).trim();
-          const userId = 'usr_' + Date.now();
-          const userPic = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`;
-          const now = new Date().toISOString();
-          const passwordHash = hashPassword(password);
-
-          // Try MySQL first
-          if (useMySQL) {
-            try {
-              const newUser = await mySQLRegisterUser({ email: cleanEmail, password, name: userName, picture: userPic });
-              
-              try {
-                db.prepare(`
-                  INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
-                  VALUES (?, ?, ?, ?, ?, 'email', ?)
-                  ON CONFLICT(email) DO UPDATE SET name = ?, picture = ?, password_hash = ?
-                `).run(newUser.id, cleanEmail, userName, userPic, passwordHash, now, userName, userPic, passwordHash);
-              } catch (e) {}
-
-              return sendJson(201, { success: true, user: newUser });
-            } catch (err) {
-              return sendJson(err.status || 400, { error: err.message });
-            }
-          }
-
-          // SQLite fallback
-          const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
-          if (existing) {
-            return sendJson(409, { error: 'User already exists with this email. Please sign in.' });
-          }
-
-          db.prepare(`
-            INSERT INTO users (id, email, name, picture, password_hash, auth_provider, created_at)
-            VALUES (?, ?, ?, ?, ?, 'email', ?)
-          `).run(userId, cleanEmail, userName, userPic, passwordHash, now);
-
-          return sendJson(201, {
-            success: true,
-            user: {
-              id: userId,
-              email: cleanEmail,
-              name: userName,
-              picture: userPic,
-              authProvider: 'email',
-              createdAt: now
-            }
-          });
-        });
-      }
-
-      // 15. POST /api/auth/login
-      if (method === 'POST' && pathname === '/api/auth/login') {
-        return parseBody(async (body) => {
-          const { email, password, name } = body;
-          if (!email || !email.trim()) return sendJson(400, { error: 'Email is required.' });
-
-          const cleanEmail = email.toLowerCase().trim();
-
-          // Password login
-          if (password) {
-            if (useMySQL) {
-              try {
-                const loggedInUser = await mySQLLoginWithPassword({ email: cleanEmail, password });
-                return sendJson(200, { success: true, user: loggedInUser });
-              } catch (err) {
-                return sendJson(err.status || 401, { error: err.message });
-              }
-            }
-
-            // SQLite Fallback
-            const userRow = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
-            if (!userRow) {
-              return sendJson(404, { error: 'User not found. Please register first.' });
-            }
-            if (!userRow.password_hash) {
-              return sendJson(400, { error: 'This account was created with Google Sign-In. Please use Google Login.' });
-            }
-            if (!verifyPassword(password, userRow.password_hash)) {
-              return sendJson(401, { error: 'Incorrect password. Please try again.' });
-            }
-
-            return sendJson(200, {
-              success: true,
-              user: {
-                id: userRow.id,
-                email: userRow.email,
-                name: userRow.name,
-                picture: userRow.picture,
-                authProvider: userRow.auth_provider,
-                createdAt: userRow.created_at
-              }
-            });
-          }
-
-          // Guest / 1-click login
-          const id = 'usr_' + Date.now();
-          const userName = name || cleanEmail.split('@')[0];
-          const now = new Date().toISOString();
-          let userDoc = {
-            id,
-            email: cleanEmail,
-            name: userName,
-            picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
-            authProvider: 'email',
-            createdAt: now
-          };
-
-          if (useMySQL) {
-            try {
-              const saved = await mySQLLoginUser(userDoc);
-              if (saved) userDoc = saved;
-            } catch (e) {}
-          }
-
-          try {
-            db.prepare(`
-              INSERT OR IGNORE INTO users (id, email, name, picture, auth_provider, created_at)
-              VALUES (?, ?, ?, ?, 'email', ?)
-            `).run(id, cleanEmail, userName, userDoc.picture, now);
-          } catch (e) {}
-
-          return sendJson(200, { success: true, user: userDoc });
         });
       }
 
       return sendJson(404, { error: 'Not found' });
     } catch (err) {
       console.error('API Error:', err);
-      return sendJson(500, { error: err.message });
+      return sendJson(503, { error: 'Changes could not be saved. Please check the database connection.' });
     }
   })();
 }
