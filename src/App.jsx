@@ -18,11 +18,12 @@ import {
 } from './api';
 import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, Play, Folder } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getLocalDateString } from './utils/formatTime.js';
 
 const STORAGE_KEY_DARK = 'iitm_dark_mode';
 
 export default function App() {
-  const getTodayString = () => new Date().toISOString().split('T')[0];
+  const getTodayString = () => getLocalDateString();
 
   // ─── Dark mode ─────────────────────────────────────────────
   const [darkMode, setDarkMode] = useState(() => {

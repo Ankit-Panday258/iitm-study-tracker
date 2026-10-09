@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, Plus, ExternalLink, Flag, Sparkles, Filter, 
   Layers, Check, Bell, BookOpen
 } from 'lucide-react';
+import { getLocalDateString } from '../utils/formatTime.js';
 
 export const ASSIGNMENT_SCHEDULE = [
   {
@@ -183,14 +184,43 @@ export const AVAILABLE_MONTHS = [
   { year: 2027, month: 0, label: 'January 2027', shortLabel: 'January 2027' }
 ];
 
+export const getInitialMonthIndex = () => {
+  const now = new Date();
+  const yr = now.getFullYear();
+  const mo = now.getMonth();
+  const idx = AVAILABLE_MONTHS.findIndex(m => m.year === yr && m.month === mo);
+  return idx !== -1 ? idx : 0;
+};
+
 const STORAGE_KEY_SUBMITTED = 'iitm_assignments_submitted_v1';
 
 export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'list'
-  const [currentMonthIdx, setCurrentMonthIdx] = useState(0); // 0 = Oct 2026, 1 = Nov, 2 = Dec, 3 = Jan 2027
+  const [currentMonthIdx, setCurrentMonthIdx] = useState(getInitialMonthIndex);
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [selectedExam, setSelectedExam] = useState(null);
   const [filterType, setFilterType] = useState('all'); // 'all' | 'milestones' | 'exams' | 'submitted' | 'pending'
+  const [todayStr, setTodayStr] = useState(getLocalDateString);
+
+  // Live real-time date updater: automatically refreshes at midnight or tab focus
+  useEffect(() => {
+    const updateToday = () => {
+      const current = getLocalDateString();
+      setTodayStr(prev => (prev !== current ? current : prev));
+    };
+
+    updateToday();
+    // Check every 10 seconds for instant midnight / live date transition
+    const interval = setInterval(updateToday, 10000);
+    window.addEventListener('focus', updateToday);
+    document.addEventListener('visibilitychange', updateToday);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', updateToday);
+      document.removeEventListener('visibilitychange', updateToday);
+    };
+  }, []);
 
   const activeMonthObj = AVAILABLE_MONTHS[currentMonthIdx] || AVAILABLE_MONTHS[0];
   const selectedMonth = activeMonthObj.month;
@@ -252,17 +282,18 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
   };
 
   // Find the next upcoming deadline from today
-  const todayStr = '2026-10-06';
   const upcomingAssignments = ASSIGNMENT_SCHEDULE.filter(a => a.deadlineDate >= todayStr);
   const nextUpcoming = upcomingAssignments[0] || ASSIGNMENT_SCHEDULE[0];
 
   // Calculate days remaining
   const getDaysRemaining = (targetDateStr) => {
-    const today = new Date(todayStr);
-    const target = new Date(targetDateStr);
-    const diffTime = target - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    if (!targetDateStr) return 0;
+    const [tY, tM, tD] = targetDateStr.split('-').map(Number);
+    const [curY, curM, curD] = todayStr.split('-').map(Number);
+    const target = new Date(tY, tM - 1, tD);
+    const current = new Date(curY, curM - 1, curD);
+    const diffTime = target.getTime() - current.getTime();
+    return Math.round(diffTime / (1000 * 60 * 60 * 24));
   };
 
   // Calendar Grid builder
@@ -606,6 +637,13 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   title="Next Month"
                 >
                   <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentMonthIdx(getInitialMonthIndex())}
+                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95"
+                  title="Jump to Today's Month"
+                >
+                  Today
                 </button>
               </div>
 
