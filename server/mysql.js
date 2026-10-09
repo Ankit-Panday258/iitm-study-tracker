@@ -14,6 +14,8 @@ const MYSQL_PORT = parseInt(process.env.MYSQL_PORT || '3306', 10);
 const MYSQL_USER = process.env.MYSQL_USER || 'root';
 const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || '';
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE || 'iitm_study_tracker';
+const MYSQL_SSL_CA = process.env.MYSQL_SSL_CA?.replace(/\\n/g, '\n');
+const mysqlSSL = MYSQL_SSL_CA ? { ca: MYSQL_SSL_CA, rejectUnauthorized: true } : undefined;
 
 let pool = null;
 let isConnected = false;
@@ -29,6 +31,7 @@ export async function initMySQL() {
       port: MYSQL_PORT,
       user: MYSQL_USER,
       password: MYSQL_PASSWORD,
+      ssl: mysqlSSL,
       connectTimeout: 5000
     });
 
@@ -41,6 +44,7 @@ export async function initMySQL() {
       port: MYSQL_PORT,
       user: MYSQL_USER,
       password: MYSQL_PASSWORD,
+      ssl: mysqlSSL,
       database: MYSQL_DATABASE,
       waitForConnections: true,
       connectionLimit: 10,
