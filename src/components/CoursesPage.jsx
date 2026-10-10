@@ -3,12 +3,60 @@ import {
   GraduationCap, Play, ExternalLink, Copy, Check, ArrowLeft, Plus,
   Trash2, Folder, Sparkles, Search, Video, CheckCircle2,
   Calendar, Terminal, Cpu, HardDrive, Layers, Globe, Clock, ChevronDown, ChevronUp,
-  ArrowRight, BookOpen, FileText, RotateCcw
+  ArrowRight, BookOpen, FileText, RotateCcw, ClipboardList
 } from 'lucide-react';
 
 export const SYSTEM_COMMANDS_DRIVE_URL = 'https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv';
 const STORAGE_KEY_COURSES = 'iitm_courses_syllabus_v5';
 const STORAGE_KEY_CHECKLIST = 'iitm_syllabus_checklist_v2';
+
+const DBMS_WEEK_ONE_QUIZ = [
+  {
+    prompt: 'Which statement about data management is true?',
+    type: 'single',
+    options: [
+      'The two major approaches in data management practice have been physical and mechanical.',
+      'Book-keeping, from a data management perspective, is the process of physical data or records management using physical ledgers and journals.',
+      'NoSQL was introduced because RDBMSs were not efficient enough to handle structured data.',
+      'Electronic data is easily destroyed by moisture and termites.'
+    ],
+    answer: [1],
+    explanation: 'Traditional book-keeping used physical ledgers and journals to manage records.'
+  },
+  {
+    prompt: 'Spreadsheet files can be better than paper-based book-keeping in which ways?',
+    type: 'multiple',
+    options: ['Durability', 'Scalability', 'Security', 'Consistency'],
+    answer: [0, 1, 2, 3],
+    explanation: 'The source quiz marks all four properties.'
+  },
+  {
+    prompt: 'Which are disadvantages of file systems compared with a DBMS?',
+    type: 'multiple',
+    options: [
+      'An upper limit on the number of rows',
+      'Constraint violations may go unchecked',
+      'The ability to give users access at different levels',
+      'Data consistency is never compromised'
+    ],
+    answer: [0, 1],
+    explanation: 'File systems can lack scalable row handling and built-in constraint enforcement.'
+  },
+  {
+    prompt: 'Choose the correct order of data management practices, from earliest to latest.',
+    type: 'single',
+    options: ['A-B-C-D', 'D-C-B-A', 'A-C-D-B', 'B-D-C-A'],
+    answer: [3],
+    explanation: 'The sequence is punched cards, hard disks, parallel and distributed databases, then data warehousing.'
+  },
+  {
+    prompt: 'Which options are client/server relational database systems (RDBMSs)?',
+    type: 'multiple',
+    options: ['Sybase', 'MongoDB', 'Couchbase', 'PostgreSQL'],
+    answer: [0, 3],
+    explanation: 'Sybase and PostgreSQL are relational database systems; MongoDB and Couchbase are NoSQL databases.'
+  }
+];
 
 export const INITIAL_COURSES_DATA = [
   {
@@ -624,6 +672,9 @@ export default function CoursesPage({
   const [activeCourseId, setActiveCourseId] = useState(initialCourseId || 'sys_cmd');
   const [selectedWeekNum, setSelectedWeekNum] = useState(1);
   const [activeVideoSubIndex, setActiveVideoSubIndex] = useState(0); // 0 = primary, 1 = extraVideo
+  const [activeQuizQuestion, setActiveQuizQuestion] = useState(0);
+  const [quizSelections, setQuizSelections] = useState({});
+  const [quizResults, setQuizResults] = useState({});
   const [showFullOverview, setShowFullOverview] = useState(false);
   const [copiedLink, setCopiedLink] = useState('');
   
@@ -662,6 +713,33 @@ export default function CoursesPage({
   const currentVideoObj = (activeWeek?.video?.extraVideos && activeVideoSubIndex > 0)
     ? activeWeek.video.extraVideos[activeVideoSubIndex - 1]
     : activeWeek?.video;
+  const activeQuiz = activeCourseId === 'dbms' && selectedWeekNum === 1 ? DBMS_WEEK_ONE_QUIZ : null;
+  const quizScore = Object.values(quizResults).filter(Boolean).length;
+
+  const startWeekOneQuiz = () => {
+    setActiveQuizQuestion(0);
+    setQuizSelections({});
+    setQuizResults({});
+    setStage('quiz');
+  };
+
+  const toggleQuizOption = (optionIndex) => {
+    setQuizSelections(prev => {
+      const current = prev[activeQuizQuestion] || [];
+      const next = current.includes(optionIndex)
+        ? current.filter(index => index !== optionIndex)
+        : [...current, optionIndex].sort((a, b) => a - b);
+      return { ...prev, [activeQuizQuestion]: next };
+    });
+  };
+
+  const submitQuizAnswer = () => {
+    if (!activeQuiz) return;
+    const selected = quizSelections[activeQuizQuestion] || [];
+    const expected = activeQuiz[activeQuizQuestion].answer;
+    const correct = selected.length === expected.length && expected.every(index => selected.includes(index));
+    setQuizResults(prev => ({ ...prev, [activeQuizQuestion]: correct }));
+  };
 
   const handleCopy = (text, label) => {
     if (!text) return;
@@ -967,7 +1045,7 @@ export default function CoursesPage({
                     </div>
                   </div>
 
-                  {/* Buttons: Start (Direct Video) & Notes */}
+                  {/* Buttons: lesson, notes, and the Week 1 DBMS quiz */}
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
@@ -991,6 +1069,18 @@ export default function CoursesPage({
                       <FileText className="w-4 h-4" />
                     </button>
                   </div>
+                  {activeCourse.id === 'dbms' && w.weekNumber === 1 && (
+                    <button
+                      onClick={() => {
+                        setSelectedWeekNum(w.weekNumber);
+                        startWeekOneQuiz();
+                      }}
+                      className="mt-2.5 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 text-amber-800 dark:text-amber-300 font-black text-xs border border-amber-200 dark:border-amber-800 transition-all cursor-pointer active:scale-95"
+                    >
+                      <ClipboardList className="w-4 h-4" />
+                      <span>Week 1 Quiz · 5 Questions</span>
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -1150,6 +1240,141 @@ export default function CoursesPage({
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* STAGE 4: WEEK 1 DBMS QUIZ                                                */}
+      {/* ========================================================================= */}
+      {stage === 'quiz' && activeQuiz && (
+        <div className="max-w-3xl mx-auto space-y-5 animate-fadeIn">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              onClick={() => setStage('week')}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-amber-700 border border-gray-200 dark:border-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Week 1</span>
+            </button>
+            <span className="text-xs font-bold text-gray-500 dark:text-slate-400">DBMS · Week 1</span>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border-2 border-amber-200 dark:border-amber-900/70 rounded-3xl p-5 sm:p-8 shadow-lg">
+            {activeQuizQuestion < activeQuiz.length ? (() => {
+              const question = activeQuiz[activeQuizQuestion];
+              const selected = quizSelections[activeQuizQuestion] || [];
+              const hasSubmitted = Object.prototype.hasOwnProperty.call(quizResults, activeQuizQuestion);
+              const isCorrect = quizResults[activeQuizQuestion];
+              return (
+                <div>
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        <ClipboardList className="w-3.5 h-3.5" /> Week 1 Quiz
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white mt-3">DBMS Foundations</h3>
+                    </div>
+                    <span className="shrink-0 text-xs font-black text-gray-500 dark:text-slate-400">
+                      {activeQuizQuestion + 1} / {activeQuiz.length}
+                    </span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden mb-6">
+                    <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${((activeQuizQuestion + 1) / activeQuiz.length) * 100}%` }} />
+                  </div>
+
+                  <p className="text-base sm:text-lg font-bold leading-relaxed text-gray-900 dark:text-white mb-2">{question.prompt}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+                    {question.type === 'multiple' ? 'Select all that apply.' : 'Select one answer.'}
+                  </p>
+
+                  <div className="space-y-2.5">
+                    {question.options.map((option, optionIndex) => {
+                      const isSelected = selected.includes(optionIndex);
+                      const isExpected = question.answer.includes(optionIndex);
+                      const optionStyle = hasSubmitted
+                        ? isExpected
+                          ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800'
+                          : isSelected
+                            ? 'border-red-400 bg-red-50 dark:bg-red-950/30 dark:border-red-900'
+                            : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50'
+                        : isSelected
+                          ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800'
+                          : 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 hover:border-amber-300';
+                      return (
+                        <button
+                          key={optionIndex}
+                          type="button"
+                          disabled={hasSubmitted}
+                          aria-pressed={isSelected}
+                          onClick={() => {
+                            if (question.type === 'single') {
+                              setQuizSelections(prev => ({ ...prev, [activeQuizQuestion]: [optionIndex] }));
+                            } else {
+                              toggleQuizOption(optionIndex);
+                            }
+                          }}
+                          className={`w-full text-left flex items-start gap-3 p-3.5 rounded-2xl border-2 transition-all ${optionStyle} ${hasSubmitted ? 'cursor-default' : 'cursor-pointer'}`}
+                        >
+                          <span className={`mt-0.5 w-5 h-5 shrink-0 ${question.type === 'multiple' ? 'rounded-md' : 'rounded-full'} border-2 flex items-center justify-center ${isSelected ? 'bg-amber-600 border-amber-600 text-white' : 'border-gray-300 dark:border-slate-600'}`}>
+                            {isSelected && <Check className="w-3.5 h-3.5" />}
+                          </span>
+                          <span className="text-sm leading-relaxed text-gray-800 dark:text-slate-200">{option}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {hasSubmitted && (
+                    <div className={`mt-5 p-4 rounded-2xl border ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900 text-emerald-900 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900 text-rose-900 dark:text-rose-200'}`}>
+                      <p className="font-black text-sm">{isCorrect ? 'Correct!' : 'Not quite'}</p>
+                      <p className="text-xs leading-relaxed mt-1">{question.explanation}</p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between gap-3 mt-6">
+                    <span className="text-xs font-bold text-gray-500 dark:text-slate-400">Score: {quizScore} / {activeQuiz.length}</span>
+                    {!hasSubmitted ? (
+                      <button
+                        type="button"
+                        disabled={selected.length === 0}
+                        onClick={submitQuizAnswer}
+                        className="px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-slate-700 text-white font-black text-sm shadow-md transition-all cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        Check Answer
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setActiveQuizQuestion(activeQuizQuestion + 1)}
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-sm shadow-md transition-all cursor-pointer"
+                      >
+                        <span>{activeQuizQuestion === activeQuiz.length - 1 ? 'See Results' : 'Next Question'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })() : (
+              <div className="text-center py-5">
+                <span className="mx-auto w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8" />
+                </span>
+                <p className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300 mt-4">Quiz Complete</p>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mt-1">You scored {quizScore} / {activeQuiz.length}</h3>
+                <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">Review the Week 1 DBMS foundations and try again whenever you like.</p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+                  <button onClick={startWeekOneQuiz} className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-sm shadow-md transition-all cursor-pointer">
+                    <RotateCcw className="w-4 h-4" /> Try Again
+                  </button>
+                  <button onClick={() => setStage('week')} className="px-5 py-3 rounded-2xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-800 dark:text-slate-200 font-black text-sm transition-all cursor-pointer">
+                    Back to Week 1
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
