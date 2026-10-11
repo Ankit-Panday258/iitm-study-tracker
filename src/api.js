@@ -93,7 +93,7 @@ export function getCurrentUserEmail() {
   return user?.email ? user.email.toLowerCase().trim() : 'default';
 }
 
-function getBackupTasks(userEmail = getCurrentUserEmail()) {
+export function getBackupTasks(userEmail = getCurrentUserEmail()) {
   try {
     const key = `${BACKUP_TASKS_KEY}_${userEmail}`;
     const raw = localStorage.getItem(key);
@@ -182,19 +182,37 @@ export async function fetchAllTasks(allUsers = false) {
 }
 
 export async function createTask(taskData) {
-  return writeRecord('/tasks', 'POST', taskData);
+  const saved = await writeRecord('/tasks', 'POST', taskData);
+  saveTaskBackup(saved);
+  return saved;
 }
 
 export async function updateTask(id, taskData) {
-  return writeRecord(`/tasks/${encodeURIComponent(id)}`, 'PUT', taskData);
+  const saved = await writeRecord(`/tasks/${encodeURIComponent(id)}`, 'PUT', taskData);
+  saveTaskBackup(saved);
+  return saved;
 }
 
 export async function toggleTask(id) {
-  return writeRecord(`/tasks/${encodeURIComponent(id)}/toggle`, 'PATCH', {});
+  const saved = await writeRecord(`/tasks/${encodeURIComponent(id)}/toggle`, 'PATCH', {});
+  saveTaskBackup(saved);
+  return saved;
 }
 
 export async function deleteTask(id) {
-  return writeRecord(`/tasks/${encodeURIComponent(id)}`, 'DELETE');
+  await writeRecord(`/tasks/${encodeURIComponent(id)}`, 'DELETE');
+  const userEmail = getCurrentUserEmail();
+  setBackupTasks(getBackupTasks(userEmail).filter(task => String(task.id) !== String(id)), userEmail);
+}
+
+function saveTaskBackup(task) {
+  if (!task || task.id === undefined) return;
+  const userEmail = (task.userEmail || getCurrentUserEmail()).toLowerCase().trim();
+  const tasks = getBackupTasks(userEmail);
+  const next = tasks.some(item => String(item.id) === String(task.id))
+    ? tasks.map(item => String(item.id) === String(task.id) ? task : item)
+    : [task, ...tasks];
+  setBackupTasks(next, userEmail);
 }
 
 export async function fetchDailyTrack(userEmail = getCurrentUserEmail()) {
@@ -253,7 +271,14 @@ export async function fetchNote(date, userEmail = getCurrentUserEmail()) {
 }
 
 export async function saveNote(date, noteText) {
-  return writeRecord(`/notes/${date}`, 'PUT', { noteText });
+  const saved = await writeRecord(`/notes/${date}`, 'PUT', { noteText });
+  const notesKey = `${BACKUP_NOTES_KEY}_${getCurrentUserEmail()}`;
+  try {
+    const notes = JSON.parse(localStorage.getItem(notesKey) || '{}');
+    notes[date] = noteText;
+    localStorage.setItem(notesKey, JSON.stringify(notes));
+  } catch (e) {}
+  return saved;
 }
 
 export async function fetchStreak(userEmail = getCurrentUserEmail()) {

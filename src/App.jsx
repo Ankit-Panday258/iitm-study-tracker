@@ -14,7 +14,7 @@ import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage
 import DailyNotes from './components/DailyNotes';
 import AssignmentCalendar from './components/AssignmentCalendar';
 import { 
-  fetchTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects, 
+  fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI
 } from './api';
 import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, Play, Folder } from 'lucide-react';
@@ -130,11 +130,9 @@ export default function App() {
 
   const [allTasks, setAllTasks] = useState(() => {
     try {
-      const raw = localStorage.getItem('iitm_tasks_backup');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
+      const cachedUser = getStoredUser();
+      const cachedTasks = getBackupTasks(cachedUser?.email || 'default');
+      if (cachedTasks.length > 0) return cachedTasks;
     } catch (e) {}
     return DEFAULT_INITIAL_TASKS;
   });
@@ -161,10 +159,14 @@ export default function App() {
   const [isDbModalOpen, setIsDbModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(['/login', '/register'].includes(window.location.pathname));
   const [currentUser, setCurrentUser] = useState(() => {
-    return null;
+    return getStoredUser();
   });
   useEffect(() => {
-    restoreSession().then(setCurrentUser).catch(error => { console.warn(error.message); setCurrentUser(null); });
+    restoreSession().then(setCurrentUser).catch(error => {
+      // Keep the cached identity visible while the session endpoint is temporarily unavailable.
+      console.warn(error.message);
+      setCurrentUser(getStoredUser());
+    });
     const onPop = () => setIsAuthModalOpen(['/login', '/register'].includes(window.location.pathname));
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);

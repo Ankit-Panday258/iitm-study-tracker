@@ -751,10 +751,12 @@ export default function CoursesPage({
   };
 
   const toggleTopicCheck = (topicKey) => {
-    setCompletedTopics(prev => {
-      const next = { ...prev, [topicKey]: !prev[topicKey] };
-      return next;
-    });
+    const next = { ...completedTopics, [topicKey]: !completedTopics[topicKey] };
+    try {
+      // Persist the click immediately so a quick refresh or navigation cannot lose it.
+      localStorage.setItem(STORAGE_KEY_CHECKLIST, JSON.stringify(next));
+    } catch (e) {}
+    setCompletedTopics(next);
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(10);
     }
