@@ -25,20 +25,8 @@ export async function initMySQL() {
   if (process.env.DATABASE_DRIVER === 'sqlite') return false;
   try {
     if (!/^[a-zA-Z0-9_]+$/.test(MYSQL_DATABASE)) throw new Error('Invalid database name');
-    // 1. Initial connection without database to ensure database exists
-    const rootConn = await mysql.createConnection({
-      host: MYSQL_HOST,
-      port: MYSQL_PORT,
-      user: MYSQL_USER,
-      password: MYSQL_PASSWORD,
-      ssl: mysqlSSL,
-      connectTimeout: 5000
-    });
-
-    await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`);
-    await rootConn.end();
-
-    // 2. Create connection pool for the app database
+    // The database is provisioned by the host. Connect directly instead of requiring
+    // the application account to have server-level CREATE DATABASE privileges.
     pool = mysql.createPool({
       host: MYSQL_HOST,
       port: MYSQL_PORT,
@@ -46,12 +34,14 @@ export async function initMySQL() {
       password: MYSQL_PASSWORD,
       ssl: mysqlSSL,
       database: MYSQL_DATABASE,
+      connectTimeout: 10000,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0
     });
+    await pool.query('SELECT 1');
 
-    // 3. Create tables
+    // Create and migrate tables inside the configured database.
     await pool.query(`
       CREATE TABLE IF NOT EXISTS subjects (
         id VARCHAR(255) PRIMARY KEY,

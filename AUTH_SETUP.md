@@ -6,7 +6,7 @@ The app now has separate `/login` and `/register` pages. Both offer the official
 
 1. Install Node.js 20+ and run `npm ci`.
 2. Copy `.env.example` to `.env` and set your MySQL host, port, user, password and database. Keep `.env` private.
-3. Set `DATABASE_DRIVER=mysql`. The MySQL account needs permission to create the selected database if it does not exist, and create/alter/read/write its tables.
+3. Set `DATABASE_DRIVER=mysql` and create the selected database in your MySQL provider before starting the app. The application account needs permission to create/alter/read/write tables inside that database; it does not need server-level `CREATE DATABASE` permission.
 4. Set `APP_ORIGIN=http://localhost:3000` and run `npm run client`. Vite serves the frontend and the same backend API at http://localhost:3000. Development requests use the actual Vite origin, independently of a production APP_ORIGIN setting. Configured production origins are normalized, so a trailing slash is accepted. Do not need a second server for development.
 5. Alternatively run `npm run build` then `npm start` to serve the complete app on port 3001. Set `APP_ORIGIN=http://localhost:3001` for this mode.
 
@@ -20,7 +20,7 @@ Official reference: https://developers.google.com/identity/gsi/web/guides/verify
 
 ## Deployment
 
-For a Node host: build and run `npm start`, provide a persistent reachable MySQL database, set `NODE_ENV=production` and `APP_ORIGIN` to the exact HTTPS site origin, and add that origin to the Google OAuth client. Sessions use Secure cookies in production.
+For a Node host: build and run `npm start`, provide a persistent reachable MySQL database and its exact host/database/user/password settings, set `NODE_ENV=production` and `APP_ORIGIN` to the exact HTTPS site origin, and add that origin to the Google OAuth client. Sessions use Secure cookies in production.
 
 For Vercel: the included `api/index.js` and API rewrite provide backend endpoints; static frontend rewrites alone cannot authenticate or save data. Configure the same server environment variables and use a MySQL server reachable from Vercel. Do not use `127.0.0.1` for a database hosted elsewhere. SQLite is only an explicitly selected local development option and is not used in MySQL mode.
 
