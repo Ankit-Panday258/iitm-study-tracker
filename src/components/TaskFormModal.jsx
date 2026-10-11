@@ -22,6 +22,8 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
   const [newSubjectName, setNewSubjectName] = useState('');
   const [newSubjectIcon, setNewSubjectIcon] = useState('📚');
   const [subjectError, setSubjectError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     if (editingTask) {
@@ -55,7 +57,9 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
     setIsAddingNewSubject(false);
     setNewSubjectName('');
     setSubjectError('');
-  }, [editingTask, isOpen, selectedDate]);
+    setSaveError('');
+    setIsSaving(false);
+  }, [editingTask, isOpen]);
 
   if (!isOpen) return null;
 
@@ -90,30 +94,49 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!topic.trim()) return;
+    if (isSaving) return;
+    if (!topic.trim()) {
+      setSaveError('Please enter a study topic.');
+      return;
+    }
+    if (!targetDate) {
+      setSaveError('Please choose a date for this task.');
+      return;
+    }
 
     const hrs = Math.max(0, Number(durationHours) || 0);
     const mins = Math.max(0, Number(durationMinutes) || 0);
     const secs = Math.max(0, Number(durationSeconds) || 0);
 
     const computedTotalMins = Math.round(((hrs * 60) + mins + (secs / 60)) * 100) / 100;
+    setIsSaving(true);
+    setSaveError('');
+    try {
+      const result = await onSaveTask({
+        id: editingTask ? editingTask.id : Date.now().toString(),
+        date: targetDate,
+        subject,
+        topic: topic.trim(),
+        durationHours: hrs,
+        durationMinutes: mins,
+        durationSeconds: secs,
+        totalMinutes: computedTotalMins > 0 ? computedTotalMins : 1,
+        priority,
+        completed: editingTask ? editingTask.completed : false,
+        completedAt: editingTask ? editingTask.completedAt : null,
+        notes: notes.trim()
+      });
 
-    const saved = await onSaveTask({
-      id: editingTask ? editingTask.id : Date.now().toString(),
-      date: targetDate,
-      subject,
-      topic: topic.trim(),
-      durationHours: hrs,
-      durationMinutes: mins,
-      durationSeconds: secs,
-      totalMinutes: computedTotalMins > 0 ? computedTotalMins : 1,
-      priority,
-      completed: editingTask ? editingTask.completed : false,
-      completedAt: editingTask ? editingTask.completedAt : null,
-      notes: notes.trim()
-    });
-
-    if (saved) onClose();
+      if (result === true || result?.success === true) {
+        onClose();
+      } else {
+        setSaveError(result?.error || 'Task could not be saved. Please try again.');
+      }
+    } catch (error) {
+      setSaveError(error.message || 'Task could not be saved. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -127,8 +150,10 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
             {editingTask ? 'Edit Study Topic' : 'Add New Study Topic'}
           </h3>
           <button
+            type="button"
+            disabled={isSaving}
             onClick={onClose}
-            className="p-1 rounded-lg text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+            className="p-1 rounded-lg text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
@@ -146,7 +171,8 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
               type="text"
               required
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onInvalid={() => setSaveError('Please enter a study topic.')}
+              onChange={(e) => { setTopic(e.target.value); setSaveError(''); }}
               placeholder="e.g. Complete Flask CRUD operations for MAD 1 Project"
               className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all text-sm font-medium"
             />
@@ -352,19 +378,26 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
           </div>
 
           {/* Action buttons */}
+          {saveError && (
+            <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300">
+              {saveError}
+            </p>
+          )}
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-300 dark:border-slate-700">
             <button
               type="button"
+              disabled={isSaving}
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 text-sm font-medium transition-colors border border-gray-300 dark:border-slate-600"
+              className="px-4 py-2 rounded-xl text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 text-sm font-medium transition-colors border border-gray-300 dark:border-slate-600 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-600/20 transition-all border border-pink-600"
+              disabled={isSaving}
+              className="px-5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-600/20 transition-all border border-pink-600 disabled:cursor-wait disabled:opacity-60"
             >
-              {editingTask ? 'Save Changes' : 'Add Task'}
+              {isSaving ? 'Saving…' : editingTask ? 'Save Changes' : 'Add Task'}
             </button>
           </div>
 

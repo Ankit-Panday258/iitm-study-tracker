@@ -291,9 +291,18 @@ export default function App() {
     try {
       const saved = editingTask ? await updateTask(editingTask.id, taskData) : await createTask(taskData);
       setAllTasks(prev => editingTask ? prev.map(t => t.id === saved.id ? saved : t) : [saved, ...prev]);
+      // Make the saved item visible even if the planner was filtered to another date or status.
+      setSelectedDate(saved.date);
+      setFilterTab('All');
+      setSelectedSubject('All');
+      setSearchQuery('');
       showToast(editingTask ? 'Topic updated successfully!' : 'Topic added successfully!');
-      loadStreak();return true;
-    } catch (error) { showToast(error.message);return false; }
+      loadStreak();
+      return { success: true };
+    } catch (error) {
+      showToast(error.message);
+      return { success: false, error: error.message };
+    }
   };
 
   // List of all distinct dates in tasks
