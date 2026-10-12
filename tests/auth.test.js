@@ -15,12 +15,18 @@ process.env.DATABASE_DRIVER=mysqlTest ? 'mysql' : 'sqlite';
 if(mysqlTest) process.env.MYSQL_DATABASE=testDatabase;
 process.env.SQLITE_PATH=path.join(temp,'test.db');
 process.env.APP_ORIGIN='http://localhost:3000';process.env.GOOGLE_CLIENT_ID='test-client';
+if(mysqlTest) {
+  const setup=await mysql.createConnection({host:process.env.MYSQL_HOST || '127.0.0.1',port:Number(process.env.MYSQL_PORT || 3306),user:process.env.MYSQL_USER,password:process.env.MYSQL_PASSWORD});
+  try { await setup.query(`CREATE DATABASE \`${testDatabase}\``); } finally { await setup.end(); }
+}
 const {handleApiRequest}=await import('../server/apiHandler.js');
+const {databaseReady}=await import('../server/mysql.js');
+if(mysqlTest) await databaseReady;
 const {default:db}=await import('../server/db.js');
 const {query}=await import('../server/authStore.js');
 const {closeMySQL}=await import('../server/mysql.js');
 const app=express();app.use(express.json());app.use(handleApiRequest);
-const server=await new Promise(resolve=>{const s=app.listen(0,()=>resolve(s));});
+const server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
 const base=`http://localhost:${server.address().port}`;
 async function request(route,method='GET',body,cookie='') {
   const res=await fetch(base+route,{method,headers:{'Content-Type':'application/json',Cookie:cookie},body:body ? JSON.stringify(body) : undefined});
@@ -38,8 +44,8 @@ after(async()=>{
 test('Registration, session persistence, ownership, logout and rejected impersonation',async()=>{
   const account={name:'Test Student',email:'Student@example.com',password:'strong-password'};
   const status=await request('/api/db-status');
-  assert.equal(status.status,200);assert.equal(status.data.activeDatabase,'SQLite');
-  assert.equal(status.data.mysql.connected,false);assert.equal('host' in status.data.mysql,false);
+  assert.equal(status.status,200);assert.equal(status.data.activeDatabase,mysqlTest ? 'MySQL' : 'SQLite');
+  assert.equal(status.data.mysql.connected,mysqlTest);assert.equal('host' in status.data.mysql,false);
   assert.equal((await request('/api/tasks')).status,401);
   assert.equal((await request('/api/auth/login','POST',{email:account.email})).status,400);
   assert.equal((await request('/api/auth/register','POST',{...account,password:'123'})).status,400);

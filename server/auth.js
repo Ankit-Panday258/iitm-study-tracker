@@ -3,6 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { hashPassword, verifyPassword } from './authUtils.js';
 import { query, ready, tokenHash, publicUser, findUser, createUser } from './authStore.js';
 import { getMySQLStatus } from './mysql.js';
+import { connectMongoDB, getMongoStatus, isMongoConnected } from './mongodb.js';
 const google = new OAuth2Client();
 const cookieName = 'iitm_session';
 const maxAge = 7 * 24 * 60 * 60;
@@ -43,12 +44,16 @@ export async function authMiddleware(req,res,next) {
     // Keep a sanitized health check available when database startup itself fails.
     // Do not expose the configured host, database, username, or raw driver error.
     if(path==='/api/db-status' && req.method==='GET') {
-      const status = getMySQLStatus();
-      const configuredDriver = ['mysql','sqlite'].includes(process.env.DATABASE_DRIVER) ? process.env.DATABASE_DRIVER : 'unknown';
+      const mysql = getMySQLStatus();
+      const configuredDriver = ['mysql','sqlite','mongodb'].includes(process.env.DATABASE_DRIVER) ? process.env.DATABASE_DRIVER : 'unknown';
+      if(configuredDriver==='mongodb' && !isMongoConnected()) await connectMongoDB();
+      const mongo = getMongoStatus();
+      const connected = configuredDriver === 'mongodb' ? mongo.connected : mysql.connected;
       return send(res,200,{
-        activeDatabase: status.connected ? 'MySQL' : configuredDriver === 'sqlite' ? 'SQLite' : 'unavailable',
+        activeDatabase: connected ? (configuredDriver === 'mongodb' ? 'MongoDB' : 'MySQL') : configuredDriver === 'sqlite' ? 'SQLite' : 'unavailable',
         driver: configuredDriver,
-        mysql: { connected: status.connected, errorCode: status.errorCode, hostFormat: status.hostFormat }
+        mysql: { connected: mysql.connected, errorCode: mysql.errorCode, hostFormat: mysql.hostFormat },
+        mongo: { connected: mongo.connected, errorCode: mongo.errorCode, database: mongo.database }
       });
     }
     await ready();
@@ -110,7 +115,7 @@ export async function authMiddleware(req,res,next) {
     }
     return next();
   } catch(error) {
-    const duplicate=error.code==='ER_DUP_ENTRY' || error.code==='SQLITE_CONSTRAINT_UNIQUE';
+    const duplicate=error.code==='ER_DUP_ENTRY' || error.code==='SQLITE_CONSTRAINT_UNIQUE' || error.code===11000;
     const status=error.status || (duplicate ? 409 : 503);
     send(res,status,{error:error.status ? error.message : duplicate ? 'An account already exists.' : 'Database unavailable. Please try again later.'});
   }

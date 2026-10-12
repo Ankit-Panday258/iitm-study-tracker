@@ -33,7 +33,7 @@ const allowLocalSQLiteFallback = process.env.NODE_ENV !== 'production'
   && process.env.ALLOW_SQLITE_FALLBACK !== 'false';
 
 export async function initMySQL() {
-  if (process.env.DATABASE_DRIVER === 'sqlite') return false;
+  if (process.env.DATABASE_DRIVER !== 'mysql') return false;
   try {
     if (!/^[a-zA-Z0-9_]+$/.test(MYSQL_DATABASE)) throw new Error('Invalid database name');
     // The database is provisioned by the host. Connect directly instead of requiring

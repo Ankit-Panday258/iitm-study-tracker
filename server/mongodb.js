@@ -4,6 +4,7 @@ import Task from './models/Task.js';
 import Subject from './models/Subject.js';
 import DailyNote from './models/DailyNote.js';
 import User from './models/User.js';
+import AuthSession from './models/AuthSession.js';
 
 dotenv.config();
 
@@ -11,19 +12,19 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/iitm_s
 
 let isConnected = false;
 let connectionError = null;
+let connectionAttempt = null;
 
-export async function connectMongoDB() {
+export function connectMongoDB() {
   if (isConnected) return true;
-
-  try {
+  if (connectionAttempt) return connectionAttempt;
+  connectionAttempt = (async () => {
+   try {
     mongoose.set('strictQuery', false);
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 2500, // Quick timeout so fallback happens gracefully if local mongod is not yet running
-    });
+    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
 
     isConnected = true;
     connectionError = null;
-    console.log(`🍃 Connected to MongoDB successfully at: ${MONGODB_URI.split('@').pop()}`);
+    console.log('🍃 Connected to MongoDB successfully.');
 
     // Auto-seed initial subjects if empty
     const subCount = await Subject.countDocuments();
@@ -99,21 +100,17 @@ export async function connectMongoDB() {
     }
 
     return true;
-  } catch (err) {
+   } catch (err) {
     isConnected = false;
-    connectionError = err.message;
-    console.warn(`🍃 MongoDB connection note: ${err.message}. (Using SQLite fallback while MongoDB starts)`);
+    connectionError = typeof err.code === 'string' ? err.code : err.name || 'UNKNOWN';
+    console.warn(`🍃 MongoDB connection failed (${connectionError}).`);
     return false;
-  }
+   } finally {
+    connectionAttempt = null;
+   }
+  })();
+  return connectionAttempt;
 }
-
-// Background auto-reconnect attempt
-connectMongoDB();
-setInterval(() => {
-  if (!isConnected) {
-    connectMongoDB();
-  }
-}, 10000);
 
 export function isMongoConnected() {
   return isConnected && mongoose.connection.readyState === 1;
@@ -122,10 +119,13 @@ export function isMongoConnected() {
 export function getMongoStatus() {
   return {
     connected: isMongoConnected(),
-    uri: MONGODB_URI.replace(/:([^:@]{1,})@/, ':****@'), // hide password in URI for security
     database: mongoose.connection?.name || 'iitm_study_tracker',
-    readyState: mongoose.connection?.readyState || 0
+    readyState: mongoose.connection?.readyState || 0,
+    errorCode: connectionError ? 'CONNECTION_FAILED' : null
   };
 }
 
-export { Task, Subject, DailyNote, User };
+export { Task, Subject, DailyNote, User, AuthSession };
+
+export const mongoReady = process.env.DATABASE_DRIVER === 'mongodb' ? connectMongoDB() : Promise.resolve(false);
+mongoReady.catch(() => {});

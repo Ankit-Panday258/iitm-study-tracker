@@ -12,6 +12,7 @@ const TaskSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false, index: true },
   completedAt: { type: String, default: null },
   notes: { type: String, default: '' },
+  userEmail: { type: String, default: 'default', required: true, index: true, lowercase: true, trim: true },
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, {
   timestamps: true

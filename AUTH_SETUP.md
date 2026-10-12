@@ -1,12 +1,12 @@
-# Authentication and MySQL setup
+# Authentication and database setup
 
 The app now has separate `/login` and `/register` pages. Both offer the official Google Identity Services button once configured. Passwords use salted scrypt hashes. Successful authentication creates a revocable, seven-day HttpOnly cookie session stored in MySQL. API identity comes from that session, never an email sent by the browser. Database failures do not produce successful local-only saves.
 
 ## Run locally
 
 1. Install Node.js 20+ and run `npm ci`.
-2. Copy `.env.example` to `.env` and set your MySQL host, port, user, password and database. Keep `.env` private.
-3. For local development, keep `ALLOW_SQLITE_FALLBACK=true` to save to the persistent `server/study_tracker.db` file if MySQL is unavailable. To require MySQL locally, set `ALLOW_SQLITE_FALLBACK=false`. For production, set `NODE_ENV=production`, set `DATABASE_DRIVER=mysql`, and create the selected database in your MySQL provider before starting the app. The application account needs permission to create/alter/read/write tables inside that database; it does not need server-level `CREATE DATABASE` permission.
+2. Copy `.env.example` to `.env` and set your MySQL credentials or `MONGODB_URI`. Keep `.env` private.
+3. For local development, keep `ALLOW_SQLITE_FALLBACK=true` to save to the persistent `server/study_tracker.db` file if MySQL is unavailable. To require MySQL locally, set `ALLOW_SQLITE_FALLBACK=false`. For production MySQL, set `NODE_ENV=production`, set `DATABASE_DRIVER=mysql`, and create the selected database in your MySQL provider before starting the app. For MongoDB Atlas, set `DATABASE_DRIVER=mongodb` and provide the Atlas connection string as `MONGODB_URI`.
 4. Set `APP_ORIGIN=http://localhost:3000` and run `npm run client`. Vite serves the frontend and the same backend API at http://localhost:3000. Development requests use the actual Vite origin, independently of a production APP_ORIGIN setting. Configured production origins are normalized, so a trailing slash is accepted. Do not need a second server for development.
 5. Alternatively run `npm run build` then `npm start` to serve the complete app on port 3001. Set `APP_ORIGIN=http://localhost:3001` for this mode.
 
@@ -20,11 +20,11 @@ Official reference: https://developers.google.com/identity/gsi/web/guides/verify
 
 ## Deployment
 
-For a Node host: build and run `npm start`, provide a persistent reachable MySQL database and its exact host/database/user/password settings, set `NODE_ENV=production` and `APP_ORIGIN` to the exact HTTPS site origin, and add that origin to the Google OAuth client. Sessions use Secure cookies in production.
+For a Node host: build and run `npm start`, provide a persistent reachable MySQL database or MongoDB Atlas connection, set `NODE_ENV=production` and `APP_ORIGIN` to the exact HTTPS site origin, and add that origin to the Google OAuth client. Sessions use Secure cookies in production.
 
-For Vercel: the included `api/index.js` and API rewrite provide backend endpoints; static frontend rewrites alone cannot authenticate or save data. Configure the same server environment variables and use a MySQL server reachable from Vercel. Do not use `127.0.0.1` for a database hosted elsewhere. Production mode never uses the local SQLite fallback.
+For Vercel: the included `api/index.js` and API rewrite provide backend endpoints; static frontend rewrites alone cannot authenticate or save data. Connect a MongoDB Atlas integration to the project, set `DATABASE_DRIVER=mongodb` for the deployment environment, and let the integration provide `MONGODB_URI`. Production mode never uses the local SQLite fallback.
 
-Users and sessions are saved to MySQL `users` and `auth_sessions`. Study records use the existing `tasks` and `daily_notes` tables. Old records under `default` are not automatically reassigned to a new account.
+Users, sessions, tasks, subjects and notes are saved to the selected database. Study records and notes are scoped to the signed-in user's email. Old local records are not automatically copied to a newly created cloud database.
 
 ## Verification performed
 

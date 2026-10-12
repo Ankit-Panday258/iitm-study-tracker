@@ -7,7 +7,7 @@ A React study planner with daily tasks, subjects, study duration tracking, Pomod
 - Separate `/login` and `/register` pages.
 - Email/password registration and login with salted scrypt password hashes.
 - Official Google sign-in button; Google ID tokens are verified on the backend.
-- MySQL-backed users and revocable HttpOnly cookie sessions.
+- MySQL or MongoDB-backed users and revocable HttpOnly cookie sessions.
 - Tasks and notes are scoped to the authenticated user; client-supplied email addresses cannot select another account.
 - Failed database writes are shown as errors instead of successful local saves.
 
@@ -16,7 +16,7 @@ A React study planner with daily tasks, subjects, study duration tracking, Pomod
 ```bash
 npm ci
 cp .env.example .env
-# Fill your MySQL settings and GOOGLE_CLIENT_ID in .env
+# Fill either your MySQL settings or MONGODB_URI, plus GOOGLE_CLIENT_ID in .env
 npm run client
 ```
 
@@ -30,9 +30,9 @@ npm run build
 npm start
 ```
 
-See [AUTH_SETUP.md](AUTH_SETUP.md) for MySQL permissions, Google Cloud OAuth origins, Node/Vercel deployment, and verification limits. Keep `.env` private. Google sign-in cannot work until a real OAuth Web Client ID and allowed origins are configured.
+See [AUTH_SETUP.md](AUTH_SETUP.md) for MySQL and MongoDB setup, Google Cloud OAuth origins, Node/Vercel deployment, and verification limits. Keep `.env` private. Google sign-in cannot work until a real OAuth Web Client ID and allowed origins are configured.
 
-Local development can use SQLite automatically when MySQL is unavailable. The fallback database is stored in `server/study_tracker.db`. Production never falls back to SQLite: set `NODE_ENV=production`, configure MySQL, and resolve any MySQL/schema initialization error before serving requests. Set `ALLOW_SQLITE_FALLBACK=false` to disable the local fallback.
+Local development can use SQLite automatically when MySQL is unavailable. The fallback database is stored in `server/study_tracker.db`. Production never falls back to SQLite: configure a reachable MySQL or MongoDB database and resolve any connection/schema initialization error before serving requests. Set `ALLOW_SQLITE_FALLBACK=false` to disable the local fallback.
 
 ## Stack
 

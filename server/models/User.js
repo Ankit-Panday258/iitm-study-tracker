@@ -5,11 +5,12 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true },
   picture: { type: String, default: '' },
-  googleId: { type: String, index: true },
-  authProvider: { type: String, default: 'google' }, // 'google' | 'email'
-  createdAt: { type: String, default: () => new Date().toISOString() }
+  google_id: { type: String, index: true },
+  password_hash: { type: String, default: null },
+  auth_provider: { type: String, default: 'google' },
+  created_at: { type: String, default: () => new Date().toISOString() }
 }, {
-  timestamps: true
+  timestamps: false
 });
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);

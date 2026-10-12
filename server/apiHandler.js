@@ -1,9 +1,7 @@
 import { authMiddleware } from './auth.js';
 import db from './db.js';
 import url from 'url';
-// Stub mongo for clean MySQL + SQLite operation
-const isMongoConnected = () => false;
-const getMongoStatus = () => ({ connected: false, message: 'MySQL is active engine' });
+import { isMongoConnected, getMongoStatus, Task, Subject, DailyNote } from './mongodb.js';
 import {
   initMySQL,
   isMySQLConnected,
@@ -183,9 +181,15 @@ function handleAuthenticatedRequest(req, res, next) {
           }
 
           if (useMongo) {
-            try {
-              await Task.findOneAndUpdate({ id: taskId }, taskData, { upsert: true, new: true });
-            } catch (e) { if (!useMySQL) throw e; }
+            const created = await Task.findOneAndUpdate({ id: taskId, userEmail: taskUser }, taskData,
+              { upsert: true, new: true, setDefaultsOnInsert: true }).lean();
+            return sendJson(201, {
+              id: created.id, date: created.date, subject: created.subject, topic: created.topic,
+              durationHours: created.durationHours || 0, durationMinutes: created.durationMinutes || 0,
+              durationSeconds: created.durationSeconds || 0, priority: created.priority,
+              completed: Boolean(created.completed), completedAt: created.completedAt,
+              notes: created.notes || '', userEmail: created.userEmail, createdAt: created.createdAt
+            });
           }
 
           // Mirror SQLite
@@ -224,6 +228,15 @@ function handleAuthenticatedRequest(req, res, next) {
             console.error('MySQL toggle task failed:', e.message);
             throw e;
           }
+        }
+
+        if (useMongo) {
+          const task = await Task.findOne({ id: taskId, userEmail }).lean();
+          if (!task) return sendJson(404, { error: 'Task not found' });
+          const completed = !task.completed;
+          const updated = await Task.findOneAndUpdate({ id: taskId, userEmail },
+            { $set: { completed, completedAt: completed ? now : null } }, { new: true }).lean();
+          return sendJson(200, updated);
         }
 
         // SQLite
@@ -297,6 +310,13 @@ function handleAuthenticatedRequest(req, res, next) {
             }
           }
 
+          if (useMongo) {
+            const updated = await Task.findOneAndUpdate({ id: taskId, userEmail },
+              { $set: { ...updateFields, updatedAt: now } }, { new: true, runValidators: true }).lean();
+            if (!updated) return sendJson(404, { error: 'Task not found' });
+            return sendJson(200, updated);
+          }
+
           // SQLite
           db.prepare(`
             UPDATE tasks
@@ -344,6 +364,11 @@ function handleAuthenticatedRequest(req, res, next) {
             throw e;
           }
         }
+        if (useMongo) {
+          const result = await Task.deleteOne({ id: taskId, userEmail });
+          if (!result.deletedCount) return sendJson(404, { error: 'Task not found' });
+          return sendJson(200, { success: true, id: taskId });
+        }
         try {
           db.prepare('DELETE FROM tasks WHERE id = ?').run(taskId);
         } catch (e) { if (!useMySQL) throw e; }
@@ -368,6 +393,31 @@ function handleAuthenticatedRequest(req, res, next) {
             console.error('MySQL GET /api/daily-track failed:', e.message);
             throw e;
           }
+        }
+
+        if (useMongo) {
+          const rows = await Task.find({ completed: true, userEmail })
+            .sort({ date: -1, completedAt: -1 }).lean();
+          const grouped = new Map();
+          for (const row of rows) {
+            if (!grouped.has(row.date)) grouped.set(row.date, []);
+            grouped.get(row.date).push({
+              subject: row.subject, topic: row.topic,
+              durationHours: row.durationHours || 0, durationMinutes: row.durationMinutes || 0,
+              durationSeconds: row.durationSeconds || 0, completedAt: row.completedAt,
+              notes: row.notes || '', priority: row.priority || 'Medium'
+            });
+          }
+          const dates = [...grouped.keys()];
+          const notes = await DailyNote.find({ userEmail, date: { $in: dates } }).lean();
+          const notesByDate = new Map(notes.map(note => [note.date, note.noteText || '']));
+          return sendJson(200, [...grouped.entries()].map(([date, tasks]) => ({
+            date,
+            totalMinutes: tasks.reduce((total, task) => total + task.durationHours * 60 + task.durationMinutes + task.durationSeconds / 60, 0),
+            completedCount: tasks.length,
+            tasks,
+            dailyNote: notesByDate.get(date) || ''
+          })));
         }
 
         // SQLite
@@ -420,6 +470,11 @@ function handleAuthenticatedRequest(req, res, next) {
             throw e;
           }
         }
+
+        if (useMongo) {
+          const note = await DailyNote.findOne({ date, userEmail }).lean();
+          return sendJson(200, note ? { date: note.date, noteText: note.noteText || '' } : { date, noteText: '' });
+        }
         
         // SQLite
         const note = db.prepare('SELECT * FROM daily_notes WHERE date = ? AND user_email = ?').get(date, userEmail);
@@ -441,6 +496,12 @@ function handleAuthenticatedRequest(req, res, next) {
               console.error('MySQL save note failed:', e.message);
             throw e;
             }
+          }
+
+          if (useMongo) {
+            await DailyNote.findOneAndUpdate({ date, userEmail: noteUser },
+              { $set: { noteText: noteText || '' } }, { upsert: true, new: true, setDefaultsOnInsert: true });
+            return sendJson(200, { date, noteText: noteText || '', userEmail: noteUser });
           }
 
           // SQLite
@@ -471,6 +532,20 @@ function handleAuthenticatedRequest(req, res, next) {
             console.error('MySQL streak failed:', e.message);
             throw e;
           }
+        }
+
+        if (useMongo) {
+          const dates = new Set(await Task.distinct('date', { completed: true, userEmail }));
+          let streak = 0;
+          const [year, month, day] = today.split('-').map(Number);
+          const todayDate = new Date(Date.UTC(year, month - 1, day));
+          for (let i = 0; i < 365; i++) {
+            const checkDate = new Date(todayDate);
+            checkDate.setUTCDate(todayDate.getUTCDate() - i);
+            if (dates.has(checkDate.toISOString().slice(0, 10))) streak++;
+            else if (i !== 0) break;
+          }
+          return sendJson(200, { streak });
         }
 
         const dates = db.prepare(`
@@ -513,6 +588,11 @@ function handleAuthenticatedRequest(req, res, next) {
           }
         }
 
+        if (useMongo) {
+          const subjects = await Subject.find({}).sort({ createdAt: 1 }).lean();
+          return sendJson(200, subjects.map(({ id, name, icon, color }) => ({ id, name, icon, color })));
+        }
+
         const rows = db.prepare('SELECT * FROM subjects ORDER BY created_at ASC').all();
         return sendJson(200, rows);
       }
@@ -536,6 +616,13 @@ function handleAuthenticatedRequest(req, res, next) {
               console.error('MySQL create subject failed:', e.message);
             throw e;
             }
+          }
+
+          if (useMongo) {
+            const created = await Subject.findOneAndUpdate({ name: subName },
+              { $setOnInsert: { id, name: subName, icon: subIcon, color: subColor } },
+              { upsert: true, new: true, setDefaultsOnInsert: true }).lean();
+            return sendJson(201, { id: created.id, name: created.name, icon: created.icon, color: created.color });
           }
 
           try {
