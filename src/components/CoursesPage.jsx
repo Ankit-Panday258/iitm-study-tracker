@@ -762,7 +762,7 @@ export default function CoursesPage({
     }
   };
 
-  const handleAddWeekToToday = (week) => {
+  const handleAddWeekToToday = async (week) => {
     if (!onAddTask) return;
 
     const taskData = {
@@ -775,8 +775,8 @@ export default function CoursesPage({
         : `Syllabus Topics: ${week.topics.join(', ')}`
     };
 
-    onAddTask(taskData);
-    if (showToast) {
+    const result = await onAddTask(taskData);
+    if (result?.success && showToast) {
       showToast(`Added ${activeCourse.name} ${week.title} to today's tasks! 🎯`);
     }
   };

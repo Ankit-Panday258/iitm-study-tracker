@@ -58,13 +58,15 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     start();return ()=>{cancelled=true;clearTimeout(timer);};
   },[isOpen,mode]);
   async function submit(e) {
-    e.preventDefault();setError('');
+    e.preventDefault();
+    if(loading) return;
+    setError('');
     if(register && password!==confirm) {setError('Passwords do not match.');return;}
     setLoading(true);
     try {
       const user=register ? await registerWithEmail({name:name.trim(),email:email.trim(),password}) : await loginWithEmail({email:email.trim(),password});
-      await await onLoginSuccess(user);onClose();
-    }catch(e) {setError(e.message);}
+      await onLoginSuccess(user);onClose();
+    }catch(e) {setError(e.message || 'Unable to sign in. Please try again.');}
     finally {setLoading(false);}
   }
   if(!isOpen) return null;
@@ -79,7 +81,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
         <p className="text-sm text-gray-500 dark:text-slate-400 mt-2 mb-6">{register ? 'A fresh start for your study routine.' : 'Sign in to your personal study workspace.'}</p>
         <div className={loading ? 'pointer-events-none opacity-60' : ''}><div ref={googleRef} className="flex justify-center"/></div>
         {googleStatus && <p className="text-xs text-gray-500 dark:text-slate-400" role="status">{googleStatus}</p>}
-        <div className="flex items-center gap-3 my-5 text-xs text-gray-400"><span className="flex-1 border-t dark:border-slate-700"/>or continue with email<span className="flex-1 border-t dark:border-slate-700"/></div>
+        <div role="separator" aria-label="Email sign-in" className="flex items-center gap-3 my-5 text-xs text-gray-400"><span aria-hidden="true" className="flex-1 border-t dark:border-slate-700"/>{googleStatus.includes('not configured') ? 'Email sign-in' : 'or continue with email'}<span aria-hidden="true" className="flex-1 border-t dark:border-slate-700"/></div>
         {error && <p role="alert" className="mb-4 rounded-xl p-3 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 text-sm">{error}</p>}
         <form onSubmit={submit} className="space-y-4">
           {register && <div><label htmlFor="auth-name" className="block text-sm font-semibold mb-1">Full name</label><input id="auth-name" autoComplete="name" required maxLength={100} value={name} onChange={e=>setName(e.target.value)} className={inputClass}/></div>}

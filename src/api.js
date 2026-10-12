@@ -1,3 +1,5 @@
+import { getLocalDateString } from './utils/formatTime.js';
+
 const API_BASE = '/api';
 
 // Local storage backup keys
@@ -15,7 +17,7 @@ export const DEFAULT_SUBJECTS = [
 export const DEFAULT_INITIAL_TASKS = [
   {
     id: '1',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateString(),
     subject: 'MAD 1 Project',
     topic: 'Complete Flask routes and Jinja templates for Task Manager',
     durationHours: 1,
@@ -29,7 +31,7 @@ export const DEFAULT_INITIAL_TASKS = [
   },
   {
     id: '2',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateString(),
     subject: 'DBMS',
     topic: 'Normalization: 1NF, 2NF, 3NF & BCNF with examples',
     durationHours: 1,
@@ -43,7 +45,7 @@ export const DEFAULT_INITIAL_TASKS = [
   },
   {
     id: '3',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateString(),
     subject: 'System Commands',
     topic: 'Shell scripting: loops, conditionals & file processing',
     durationHours: 0,
@@ -57,7 +59,7 @@ export const DEFAULT_INITIAL_TASKS = [
   },
   {
     id: '4',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateString(),
     subject: 'DBMS',
     topic: 'SQL Joins and Subqueries practice problems',
     durationHours: 0,
@@ -285,11 +287,11 @@ export async function fetchStreak(userEmail = getCurrentUserEmail()) {
   const backup = getBackupTasks(userEmail).filter(t => t.completed);
   const dates = new Set(backup.map(t => t.date));
   let localStreak = 0;
-  const today = new Date();
+  const today = getLocalDateString();
   for (let i = 0; i < 365; i++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(today.getDate() - i);
-    const dateStr = checkDate.toISOString().split('T')[0];
+    const checkDate = new Date(`${today}T00:00:00`);
+    checkDate.setDate(checkDate.getDate() - i);
+    const dateStr = getLocalDateString(checkDate);
     if (dates.has(dateStr)) {
       localStreak++;
     } else if (i === 0) {
@@ -300,7 +302,7 @@ export async function fetchStreak(userEmail = getCurrentUserEmail()) {
   }
 
   try {
-    const res = await fetchWithTimeout(`${API_BASE}/stats/streak?user_email=${encodeURIComponent(userEmail)}`);
+    const res = await fetchWithTimeout(`${API_BASE}/stats/streak?user_email=${encodeURIComponent(userEmail)}&today=${today}`);
     if (res.ok) {
       const data = await res.json();
       if (data && typeof data.streak === 'number') return data;
@@ -340,9 +342,15 @@ export async function createSubject(subjectData) {
 }
 
 async function authRequest(path, body) {
-  const res = await fetchWithTimeout(`${API_BASE}/auth/${path}`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-  });
+  let res;
+  try {
+    res = await fetchWithTimeout(`${API_BASE}/auth/${path}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('Sign-in timed out. Check your connection and try again.');
+    throw error;
+  }
   const data = await safeJson(res);
   if (!res.ok || !data?.user) throw new Error(data?.error || 'Unable to sign in. Please try again.');
   setStoredUser(data.user);return data.user;

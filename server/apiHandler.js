@@ -459,9 +459,13 @@ function handleAuthenticatedRequest(req, res, next) {
 
       // 9. GET /api/stats/streak
       if (method === 'GET' && pathname === '/api/stats/streak') {
+        const requestedToday = parsedUrl.query.today;
+        const today = typeof requestedToday === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(requestedToday)
+          ? requestedToday
+          : new Date().toISOString().slice(0, 10);
         if (useMySQL) {
           try {
-            const streak = await mySQLGetStreak(userEmail);
+            const streak = await mySQLGetStreak(userEmail, today);
             return sendJson(200, { streak });
           } catch (e) {
             console.error('MySQL streak failed:', e.message);
@@ -475,11 +479,12 @@ function handleAuthenticatedRequest(req, res, next) {
 
         const dateSet = new Set(dates);
         let streak = 0;
-        const today = new Date();
+        const [year, month, day] = today.split('-').map(Number);
+        const todayDate = new Date(Date.UTC(year, month - 1, day));
 
         for (let i = 0; i < 365; i++) {
-          const checkDate = new Date(today);
-          checkDate.setDate(today.getDate() - i);
+          const checkDate = new Date(todayDate);
+          checkDate.setUTCDate(todayDate.getUTCDate() - i);
           const dateStr = checkDate.toISOString().split('T')[0];
 
           if (dateSet.has(dateStr)) {

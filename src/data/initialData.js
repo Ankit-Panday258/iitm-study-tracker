@@ -1,5 +1,7 @@
+import { getLocalDateString } from '../utils/formatTime.js';
+
 export const getInitialTasks = () => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getLocalDateString();
   
   return [
     {

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { fetchDailyTrack } from '../api';
 import { SUBJECT_OPTIONS } from '../data/initialData';
-import { formatTaskDuration } from '../utils/formatTime';
+import { formatTaskDuration, getLocalDateString } from '../utils/formatTime';
 
 const STICKER_ICONS = ['🏆', '⭐', '🎯', '🔥', '🌟', '🚀', '💪', '👑'];
 
@@ -14,8 +14,10 @@ function getSubjectConfig(subjectName) {
 }
 
 function formatDate(dateStr) {
-  const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const today = getLocalDateString();
+  const yesterdayDate = new Date(`${today}T00:00:00`);
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterday = getLocalDateString(yesterdayDate);
   
   if (dateStr === today) return 'Today';
   if (dateStr === yesterday) return 'Yesterday';

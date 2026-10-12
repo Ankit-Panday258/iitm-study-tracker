@@ -60,6 +60,7 @@ test('Registration, session persistence, ownership, logout and rejected imperson
   assert.equal((await request('/api/notes/2026-10-09','PUT',{noteText:'Other note'},other.cookie)).status,200);
   assert.equal((await request('/api/notes/2026-10-09','GET',null,cookie)).data.noteText,'My note');
   assert.equal((await request('/api/tasks/'+created.data.id+'/toggle','PATCH',{},cookie)).data.completed,true);
+  assert.equal((await request('/api/stats/streak?today=2026-10-10','GET',null,cookie)).data.streak,1);
   assert.equal((await request('/api/auth/google','POST',{email:'fake@example.com',googleId:'fake'})).status,400);
   assert.equal((await request('/api/auth/google','POST',{credential:'fake-token'})).status,401);
   assert.equal((await request('/api/auth/logout','POST',{},cookie)).status,200);

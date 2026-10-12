@@ -413,7 +413,7 @@ export async function mySQLSaveNote(date, noteText, userEmail = 'kumar@gmail.com
   return { date, noteText: noteText || '', userEmail: cleanEmail };
 }
 
-export async function mySQLGetStreak(userEmail = 'kumar@gmail.com') {
+export async function mySQLGetStreak(userEmail = 'kumar@gmail.com', today = new Date().toISOString().slice(0, 10)) {
   if (!pool) throw new Error('MySQL pool not ready');
   const cleanEmail = (userEmail || 'kumar@gmail.com').toLowerCase().trim();
 
@@ -423,11 +423,12 @@ export async function mySQLGetStreak(userEmail = 'kumar@gmail.com') {
 
   const dateSet = new Set(rows.map(r => r.date));
   let streak = 0;
-  const today = new Date();
+  const [year, month, day] = today.split('-').map(Number);
+  const todayDate = new Date(Date.UTC(year, month - 1, day));
 
   for (let i = 0; i < 365; i++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(today.getDate() - i);
+    const checkDate = new Date(todayDate);
+    checkDate.setUTCDate(todayDate.getUTCDate() - i);
     const dateStr = checkDate.toISOString().split('T')[0];
 
     if (dateSet.has(dateStr)) {

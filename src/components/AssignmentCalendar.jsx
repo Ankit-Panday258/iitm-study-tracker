@@ -251,7 +251,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
     });
   };
 
-  const handleAddAssignmentTask = (item) => {
+  const handleAddAssignmentTask = async (item) => {
     if (!onAddTask) return;
     const taskData = {
       subject: 'IITM Assignment',
@@ -260,13 +260,13 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
       priority: item.comment ? 'High' : 'Medium',
       notes: `Release: ${item.releaseDateStr}\nDeadline: ${item.deadlineStr}${item.comment ? `\nImportant: ${item.comment}` : ''}`
     };
-    onAddTask(taskData);
-    if (showToast) {
+    const result = await onAddTask(taskData);
+    if (result?.success && showToast) {
       showToast(`Added ${item.label} assignment deadline to tasks! 🎯`);
     }
   };
 
-  const handleAddExamTask = (exam) => {
+  const handleAddExamTask = async (exam) => {
     if (!onAddTask) return;
     const taskData = {
       subject: 'IITM Exam',
@@ -275,8 +275,8 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
       priority: 'High',
       notes: `Official Exam Date: ${exam.dateStr}\nScope: ${exam.scope}\nDetails: ${exam.description}`
     };
-    onAddTask(taskData);
-    if (showToast) {
+    const result = await onAddTask(taskData);
+    if (result?.success && showToast) {
       showToast(`Added ${exam.name} exam prep to tasks! 🎯`);
     }
   };

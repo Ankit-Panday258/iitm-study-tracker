@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle2, Clock, Target, Sparkles } from 'lucide-react';
-import { getTotalDurationSeconds, formatTotalTime } from '../utils/formatTime';
+import { getTotalDurationSeconds, formatTotalTime, getLocalDateString } from '../utils/formatTime';
 
 export default function StatsOverview({ tasks, selectedDate }) {
   const totalTasks = tasks.length;
@@ -11,7 +11,7 @@ export default function StatsOverview({ tasks, selectedDate }) {
     .filter(t => t.completed)
     .reduce((acc, t) => acc + getTotalDurationSeconds(t), 0);
 
-  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === getLocalDateString();
 
   return (
     <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-2xl p-5 mb-6 shadow-sm">

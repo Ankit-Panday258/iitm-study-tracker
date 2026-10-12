@@ -17,7 +17,7 @@ import {
   fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI
 } from './api';
-import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, Play, Folder } from 'lucide-react';
+import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, ChevronLeft, ChevronRight, Play, Folder } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getLocalDateString } from './utils/formatTime.js';
 
@@ -119,13 +119,13 @@ export default function App() {
   const handlePrevDay = () => {
     const d = new Date(selectedDate + 'T00:00:00');
     d.setDate(d.getDate() - 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getLocalDateString(d));
   };
 
   const handleNextDay = () => {
     const d = new Date(selectedDate + 'T00:00:00');
     d.setDate(d.getDate() + 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(getLocalDateString(d));
   };
 
   const [allTasks, setAllTasks] = useState(() => {
@@ -224,11 +224,12 @@ export default function App() {
     await Promise.all([loadTasks(null), loadStreak(null)]);
   };
 
-  const handleLoginSuccess = async (user) => {
+  const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     setStoredUser(user);
     showToast(`Welcome back, ${user.name || user.email}!`);
-    await Promise.all([loadTasks(user), loadStreak(user)]);
+    // Close the sign-in screen as soon as authentication succeeds; data refreshes in the background.
+    void Promise.all([loadTasks(user), loadStreak(user)]);
   };
 
   const showToast = (msg) => {
@@ -288,8 +289,13 @@ export default function App() {
   };
 
   const handleSaveTask = async (taskData) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      return { success: false, error: 'Please sign in to add or edit study topics.' };
+    }
     try {
-      const saved = editingTask ? await updateTask(editingTask.id, taskData) : await createTask(taskData);
+      const taskWithDate = { ...taskData, date: taskData.date || getTodayString() };
+      const saved = editingTask ? await updateTask(editingTask.id, taskWithDate) : await createTask(taskWithDate);
       setAllTasks(prev => editingTask ? prev.map(t => t.id === saved.id ? saved : t) : [saved, ...prev]);
       // Make the saved item visible even if the planner was filtered to another date or status.
       setSelectedDate(saved.date);
@@ -388,6 +394,37 @@ export default function App() {
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
+
+            <div className="flex items-center justify-center gap-3 mb-4" aria-label="Study date navigation">
+              <button
+                type="button"
+                onClick={handlePrevDay}
+                aria-label="Previous day"
+                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-pink-400 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="min-w-36 text-center text-sm font-semibold text-gray-700 dark:text-slate-200">
+                {new Date(`${selectedDate}T00:00:00`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+              {selectedDate !== getTodayString() && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDate(getTodayString())}
+                  className="px-3 py-2 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 text-xs font-bold hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-colors"
+                >
+                  Today
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleNextDay}
+                aria-label="Next day"
+                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-pink-400 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
 
             {/* IIT Madras Term 3 Assignment Calendar & Deadlines Banner */}
             <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-pink-950/80 text-white rounded-2xl p-3.5 sm:p-4 mb-4 border border-indigo-500/30 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3">
