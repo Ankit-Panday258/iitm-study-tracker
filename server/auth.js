@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { hashPassword, verifyPassword } from './authUtils.js';
 import { query, ready, tokenHash, publicUser, findUser, createUser } from './authStore.js';
+import { getMySQLStatus } from './mysql.js';
 const google = new OAuth2Client();
 const cookieName = 'iitm_session';
 const maxAge = 7 * 24 * 60 * 60;
@@ -38,6 +39,17 @@ export async function authMiddleware(req,res,next) {
     if(!['GET','HEAD','OPTIONS'].includes(req.method) && req.headers.origin) {
       const allowed=new URL(req.appOrigin || process.env.APP_ORIGIN || `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers.host}`).origin;
       if(req.headers.origin!==allowed) throw fail(403,'Request origin is not allowed.');
+    }
+    // Keep a sanitized health check available when database startup itself fails.
+    // Do not expose the configured host, database, username, or raw driver error.
+    if(path==='/api/db-status' && req.method==='GET') {
+      const status = getMySQLStatus();
+      const configuredDriver = ['mysql','sqlite'].includes(process.env.DATABASE_DRIVER) ? process.env.DATABASE_DRIVER : 'unknown';
+      return send(res,200,{
+        activeDatabase: status.connected ? 'MySQL' : configuredDriver === 'sqlite' ? 'SQLite' : 'unavailable',
+        driver: configuredDriver,
+        mysql: { connected: status.connected, errorCode: status.errorCode }
+      });
     }
     await ready();
     if(path==='/api/auth/config' && req.method==='GET') return send(res,200,{googleClientId:process.env.GOOGLE_CLIENT_ID || ''});

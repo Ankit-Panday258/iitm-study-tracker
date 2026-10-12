@@ -19,7 +19,7 @@ const mysqlSSL = MYSQL_SSL_CA ? { ca: MYSQL_SSL_CA, rejectUnauthorized: true } :
 
 let pool = null;
 let isConnected = false;
-let connectionError = null;
+let connectionErrorCode = null;
 const allowLocalSQLiteFallback = process.env.NODE_ENV !== 'production'
   && process.env.ALLOW_SQLITE_FALLBACK !== 'false';
 
@@ -148,12 +148,12 @@ export async function initMySQL() {
     }
 
     isConnected = true;
-    connectionError = null;
+    connectionErrorCode = null;
     console.log(`🐬 Connected to local MySQL successfully at: ${MYSQL_HOST}:${MYSQL_PORT} / db: ${MYSQL_DATABASE}`);
     return true;
   } catch (err) {
     isConnected = false;
-    connectionError = err.message;
+    connectionErrorCode = typeof err.code === 'string' ? err.code : err.name || 'UNKNOWN';
     if (allowLocalSQLiteFallback) {
       console.warn(`🐬 MySQL unavailable (${err.message}); using the local SQLite database for development.`);
       return false;
@@ -171,11 +171,7 @@ export function getMySQLStatus() {
   return {
     connected: isConnected,
     type: 'MySQL',
-    host: MYSQL_HOST,
-    port: MYSQL_PORT,
-    database: MYSQL_DATABASE,
-    user: MYSQL_USER,
-    error: connectionError
+    errorCode: connectionErrorCode
   };
 }
 

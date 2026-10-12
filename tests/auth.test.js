@@ -37,6 +37,9 @@ after(async()=>{
 });
 test('Registration, session persistence, ownership, logout and rejected impersonation',async()=>{
   const account={name:'Test Student',email:'Student@example.com',password:'strong-password'};
+  const status=await request('/api/db-status');
+  assert.equal(status.status,200);assert.equal(status.data.activeDatabase,'SQLite');
+  assert.equal(status.data.mysql.connected,false);assert.equal('host' in status.data.mysql,false);
   assert.equal((await request('/api/tasks')).status,401);
   assert.equal((await request('/api/auth/login','POST',{email:account.email})).status,400);
   assert.equal((await request('/api/auth/register','POST',{...account,password:'123'})).status,400);
