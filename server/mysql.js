@@ -16,6 +16,15 @@ const MYSQL_PASSWORD = process.env.MYSQL_PASSWORD || '';
 const MYSQL_DATABASE = process.env.MYSQL_DATABASE || 'iitm_study_tracker';
 const MYSQL_SSL_CA = process.env.MYSQL_SSL_CA?.replace(/\\n/g, '\n');
 const mysqlSSL = MYSQL_SSL_CA ? { ca: MYSQL_SSL_CA, rejectUnauthorized: true } : undefined;
+function getMySQLHostFormat() {
+  const host = MYSQL_HOST.trim();
+  if (!host) return 'missing';
+  if (/^(mysql|mariadb):\/\//i.test(host)) return 'connection-url';
+  if (/^[^/:]+:\d+$/.test(host)) return 'host-with-port';
+  if (host.includes('/')) return 'path-in-host';
+  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(host)) return 'ip-address';
+  return 'hostname';
+}
 
 let pool = null;
 let isConnected = false;
@@ -171,7 +180,8 @@ export function getMySQLStatus() {
   return {
     connected: isConnected,
     type: 'MySQL',
-    errorCode: connectionErrorCode
+    errorCode: connectionErrorCode,
+    hostFormat: getMySQLHostFormat()
   };
 }
 

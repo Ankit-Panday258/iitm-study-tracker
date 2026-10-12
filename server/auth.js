@@ -48,7 +48,7 @@ export async function authMiddleware(req,res,next) {
       return send(res,200,{
         activeDatabase: status.connected ? 'MySQL' : configuredDriver === 'sqlite' ? 'SQLite' : 'unavailable',
         driver: configuredDriver,
-        mysql: { connected: status.connected, errorCode: status.errorCode }
+        mysql: { connected: status.connected, errorCode: status.errorCode, hostFormat: status.hostFormat }
       });
     }
     await ready();
