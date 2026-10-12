@@ -1,10 +1,9 @@
 import crypto from 'node:crypto';
 import db from './db.js';
-import { authQuery, databaseReady } from './mysql.js';
-export const databaseType = process.env.DATABASE_DRIVER || 'mysql';
+import { authQuery, databaseReady, isMySQLConnected } from './mysql.js';
 export async function query(sql, params = []) {
   await databaseReady;
-  if (databaseType === 'mysql') return authQuery(sql, params);
+  if (isMySQLConnected()) return authQuery(sql, params);
   const statement = db.prepare(sql);
   return /^SELECT/i.test(sql.trim()) ? statement.all(...params) : statement.run(...params);
 }

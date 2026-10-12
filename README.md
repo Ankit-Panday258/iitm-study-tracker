@@ -32,7 +32,7 @@ npm start
 
 See [AUTH_SETUP.md](AUTH_SETUP.md) for MySQL permissions, Google Cloud OAuth origins, Node/Vercel deployment, and verification limits. Keep `.env` private. Google sign-in cannot work until a real OAuth Web Client ID and allowed origins are configured.
 
-SQLite is available only through explicit `DATABASE_DRIVER=sqlite` for local development; MySQL mode does not silently switch to another database.
+Local development can use SQLite automatically when MySQL is unavailable. The fallback database is stored in `server/study_tracker.db`. Production never falls back to SQLite: set `NODE_ENV=production`, configure MySQL, and resolve any MySQL/schema initialization error before serving requests. Set `ALLOW_SQLITE_FALLBACK=false` to disable the local fallback.
 
 ## Stack
 

@@ -20,6 +20,8 @@ const mysqlSSL = MYSQL_SSL_CA ? { ca: MYSQL_SSL_CA, rejectUnauthorized: true } :
 let pool = null;
 let isConnected = false;
 let connectionError = null;
+const allowLocalSQLiteFallback = process.env.NODE_ENV !== 'production'
+  && process.env.ALLOW_SQLITE_FALLBACK !== 'false';
 
 export async function initMySQL() {
   if (process.env.DATABASE_DRIVER === 'sqlite') return false;
@@ -152,6 +154,10 @@ export async function initMySQL() {
   } catch (err) {
     isConnected = false;
     connectionError = err.message;
+    if (allowLocalSQLiteFallback) {
+      console.warn(`🐬 MySQL unavailable (${err.message}); using the local SQLite database for development.`);
+      return false;
+    }
     console.error(`🐬 MySQL connection error: ${err.message}. (Requests will fail until MySQL is available)`);
     throw new Error('MySQL unavailable. Check MYSQL_* settings.');
   }

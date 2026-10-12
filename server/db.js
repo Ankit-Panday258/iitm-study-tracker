@@ -7,8 +7,12 @@ const __dirname = path.dirname(__filename);
 
 let db = null;
 
-if (process.env.DATABASE_DRIVER !== 'sqlite') {
-  // MySQL mode never requires a local SQLite file or native addon.
+const allowLocalSQLiteFallback = process.env.NODE_ENV !== 'production'
+  && process.env.ALLOW_SQLITE_FALLBACK !== 'false';
+const sqliteEnabled = process.env.DATABASE_DRIVER === 'sqlite' || allowLocalSQLiteFallback;
+
+if (!sqliteEnabled) {
+  // Production MySQL mode does not require a local SQLite file or native addon.
   db = { prepare() { throw new Error('SQLite disabled in MySQL mode'); } };
 } else try {
   const { default: Database } = await import('better-sqlite3');
