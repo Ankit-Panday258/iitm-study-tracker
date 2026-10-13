@@ -58,6 +58,105 @@ const DBMS_WEEK_ONE_QUIZ = [
   }
 ];
 
+const DBMS_12_WEEK_SYLLABUS = [
+  {
+    id: 'dbms_w1', weekNumber: 1, title: 'Course Overview',
+    description: 'DBMS की बुनियाद, architecture, data independence और data models.',
+    topics: ['D1: Introduction to DBMS', 'D2: File System vs DBMS', 'D3: Schema & Instance', 'D4: DBMS Architecture', 'D5: Data Independence', 'D6: DBA, Users, Data Models'],
+    practice: 'DBMS Architecture का डायग्राम बनाएं और 20 MCQs हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'DBMS Introduction', highlights: 'Introduction to DBMS', notes: 'DBMS Introduction — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=140s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w2', weekNumber: 2, title: 'Relational Model & Basic SQL',
+    description: 'Relations, keys, integrity constraints और SQL के आधारभूत commands.',
+    topics: ['D1: Relation, Tuple, Attribute', 'D2: Primary, Foreign, Candidate Keys', 'D3: Integrity Constraints', 'D4: CREATE, ALTER, DROP', 'D5: INSERT, UPDATE, DELETE', 'D6: SELECT, WHERE, ORDER BY'],
+    practice: '15 Basic SQL Queries लिखें और चलाएं.',
+    video: { instructor: 'Gate Smashers', title: 'Relational Model & SQL', highlights: 'Relational Model and SQL basics', notes: 'Relational Model & SQL — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=11640s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w3', weekNumber: 3, title: 'Intermediate & Advanced SQL',
+    description: 'Joins, grouping, subqueries, views, triggers, CTE और window functions.',
+    topics: ['D1: INNER JOIN', 'D2: OUTER, SELF, CROSS JOIN', 'D3: GROUP BY, HAVING', 'D4: Subqueries', 'D5: Views, Triggers, CTE', 'D6: Aggregate & Window Functions'],
+    practice: '20–25 Advanced SQL Queries हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'SQL Lectures', highlights: 'Intermediate and advanced SQL', notes: 'SQL Lectures — हिंदी वीडियो प्लेलिस्ट', url: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y', youtubeId: '' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w4', weekNumber: 4, title: 'Query Languages & Database Design',
+    description: 'Relational algebra, relational calculus, ER model और relational mapping.',
+    topics: ['D1: Relational Algebra', 'D2: Relational Operators', 'D3: Tuple Relational Calculus', 'D4: Domain Relational Calculus', 'D5: ER Model & Diagrams', 'D6: ER-to-Relational Mapping'],
+    practice: '10 Algebra Questions हल करें और एक ER Diagram बनाएं.',
+    video: { instructor: 'Gate Smashers', title: 'Relational Algebra', highlights: 'Relational Algebra', notes: 'Relational Algebra — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=10148s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w5', weekNumber: 5, title: 'Functional Dependency & Normal Forms',
+    description: 'Functional dependencies, closure, Armstrong axioms, keys और 1NF/2NF.',
+    topics: ['D1: Functional Dependency', 'D2: Types of FD', 'D3: Attribute Closure', "D4: Armstrong's Axioms", 'D5: Candidate Keys', 'D6: 1NF और 2NF'],
+    practice: 'Attribute closure, candidate keys और normalization के सवाल हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'Functional Dependency', highlights: 'Functional Dependency', notes: 'Functional Dependency — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=3008s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w6', weekNumber: 6, title: 'Normal Forms Continued',
+    description: '3NF, BCNF, lossless decomposition, dependency preservation, 4NF और 5NF.',
+    topics: ['D1: 3NF', 'D2: BCNF', 'D3: Lossless Decomposition', 'D4: Dependency Preservation', 'D5: Multivalued Dependency, 4NF', 'D6: 5NF, Canonical Cover'],
+    practice: '15 Normalization Questions हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'Advanced Normalization', highlights: 'Advanced Normalization', notes: 'Advanced Normalization — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=5908s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w7', weekNumber: 7, title: 'Application Development',
+    description: 'Database applications, JDBC/ODBC, connections, CRUD और prepared statements.',
+    topics: ['D1: Database Applications', 'D2: JDBC, ODBC, Embedded SQL', 'D3: Database Connection', 'D4: CRUD Operations', 'D5: Prepared Statements', 'D6: Mini Project'],
+    practice: 'एक छोटा Student Database Application बनाएं.',
+    video: { instructor: 'Hindi tutorial', title: 'JDBC in Hindi', highlights: 'JDBC and database applications', notes: 'JDBC in Hindi — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=lZbl7Q21t4s', youtubeId: 'lZbl7Q21t4s' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w8', weekNumber: 8, title: 'Storage Management',
+    description: 'Storage hierarchy, disks, records, file organization, buffers और RAID.',
+    topics: ['D1: Storage Hierarchy', 'D2: Disk, Blocks, Records', 'D3: File Organization', 'D4: Heap & Sequential Files', 'D5: Buffer Management', 'D6: RAID, Storage Structures'],
+    practice: 'File Organization के नोट्स बनाएं और संबंधित सवाल हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'DBMS Storage Lectures', highlights: 'Storage management', notes: 'DBMS Storage Lectures — हिंदी वीडियो प्लेलिस्ट', url: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y', youtubeId: '' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w9', weekNumber: 9, title: 'Indexing & Hashing',
+    description: 'Primary/secondary indexes, dense/sparse indexes, B-trees और hashing.',
+    topics: ['D1: Primary & Secondary Index', 'D2: Dense & Sparse Index', 'D3: B-Tree', 'D4: B+ Tree', 'D5: Static Hashing', 'D6: Dynamic Hashing'],
+    practice: 'B+ Tree और Hashing के numericals हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'Indexing', highlights: 'Indexing and hashing', notes: 'Indexing — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=8372s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w10', weekNumber: 10, title: 'Transactions',
+    description: 'ACID, transaction states, serializability, locks, 2PL और deadlocks.',
+    topics: ['D1: Transaction & ACID', 'D2: Transaction States', 'D3: Schedules & Serializability', 'D4: Conflict & View Serializability', 'D5: Locks, 2PL', 'D6: Deadlock, Timestamp Protocols'],
+    practice: '10 Serializability Questions हल करें.',
+    video: { instructor: 'Gate Smashers', title: 'Transactions', highlights: 'Transactions and concurrency control', notes: 'Transactions — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=15748s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w11', weekNumber: 11, title: 'Backup & Recovery',
+    description: 'Failure types, backups, log-based recovery, undo/redo और shadow paging.',
+    topics: ['D1: Failure Types', 'D2: Database Backup Types', 'D3: Log-Based Recovery', 'D4: UNDO, REDO, Checkpoints', 'D5: Shadow Paging', 'D6: Backup & Restore Practical'],
+    practice: 'Recovery के सवाल हल करें और Backup का अभ्यास करें.',
+    video: { instructor: 'Gate Smashers', title: 'Recovery Lectures', highlights: 'Backup and recovery', notes: 'Recovery Lectures — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=YRnjGeQbsHQ&t=18062s', youtubeId: 'YRnjGeQbsHQ' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  },
+  {
+    id: 'dbms_w12', weekNumber: 12, title: 'Query Optimization & Conclusion',
+    description: 'Query processing, execution plans, heuristic/cost-based optimization और revision.',
+    topics: ['D1: Query Processing', 'D2: Query Execution Plans', 'D3: Heuristic Optimization', 'D4: Cost-Based Optimization', 'D5: Join Optimization', 'D6: Full DBMS Revision'],
+    practice: 'पूरे सिलेबस का Mock Test दें.',
+    video: { instructor: 'Hindi tutorial', title: 'Query Optimization', highlights: 'Query optimization', notes: 'Query Optimization — हिंदी वीडियो', url: 'https://www.youtube.com/watch?v=TyHUU05XKMY', youtubeId: 'TyHUU05XKMY' },
+    notesUrl: SYSTEM_COMMANDS_DRIVE_URL, keyCommands: []
+  }
+];
+
 export const INITIAL_COURSES_DATA = [
   {
     id: 'sys_cmd',
@@ -485,163 +584,9 @@ export const INITIAL_COURSES_DATA = [
     subtitle: 'SQL & Database Design',
     icon: '🗄️',
     description: 'IIT Madras Database Management Systems — Relational Algebra, SQL Queries, Schema Normalization (1NF to BCNF) & Transactions.',
-    driveUrl: SYSTEM_COMMANDS_DRIVE_URL,
+    driveUrl: '',
     badge: 'Theory & SQL Lab',
-    weeks: [
-      {
-        id: 'dbms_w1',
-        weekNumber: 1,
-        title: 'Week 1: Relational Model, ER Diagrams & Schema Mapping',
-        description: 'Relational data models, ER diagrams to table mapping, entity types, attributes, and cardinality.',
-        topics: ['Entity-Relationship (ER) model', 'Entity types, weak entities & attributes', 'Primary key, candidate key & foreign key', 'Mapping ER diagram to relational schema'],
-        video: {
-          instructor: 'Gate Smashers (Varun Singla)',
-          title: 'Introduction to DBMS & ER Model in Hindi — Complete Lecture',
-          highlights: 'DBMS intro, 3-tier architecture, ER diagram, keys, mapping',
-          notes: 'Gate Smashers DBMS Hindi Playlist — ER Modeling, Entities, Cardinality and Keys concept.',
-          url: 'https://youtu.be/kBdlM6hNDAE',
-          youtubeId: 'kBdlM6hNDAE'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'CREATE TABLE students (id INT PRIMARY KEY);', label: 'Primary Key', desc: 'Define unique entity identifier' }
-        ]
-      },
-      {
-        id: 'dbms_w2',
-        weekNumber: 2,
-        title: 'Week 2: SQL DDL, DML & Schema Constraints',
-        description: 'SQL fundamentals, CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, and column constraints.',
-        topics: ['Data Definition Language (DDL)', 'Data Manipulation Language (DML)', 'NOT NULL, UNIQUE, CHECK, DEFAULT', 'Referential Integrity & FOREIGN KEY ON DELETE CASCADE'],
-        video: {
-          instructor: 'Kudvenkat / Gate Smashers',
-          title: 'SQL DDL vs DML Commands & Constraints in Hindi',
-          highlights: 'DDL, DML, constraints, primary key, foreign key, cascade',
-          notes: 'SQL syntax for creating tables and enforcing integrity constraints.',
-          url: 'https://youtu.be/7Vtl2Wc7d-8',
-          youtubeId: '7Vtl2Wc7d-8'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'ALTER TABLE users ADD COLUMN email VARCHAR(100);', label: 'ALTER Table', desc: 'Add column to existing table' }
-        ]
-      },
-      {
-        id: 'dbms_w3',
-        weekNumber: 3,
-        title: 'Week 3: Complex SQL Queries, Aggregation & Grouping',
-        description: 'Querying tables, aggregate functions (COUNT, SUM, AVG), GROUP BY, HAVING, and filtering with WHERE.',
-        topics: ['SELECT with WHERE clause', 'Aggregate functions: COUNT, SUM, AVG, MIN, MAX', 'GROUP BY clause & grouping semantics', 'HAVING clause vs WHERE clause'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'SQL GROUP BY and HAVING Clause with Examples in Hindi',
-          highlights: 'GROUP BY, HAVING, aggregate functions, filtering',
-          notes: 'Understanding data aggregation and group-level filtering with HAVING.',
-          url: 'https://youtu.be/9k5d5e5bA2E',
-          youtubeId: '9k5d5e5bA2E'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'SELECT dept, AVG(salary) FROM emp GROUP BY dept HAVING AVG(salary) > 50000;', label: 'GROUP BY', desc: 'Aggregate by department' }
-        ]
-      },
-      {
-        id: 'dbms_w4',
-        weekNumber: 4,
-        title: 'Week 4: SQL Joins & Nested Subqueries',
-        description: 'Inner joins, Left outer joins, Right joins, Full joins, Cross joins, and correlated subqueries.',
-        topics: ['INNER JOIN vs OUTER JOIN', 'LEFT JOIN, RIGHT JOIN & FULL JOIN', 'Natural Joins and Self Joins', 'Nested Subqueries (IN, NOT IN, EXISTS, ANY, ALL)'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'SQL Joins Explained in Hindi — Inner, Left, Right & Full Join',
-          highlights: 'INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, subqueries',
-          notes: 'Mastering table joins and multi-table data extraction techniques.',
-          url: 'https://youtu.be/2HVMiPPuPIM',
-          youtubeId: '2HVMiPPuPIM'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'SELECT * FROM A INNER JOIN B ON A.id = B.a_id;', label: 'Inner Join', desc: 'Combine matching records from both tables' }
-        ]
-      },
-      {
-        id: 'dbms_w5',
-        weekNumber: 5,
-        title: 'Week 5: Relational Algebra & Tuple Relational Calculus',
-        description: 'Formal relational query languages, Selection (σ), Projection (π), Cartesian product (×), Join (⨝), Union, Set Difference.',
-        topics: ['Fundamental operators: Selection (σ) & Projection (π)', 'Set operations: Union (∪), Intersection (∩), Difference (−)', 'Cartesian product (×) & Theta Join (⨝)', 'Tuple Relational Calculus (TRC) queries'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'Relational Algebra in DBMS in Hindi — Complete Concept',
-          highlights: 'Relational algebra, sigma, pi, join, cross product, TRC',
-          notes: 'Theoretical foundations of relational queries and algebraic transformations.',
-          url: 'https://youtu.be/4YilEjkNPrQ',
-          youtubeId: '4YilEjkNPrQ'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'π_name (σ_age>20 (Students))', label: 'Relational Algebra', desc: 'Filter age > 20 and project name' }
-        ]
-      },
-      {
-        id: 'dbms_w6',
-        weekNumber: 6,
-        title: 'Week 6: Functional Dependencies & Normalization (1NF to BCNF)',
-        description: 'Database anomalies, closure of functional dependencies, minimal cover, 1NF, 2NF, 3NF, and Boyce-Codd Normal Form (BCNF).',
-        topics: ['Functional Dependencies (FD) & Armstrong Axioms', 'Attribute Closure & Finding Candidate Keys', 'Update, Insertion & Deletion Anomalies', '1NF, 2NF, 3NF and BCNF decomposition rules'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'Normalization in DBMS in Hindi — 1NF, 2NF, 3NF, BCNF Easy Explanation',
-          highlights: 'Normalization, 1NF, 2NF, 3NF, BCNF, functional dependencies',
-          notes: 'Eliminating redundancy and anomalies through step-by-step schema normalization.',
-          url: 'https://youtu.be/5dspsycsm-s',
-          youtubeId: '5dspsycsm-s'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'FD: A -> B, B -> C  => A -> C (Transitivity)', label: 'Armstrong Axiom', desc: 'Transitive functional dependency' }
-        ]
-      },
-      {
-        id: 'dbms_w7',
-        weekNumber: 7,
-        title: 'Week 7: Transactions, ACID Properties & Concurrency Control',
-        description: 'Transaction concepts, ACID properties, serializability, Conflict Serializability, Two-Phase Locking (2PL), and Deadlocks.',
-        topics: ['Transaction states: Active, Partially Committed, Failed, Aborted', 'ACID Properties: Atomicity, Consistency, Isolation, Durability', 'Schedules & Conflict Serializability', 'Concurrency control: Lock-based protocols & 2PL'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'Transactions and Concurrency Control in DBMS in Hindi',
-          highlights: 'ACID, serializability, 2PL, locking, deadlocks',
-          notes: 'Ensuring data integrity under concurrent multi-user database operations.',
-          url: 'https://youtu.be/d4_Jg_l8f4Y',
-          youtubeId: 'd4_Jg_l8f4Y'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'START TRANSACTION; ... COMMIT; / ROLLBACK;', label: 'Transaction SQL', desc: 'Atomic transaction boundaries' }
-        ]
-      },
-      {
-        id: 'dbms_w8',
-        weekNumber: 8,
-        title: 'Week 8: Indexing, B-Trees, B+ Trees & Query Optimization',
-        description: 'File organizations, primary/secondary/clustering indexes, B-Trees, B+ Trees search/insertion, and query execution plans.',
-        topics: ['File organization: Heap vs Ordered files', 'Index structures: Dense vs Sparse, Primary vs Secondary', 'B-Trees and B+ Trees multi-level indexing', 'Query evaluation & EXPLAIN query execution plan'],
-        video: {
-          instructor: 'Gate Smashers',
-          title: 'Indexing in DBMS & B+ Tree Explained in Hindi',
-          highlights: 'Indexing, B-Tree, B+ Tree, search time complexity, EXPLAIN',
-          notes: 'Accelerating query retrieval speed using balanced tree indexes.',
-          url: 'https://youtu.be/aZjYr87r1b8',
-          youtubeId: 'aZjYr87r1b8'
-        },
-        notesUrl: SYSTEM_COMMANDS_DRIVE_URL,
-        keyCommands: [
-          { cmd: 'CREATE INDEX idx_user_email ON users(email);', label: 'Create Index', desc: 'Accelerate queries on email column' },
-          { cmd: 'EXPLAIN SELECT * FROM users WHERE email = "...";', label: 'Query Plan', desc: 'Inspect execution plan and index usage' }
-        ]
-      }
-    ]
+    weeks: DBMS_12_WEEK_SYLLABUS
   }
 ];
 
@@ -659,7 +604,11 @@ export default function CoursesPage({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length >= 3) {
-          return parsed;
+          const dbmsCourse = INITIAL_COURSES_DATA.find(course => course.id === 'dbms');
+          const savedDbms = parsed.some(course => course.id === 'dbms');
+          return savedDbms
+            ? parsed.map(course => course.id === 'dbms' ? { ...course, ...dbmsCourse } : course)
+            : [...parsed, dbmsCourse];
         }
       }
     } catch (e) {}
@@ -770,9 +719,10 @@ export default function CoursesPage({
       topic: `${week.title} (${week.topics.slice(0, 3).join(', ')})`,
       durationMinutes: 90,
       priority: 'High',
-      notes: week.video 
-        ? `${week.video.instructor}: ${week.video.title} - ${week.video.url}\n${week.video.notes}`
-        : `Syllabus Topics: ${week.topics.join(', ')}`
+      notes: [
+        week.video && `${week.video.instructor}: ${week.video.title} - ${week.video.url}\n${week.video.notes}`,
+        week.practice && `दिन 7: ${week.practice}`
+      ].filter(Boolean).join('\n') || `Syllabus Topics: ${week.topics.join(', ')}`
     };
 
     const result = await onAddTask(taskData);
@@ -858,7 +808,7 @@ export default function CoursesPage({
                   <span>Select a Subject</span>
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-slate-400">
-                  Choose a subject to view its 8-week curriculum and start video lectures.
+                  Choose a subject to view its curriculum and start video lectures.
                 </p>
               </div>
             </div>
@@ -1498,6 +1448,16 @@ export default function CoursesPage({
               </div>
             </div>
 
+            {activeWeek.practice && (
+              <div className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 sm:p-5">
+                <h4 className="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-2 mb-2">
+                  <ClipboardList className="w-4 h-4" />
+                  <span>दिन 7: प्रैक्टिस</span>
+                </h4>
+                <p className="text-sm font-medium text-amber-950 dark:text-amber-100">{activeWeek.practice}</p>
+              </div>
+            )}
+
             {/* Cheatsheet / Key Commands if available */}
             {activeWeek.keyCommands && activeWeek.keyCommands.length > 0 && (
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
@@ -1532,14 +1492,14 @@ export default function CoursesPage({
       )}
 
       {/* ========================================================================= */}
-      {/* COLLAPSIBLE FULL 8-WEEK SYLLABUS OVERVIEW                                 */}
+      {/* COLLAPSIBLE FULL SYLLABUS OVERVIEW                                       */}
       {/* ========================================================================= */}
       {showFullOverview && (
         <div className="mt-10 pt-8 border-t-2 border-dashed border-gray-200 dark:border-slate-800 space-y-6 animate-fadeIn">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
               <span>📚</span>
-              <span>All 8 Weeks Overview: {activeCourse.name}</span>
+              <span>All {activeCourse.weeks?.length || 0} Weeks Overview: {activeCourse.name}</span>
             </h3>
             <button
               onClick={() => setShowFullOverview(false)}
