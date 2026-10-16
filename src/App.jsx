@@ -11,7 +11,6 @@ import AuthModal from './components/AuthModal';
 import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
 import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage';
-import DailyNotes from './components/DailyNotes';
 import AssignmentCalendar from './components/AssignmentCalendar';
 import { 
   fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
@@ -619,9 +618,6 @@ export default function App() {
                 </button>
               </div>
             )}
-
-            {/* Today's Key Learnings / Summary Note */}
-            <DailyNotes key={currentUser?.id || "guest"} selectedDate={selectedDate} />
 
             {/* App Footer */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
