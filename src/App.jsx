@@ -356,7 +356,7 @@ export default function App() {
       {currentUser?.isAdmin && currentPage !== 'admin' && (
         <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 pt-3">
           <button onClick={() => setCurrentPage('admin')} className="rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/40 px-3 py-2 text-xs font-bold text-pink-700 dark:text-pink-300 hover:bg-pink-100 dark:hover:bg-pink-900/50">
-            एडमिन पैनल
+            Admin Panel
           </button>
         </div>
       )}
