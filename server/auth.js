@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { hashPassword, verifyPassword } from './authUtils.js';
-import { query, ready, tokenHash, publicUser, findUser, createUser } from './authStore.js';
+import { query, ready, tokenHash, publicUser, findUser, createUser, listUsers } from './authStore.js';
 import { getMySQLStatus } from './mysql.js';
 import { connectMongoDB, getMongoStatus, isMongoConnected } from './mongodb.js';
 const google = new OAuth2Client();
@@ -97,6 +97,25 @@ export async function authMiddleware(req,res,next) {
     if(path==='/api/auth/me' && req.method==='GET') return send(res,row ? 200 : 401,row ? {user:publicUser(row)} : {error:'Please sign in.'});
     if(!row) throw fail(401,'Please sign in to access your study records.');
     req.user=publicUser(row);
+    if(path.startsWith('/api/admin/')) {
+      if(!req.user.isAdmin) throw fail(403,'Admin access is required.');
+      if(path==='/api/admin/users' && req.method==='GET') {
+        const users=await listUsers();
+        return send(res,200,users.map(publicUser));
+      }
+      if(path==='/api/admin/users' && req.method==='POST') {
+        const body=await readBody(req);
+        const email=typeof body.email==='string' ? body.email.trim().toLowerCase() : '';
+        const name=typeof body.name==='string' ? body.name.trim() : '';
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length>254) throw fail(400,'A valid email address is required.');
+        if(!name || name.length>100) throw fail(400,'A name is required (maximum 100 characters).');
+        if(typeof body.password!=='string' || body.password.length<8 || body.password.length>128) throw fail(400,'Password must be between 8 and 128 characters.');
+        if(await findUser(email)) throw fail(409,'An account already exists with this email.');
+        const created=await createUser({email,name,passwordHash:hashPassword(body.password)});
+        return send(res,201,{user:publicUser(created)});
+      }
+      throw fail(404,'Not found.');
+    }
     // Legacy handlers receive identity only from the verified session.
     req.headers['x-user-email']=row.email;
     if(req.query) {req.query.user_email=row.email;delete req.query.all_users;}

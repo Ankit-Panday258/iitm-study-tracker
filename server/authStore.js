@@ -77,8 +77,20 @@ export function ready() {
   return initialized;
 }
 export const tokenHash = token => crypto.createHash('sha256').update(token).digest('hex');
+export async function listUsers() {
+  if (process.env.DATABASE_DRIVER === 'mongodb') {
+    if (!isMongoConnected()) await connectMongoDB();
+    if (!isMongoConnected()) throw new Error('MongoDB is unavailable');
+    return (await User.find({}).sort({ created_at: -1 }).lean()).map(plain);
+  }
+  await databaseReady;
+  if (isMySQLConnected()) return authQuery('SELECT * FROM users ORDER BY created_at DESC', []);
+  return db.prepare('SELECT * FROM users ORDER BY created_at DESC').all();
+}
+export const isAdminEmail = email => (process.env.ADMIN_EMAILS || '').split(',').map(value => value.trim().toLowerCase()).filter(Boolean).includes(String(email || '').trim().toLowerCase());
 export const publicUser = row => ({ id: row.id, email: row.email, name: row.name,
-  picture: row.picture || '', authProvider: row.auth_provider || row.authProvider, createdAt: row.created_at || row.createdAt });
+  picture: row.picture || '', authProvider: row.auth_provider || row.authProvider, createdAt: row.created_at || row.createdAt,
+  isAdmin: isAdminEmail(row.email) });
 export async function findUser(email) { return (await query('SELECT * FROM users WHERE email = ?', [email]))[0]; }
 export async function createUser({email, name, passwordHash = null, googleId = null, picture = ''}) {
   const id = crypto.randomUUID();

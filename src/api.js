@@ -316,6 +316,17 @@ export async function fetchStreak(userEmail = getCurrentUserEmail()) {
 
 export async function fetchSubjects() {
   const cached = localStorage.getItem(BACKUP_SUBJECTS_KEY);
+  try {
+    const res = await fetchWithTimeout(`${API_BASE}/subjects`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        localStorage.setItem(BACKUP_SUBJECTS_KEY, JSON.stringify(data));
+        return data;
+      }
+    }
+  } catch (err) {}
+
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -323,22 +334,23 @@ export async function fetchSubjects() {
     } catch (e) {}
   }
 
-  try {
-    const res = await fetchWithTimeout(`${API_BASE}/subjects`);
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        localStorage.setItem(BACKUP_SUBJECTS_KEY, JSON.stringify(data));
-        return data;
-      }
-    }
-  } catch (err) {}
-
   return DEFAULT_SUBJECTS;
 }
 
 export async function createSubject(subjectData) {
   return writeRecord('/subjects', 'POST', subjectData);
+}
+
+export async function fetchAdminUsers() {
+  const res = await fetchWithTimeout(`${API_BASE}/admin/users`);
+  const data = await safeJson(res);
+  if (!res.ok || !Array.isArray(data)) throw new Error(data?.error || 'Unable to load users.');
+  return data;
+}
+
+export async function createAdminUser(userData) {
+  const result = await writeRecord('/admin/users', 'POST', userData);
+  return result.user;
 }
 
 async function authRequest(path, body) {

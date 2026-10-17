@@ -16,6 +16,10 @@ Create a Google Cloud OAuth **Web application** client and configure the consent
 
 The server uses Google's library to validate token signature, audience, issuer and expiry. Unverified emails and simulated credentials are rejected. Existing password accounts are not silently linked by matching email; those users keep using their password. The verified Google `sub` identifies returning Google accounts.
 
+## Admin panel
+
+Set `ADMIN_EMAILS` on the server to a comma-separated list of account email addresses, for example `ADMIN_EMAILS=owner@example.com`. Restart the server, then sign in with one of those accounts; the **एडमिन पैनल** button appears in the app. Admins can create user accounts with a password and add courses/subjects. Admin access is checked by the server on every admin API request. Keep this setting private and only list trusted accounts. A newly created user can sign in with the password set in the panel.
+
 Official reference: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
 
 ## Deployment
