@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Flame, Sun, Moon, LogOut, 
   Download, GraduationCap,
-  Menu, X, Calendar
+  Menu, X, Calendar, ShieldCheck
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -17,7 +17,8 @@ export default function Navbar({
   isInstallable,
   onInstallApp,
   onOpenCourses,
-  onOpenCalendar
+  onOpenCalendar,
+  onOpenAdmin
 }) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -156,6 +157,22 @@ export default function Navbar({
                       </span>
                       <span className="text-[10px] text-pink-600 font-bold">📅</span>
                     </button>
+
+                    {currentUser?.isAdmin && typeof onOpenAdmin === 'function' && (
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          onOpenAdmin();
+                        }}
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <ShieldCheck className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                          <span>Admin Panel</span>
+                        </span>
+                        <span className="text-[10px] text-pink-600 font-bold">→</span>
+                      </button>
+                    )}
 
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
@@ -309,6 +326,22 @@ export default function Navbar({
                       </span>
                       <span className="text-[10px] text-pink-600 font-bold">📅</span>
                     </button>
+
+                    {currentUser?.isAdmin && typeof onOpenAdmin === 'function' && (
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          onOpenAdmin();
+                        }}
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <ShieldCheck className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                          <span>Admin Panel</span>
+                        </span>
+                        <span className="text-[10px] text-pink-600 font-bold">→</span>
+                      </button>
+                    )}
 
                     <a
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
