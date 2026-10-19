@@ -624,7 +624,7 @@ export default function App() {
             )}
 
             {/* App Footer */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
+            {currentUser?.isAdmin && <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
               <p>IIT Madras Study Tracker &bull; Mobile App Edition</p>
               <div className="flex items-center gap-2">
                 <button
@@ -638,7 +638,7 @@ export default function App() {
                   <span>{currentUser ? 'Signed in' : 'Sign in to sync'}</span>
                 </span>
               </div>
-            </div>
+            </div>}
 
           </main>
         )}
