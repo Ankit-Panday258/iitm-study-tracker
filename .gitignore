@@ -24,6 +24,7 @@ dist-ssr
 server/*.db
 server/*.db-shm
 server/*.db-wal
+server/.notion-goals-db.json
 
 # Editor & OS files
 .vscode/*

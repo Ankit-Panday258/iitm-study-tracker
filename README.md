@@ -37,3 +37,17 @@ Local development can use SQLite automatically when MySQL is unavailable. The fa
 ## Stack
 
 React 18, Vite, Tailwind CSS, Express API, MySQL (`mysql2`), Google Auth Library, and optional local SQLite (`better-sqlite3`).
+# Goals and Notion sync
+
+The Goals page is available from the planner. Goals are saved as the signed-in user's regular app records, but are kept out of the daily study-topic list. Completing a goal awards 10 points; every 100 points advances the displayed level. The page also shows the learner's rank by completed-goal points without exposing other learners' identities.
+
+The connected Notion workspace now has a verified `Study Goals` database. To connect the app server, create a Notion integration with page editing capability, share that database with it, and configure these server environment variables:
+
+```env
+NOTION_TOKEN=secret_...
+NOTION_GOALS_DATABASE_ID=fab18750-36f8-4ea5-8835-4498f938607a
+```
+
+Then open Goals and choose **Sync all goals** to backfill app goals. New goals are added immediately, and completion/edit/removal changes are sent to Notion as part of the app action. The database has `Name` (title), `Status` (select), `Goal ID` (rich text), `Points` (number), and `Owner` (rich text) properties. For a different workspace, set `NOTION_PARENT_PAGE_ID` to a page shared with the integration and omit `NOTION_GOALS_DATABASE_ID`; the setup action creates a new database and backfills existing goals.
+
+This is app-to-Notion sync. Editing a row directly in Notion does not currently update the app. Notion webhooks can deliver changes to a secure, publicly reachable HTTPS endpoint, but this app needs a deployed endpoint plus a verified webhook subscription before Notion-to-app updates can be enabled. Localhost is not reachable by Notion. If credentials are absent, goals continue to work in the app and the Goals page explains the missing setup.

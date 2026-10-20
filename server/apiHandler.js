@@ -24,6 +24,7 @@ import {
   mySQLGetUsers
 } from './mysql.js';
 import { hashPassword, verifyPassword } from './authUtils.js';
+import { createGoalsDatabase, getNotionStatus, upsertGoalInNotion } from './notionGoals.js';
 
 export function handleApiRequest(req, res, next) {
   return authMiddleware(req, res, () => handleAuthenticatedRequest(req, res, next));
@@ -64,6 +65,50 @@ function handleAuthenticatedRequest(req, res, next) {
         parsedUrl.query.user_email ||
         'default'
       ).toLowerCase().trim();
+
+      // Goal records stay in the app's existing task store; Notion is an optional mirror.
+      if (method === 'GET' && pathname === '/api/notion/goals/status') {
+        return sendJson(200, getNotionStatus());
+      }
+
+      if (method === 'POST' && pathname === '/api/notion/goals/setup') {
+        const database = await createGoalsDatabase();
+        let goals;
+        if (useMySQL) goals = (await mySQLGetAllTasks()).filter(goal => goal.subject === 'Personal Goals');
+        else if (useMongo) goals = await Task.find({ subject: 'Personal Goals' }).lean();
+        else goals = db.prepare('SELECT id, topic, completed, user_email AS userEmail FROM tasks WHERE subject = ?').all('Personal Goals');
+        for (const goal of goals) {
+          await upsertGoalInNotion({ id: goal.id, title: goal.topic, completed: Boolean(goal.completed), ownerEmail: goal.userEmail || goal.user_email || userEmail });
+        }
+        return sendJson(200, { success: true, databaseUrl: database.url, goalCount: goals.length });
+      }
+
+      if (method === 'POST' && pathname === '/api/notion/goals') {
+        return await parseBody(async (body) => {
+          const goalId = String(body.id || '').slice(0, 100);
+          const title = String(body.title || '').trim().slice(0, 160);
+          if (!goalId || !title) return sendJson(400, { error: 'A goal ID and title are required.' });
+          await upsertGoalInNotion({ id: goalId, title, completed: Boolean(body.completed), ownerEmail: userEmail, archived: Boolean(body.archived) });
+          return sendJson(200, { success: true });
+        });
+      }
+
+      if (method === 'GET' && pathname === '/api/goals/ranking') {
+        let rows;
+        if (useMySQL) rows = await mySQLGetAllTasks();
+        else if (useMongo) rows = await Task.find({ subject: 'Personal Goals', completed: true }).select('userEmail').lean();
+        else rows = db.prepare('SELECT user_email AS userEmail FROM tasks WHERE subject = ? AND completed = 1').all('Personal Goals');
+        const scores = new Map();
+        for (const row of rows) {
+          if (row.subject && row.subject !== 'Personal Goals') continue;
+          if (row.completed === false || row.completed === 0) continue;
+          const email = String(row.userEmail || row.user_email || '').toLowerCase();
+          if (email) scores.set(email, (scores.get(email) || 0) + 10);
+        }
+        const sorted = [...scores.entries()].sort((a, b) => b[1] - a[1]);
+        const rank = sorted.findIndex(([email]) => email === userEmail) + 1;
+        return sendJson(200, { rank: rank || null, participants: sorted.length, points: scores.get(userEmail) || 0 });
+      }
 
       // 0. GET /api/db-status
       if (method === 'GET' && pathname === '/api/db-status') {

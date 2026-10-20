@@ -201,6 +201,36 @@ export async function toggleTask(id) {
   return saved;
 }
 
+export async function syncGoalToNotion(goal, archived = false) {
+  const res = await fetchWithTimeout(`${API_BASE}/notion/goals`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: goal.id, title: goal.topic, completed: Boolean(goal.completed), archived })
+  });
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data?.error || 'Notion sync failed.');
+  return data;
+}
+
+export async function fetchGoalRanking() {
+  const res = await fetchWithTimeout(`${API_BASE}/goals/ranking`);
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data?.error || 'Could not load goal rankings.');
+  return data;
+}
+
+export async function fetchNotionGoalsStatus() {
+  const res = await fetchWithTimeout(`${API_BASE}/notion/goals/status`);
+  return await safeJson(res) || { ready: false };
+}
+
+export async function setupNotionGoals() {
+  const res = await fetchWithTimeout(`${API_BASE}/notion/goals/setup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+  const data = await safeJson(res);
+  if (!res.ok) throw new Error(data?.error || 'Notion setup failed.');
+  return data;
+}
+
 export async function deleteTask(id) {
   await writeRecord(`/tasks/${encodeURIComponent(id)}`, 'DELETE');
   const userEmail = getCurrentUserEmail();

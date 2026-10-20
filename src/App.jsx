@@ -12,12 +12,13 @@ import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
 import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage';
 import AssignmentCalendar from './components/AssignmentCalendar';
+import GoalsPage from './components/GoalsPage';
 import AdminPanel from './components/AdminPanel';
 import { 
   fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
-  DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI
+  DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI, syncGoalToNotion
 } from './api';
-import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, ChevronLeft, ChevronRight, Play, Folder } from 'lucide-react';
+import { Plus, CheckCircle2, Search, BookMarked, Check, Calendar, ChevronLeft, ChevronRight, Play, Folder, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getLocalDateString } from './utils/formatTime.js';
 
@@ -244,7 +245,7 @@ export default function App() {
   }, [subjects]);
 
   // ─── Filter tasks for selected date ────────────────────────
-  const dateTasks = allTasks.filter(t => t.date === selectedDate);
+  const dateTasks = allTasks.filter(t => t.date === selectedDate && t.subject !== 'Personal Goals');
 
   const filteredTasks = dateTasks.filter(task => {
     if (filterTab === 'Pending' && task.completed) return false;
@@ -264,16 +265,27 @@ export default function App() {
     try {
       const updated = await toggleTask(taskId);
       setAllTasks(prev => prev.map(t => t.id === taskId ? updated : t));
+      let syncWarning = '';
+      if (updated.subject === 'Personal Goals') {
+        try { await syncGoalToNotion(updated); }
+        catch (syncError) { syncWarning = ` · Notion sync failed: ${syncError.message}`; }
+      }
       if (updated.completed) confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-      showToast(updated.completed ? 'Topic marked completed!' : 'Topic marked pending');
+      showToast(`${updated.completed ? 'Topic marked completed!' : 'Topic marked pending'}${syncWarning}`);
       loadStreak();
     } catch (error) { showToast(error.message); }
   };
   const handleDeleteTask = async (taskId) => {
     try {
+      const deleting = allTasks.find(task => task.id === taskId);
       await deleteTask(taskId);
+      let syncWarning = '';
+      if (deleting?.subject === 'Personal Goals') {
+        try { await syncGoalToNotion(deleting, true); }
+        catch (syncError) { syncWarning = ` · Notion sync failed: ${syncError.message}`; }
+      }
       setAllTasks(prev => prev.filter(t => t.id !== taskId));
-      showToast('Topic deleted');loadStreak();
+      showToast(`Topic deleted${syncWarning}`);loadStreak();
     } catch (error) { showToast(error.message); }
   };
 
@@ -288,21 +300,27 @@ export default function App() {
     setIsModalOpen(true);
   };
 
-  const handleSaveTask = async (taskData) => {
+  const handleSaveTask = async (taskData, goalToEdit = null) => {
     if (!currentUser) {
       setIsAuthModalOpen(true);
       return { success: false, error: 'Please sign in to add or edit study topics.' };
     }
     try {
       const taskWithDate = { ...taskData, date: taskData.date || getTodayString() };
-      const saved = editingTask ? await updateTask(editingTask.id, taskWithDate) : await createTask(taskWithDate);
-      setAllTasks(prev => editingTask ? prev.map(t => t.id === saved.id ? saved : t) : [saved, ...prev]);
+      const taskBeingEdited = goalToEdit === false ? null : goalToEdit || editingTask;
+      const saved = taskBeingEdited ? await updateTask(taskBeingEdited.id, taskWithDate) : await createTask(taskWithDate);
+      setAllTasks(prev => taskBeingEdited ? prev.map(t => t.id === saved.id ? saved : t) : [saved, ...prev]);
+      let syncWarning = '';
+      if (saved.subject === 'Personal Goals') {
+        try { await syncGoalToNotion(saved); }
+        catch (syncError) { syncWarning = ` · Notion sync failed: ${syncError.message}`; }
+      }
       // Make the saved item visible even if the planner was filtered to another date or status.
       setSelectedDate(saved.date);
       setFilterTab('All');
       setSelectedSubject('All');
       setSearchQuery('');
-      showToast(editingTask ? 'Topic updated successfully!' : 'Topic added successfully!');
+      showToast(`${taskBeingEdited ? 'Topic updated successfully!' : 'Topic added successfully!'}${syncWarning}`);
       loadStreak();
       return { success: true };
     } catch (error) {
@@ -355,7 +373,9 @@ export default function App() {
       />
 
         {/* View Switch: Daily Track, Courses & Syllabus, Books Library, Assignment Calendar, or Main Planner */}
-        {currentPage === 'admin' ? (
+        {currentPage === 'goals' ? (
+          <GoalsPage tasks={allTasks} onSave={handleSaveTask} onToggle={handleToggleTask} onDelete={handleDeleteTask} onBack={() => setCurrentPage('home')} />
+        ) : currentPage === 'admin' ? (
           <AdminPanel onBack={() => setCurrentPage('home')} showToast={showToast} />
         ) : currentPage === 'dailyTrack' ? (
           <DailyTrack 
@@ -395,6 +415,7 @@ export default function App() {
           />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <button onClick={() => setCurrentPage('goals')} className="mb-4 inline-flex items-center gap-2 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-300"><Trophy className="w-4 h-4"/> Goals & rewards</button>
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
 
