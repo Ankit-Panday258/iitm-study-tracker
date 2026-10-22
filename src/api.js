@@ -398,7 +398,7 @@ async function authRequest(path, body) {
   setStoredUser(data.user);return data.user;
 }
 export const loginWithGoogle = ({ credential }) => authRequest('google', { credential });
-export const registerWithEmail = ({ email, password, name }) => authRequest('register', { email, password, name });
+export const registerWithEmail = ({ email, password, name, studyGoal, selectedSubjects }) => authRequest('register', { email, password, name, studyGoal, selectedSubjects });
 export const loginWithEmail = ({ email, password }) => authRequest('login', { email, password });
 export async function fetchAuthConfig() {
   const res = await fetchWithTimeout(`${API_BASE}/auth/config`);

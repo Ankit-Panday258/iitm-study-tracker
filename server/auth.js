@@ -4,6 +4,7 @@ import { hashPassword, verifyPassword } from './authUtils.js';
 import { query, ready, tokenHash, publicUser, findUser, createUser, listUsers } from './authStore.js';
 import { getMySQLStatus } from './mysql.js';
 import { connectMongoDB, getMongoStatus, isMongoConnected } from './mongodb.js';
+import { IITM_CURRICULUM, IITM_STUDY_GOALS } from '../src/data/iitmCurriculum.js';
 const google = new OAuth2Client();
 const cookieName = 'iitm_session';
 const maxAge = 7 * 24 * 60 * 60;
@@ -18,6 +19,15 @@ function limitAttempts(req) {
 
 function send(res, status, data) { res.statusCode=status;res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');res.end(JSON.stringify(data)); }
 function fail(status, message) { return Object.assign(new Error(message), {status}); }
+function validateStudySelection(body) {
+  const studyGoal=IITM_STUDY_GOALS.find(goal=>goal.id===body.studyGoal);
+  if(!studyGoal) throw fail(400,'Choose your IITM study level or degree goal.');
+  if(!Array.isArray(body.selectedSubjects) || body.selectedSubjects.length===0 || body.selectedSubjects.length>50) throw fail(400,'Choose at least one subject.');
+  const availableCodes=new Set(IITM_CURRICULUM.filter(course=>course.level===studyGoal.curriculumLevel).map(course=>course.code));
+  const selectedSubjects=[...new Set(body.selectedSubjects)];
+  if(selectedSubjects.length!==body.selectedSubjects.length || selectedSubjects.some(code=>typeof code!=='string' || !availableCodes.has(code))) throw fail(400,'The selected subjects do not match the chosen study level.');
+  return {studyGoal:studyGoal.id,selectedSubjects};
+}
 function cookie(token, age=maxAge) { return `${cookieName}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${age}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`; }
 function sessionToken(req) { return (req.headers.cookie || '').split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1); }
 async function readBody(req) {
@@ -72,7 +82,11 @@ export async function authMiddleware(req,res,next) {
         const linked=(await query('SELECT * FROM users WHERE google_id = ?',[payload.sub]))[0];
         row=linked || await findUser(payload.email.toLowerCase().trim());
         if(row && row.google_id!==payload.sub) throw fail(409,'This email already has an account. Sign in with its existing method.');
-        if(!row) row=await createUser({email:payload.email.toLowerCase().trim(),name:payload.name || payload.email.split('@')[0],googleId:payload.sub,picture:payload.picture || ''});
+        if(!row) {
+          if(!body.studyGoal || !Array.isArray(body.selectedSubjects)) throw fail(404,'No account found. Create an account first and choose your study goal and subjects.');
+          const study=validateStudySelection(body);
+          row=await createUser({email:payload.email.toLowerCase().trim(),name:payload.name || payload.email.split('@')[0],googleId:payload.sub,picture:payload.picture || '',...study});
+        }
       } else {
         const email=typeof body.email==='string' ? body.email.trim().toLowerCase() : '';
         if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length>254) throw fail(400,'A valid email address is required.');
@@ -81,8 +95,9 @@ export async function authMiddleware(req,res,next) {
         if(path.endsWith('/register')) {
           if(body.password.length<8) throw fail(400,'Password must be at least 8 characters.');
           if(typeof body.name!=='string' || !body.name.trim() || body.name.trim().length>100) throw fail(400,'Your full name is required (maximum 100 characters).');
+          const study=validateStudySelection(body);
           if(row) throw fail(409,'An account already exists with this email. Please sign in.');
-          row=await createUser({email,name:body.name.trim(),passwordHash:hashPassword(body.password)});
+          row=await createUser({email,name:body.name.trim(),passwordHash:hashPassword(body.password),...study});
         } else if(!row || !verifyPassword(body.password,row.password_hash)) throw fail(401,'Incorrect email or password.');
       }
       return await signIn(req,res,row,path.endsWith('/register') ? 201 : 200);

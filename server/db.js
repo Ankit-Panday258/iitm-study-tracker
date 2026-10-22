@@ -84,6 +84,12 @@ if (!sqliteEnabled) {
   try {
     db.exec("ALTER TABLE users ADD COLUMN password_hash TEXT");
   } catch (e) {}
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN study_goal TEXT DEFAULT ''");
+  } catch (e) {}
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN selected_subjects TEXT DEFAULT '[]'");
+  } catch (e) {}
 
   if (db.prepare("SELECT sql FROM sqlite_master WHERE name = 'daily_notes'").get().sql.includes('date TEXT UNIQUE')) {
     db.transaction(() => {

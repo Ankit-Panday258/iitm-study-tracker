@@ -14,6 +14,7 @@ import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage
 import AssignmentCalendar from './components/AssignmentCalendar';
 import GoalsPage from './components/GoalsPage';
 import AdminPanel from './components/AdminPanel';
+import { IITM_CURRICULUM } from './data/iitmCurriculum';
 import { 
   fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI, syncGoalToNotion
@@ -162,6 +163,11 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     return getStoredUser();
   });
+  const selectedProfileSubjects = (currentUser?.selectedSubjects || [])
+    .map(code => IITM_CURRICULUM.find(course => course.code === code))
+    .filter(Boolean)
+    .map(course => ({ id: `iitm_${course.code}`, name: course.name, icon: '📘', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-800' }));
+  const availableSubjects = [...subjects, ...selectedProfileSubjects.filter(profileSubject => !subjects.some(subject => subject.name === profileSubject.name))];
   useEffect(() => {
     restoreSession().then(setCurrentUser).catch(error => {
       // Keep the cached identity visible while the session endpoint is temporarily unavailable.
@@ -583,7 +589,7 @@ export default function App() {
                   className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 dark:text-slate-200 focus:outline-none focus:border-pink-500 font-medium shadow-sm"
                 >
                   <option value="All">All Subjects</option>
-                  {subjects.map(s => (
+                  {availableSubjects.map(s => (
                     <option key={s.name} value={s.name}>
                       {s.icon || '📚'} {s.name}
                     </option>
@@ -725,7 +731,7 @@ export default function App() {
           onSaveTask={handleSaveTask}
           editingTask={editingTask}
           selectedDate={selectedDate}
-          availableSubjects={subjects}
+          availableSubjects={availableSubjects}
           onSubjectAdded={(newSub) => {
             setSubjects(prev => [...prev.filter(s => s.name !== newSub.name), newSub]);
             showToast(`Subject "${newSub.name}" added!`);

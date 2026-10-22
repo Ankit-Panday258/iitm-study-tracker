@@ -42,7 +42,7 @@ after(async()=>{
  rmSync(temp,{recursive:true,force:true});
 });
 test('Registration, session persistence, ownership, logout and rejected impersonation',async()=>{
-  const account={name:'Test Student',email:'Student@example.com',password:'strong-password'};
+  const account={name:'Test Student',email:'Student@example.com',password:'strong-password',studyGoal:'foundation',selectedSubjects:['BSCS1001']};
   const status=await request('/api/db-status');
   assert.equal(status.status,200);assert.equal(status.data.activeDatabase,mysqlTest ? 'MySQL' : 'SQLite');
   assert.equal(status.data.mysql.connected,mysqlTest);assert.equal('host' in status.data.mysql,false);
@@ -83,7 +83,7 @@ test('Verified Google identity is persisted and reuses the same account',async()
     return {getPayload:()=>({sub:'google-subject-123',email:'google@gmail.com',email_verified:true,name:'Google Student'})};
   };
   try {
-    const first=await request('/api/auth/google','POST',{credential:'verified-test-token',email:'attacker@example.com'});
+    const first=await request('/api/auth/google','POST',{credential:'verified-test-token',email:'attacker@example.com',studyGoal:'foundation',selectedSubjects:['BSCS1001']});
     assert.equal(first.status,200);assert.equal(first.data.user.email,'google@gmail.com');
     const second=await request('/api/auth/google','POST',{credential:'verified-test-token'});
     assert.equal(first.data.user.id,second.data.user.id);

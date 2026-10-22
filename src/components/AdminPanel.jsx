@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, BookOpen, Plus, ShieldCheck, Users } from 'lucide-react';
 import { createAdminUser, createSubject, fetchAdminUsers, fetchSubjects } from '../api';
+import { IITM_CURRICULUM, IITM_STUDY_GOALS } from '../data/iitmCurriculum';
 
 const inputClass = 'w-full rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-gray-900 dark:text-slate-100 outline-none focus:border-pink-400';
 
@@ -68,7 +69,11 @@ export default function AdminPanel({ onBack, showToast }) {
               <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-pink-700"><Plus className="w-4 h-4" /> Add User</button>
             </form>
             <div className="max-h-72 space-y-2 overflow-auto">
-              {users.map(user => <div key={user.id} className="flex items-center justify-between rounded-xl bg-gray-50 dark:bg-slate-800/70 px-3 py-2.5"><div className="min-w-0"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-gray-500 dark:text-slate-400">{user.email}</p></div><span className="shrink-0 rounded-full bg-gray-200 dark:bg-slate-700 px-2 py-1 text-[10px] font-bold">{user.isAdmin ? 'Admin' : 'User'}</span></div>)}
+              {users.map(user => {
+                const goalLabel = IITM_STUDY_GOALS.find(goal => goal.id === user.studyGoal)?.label;
+                const subjectNames = (user.selectedSubjects || []).map(code => IITM_CURRICULUM.find(course => course.code === code)?.name || code);
+                return <div key={user.id} className="flex items-start justify-between gap-3 rounded-xl bg-gray-50 dark:bg-slate-800/70 px-3 py-2.5"><div className="min-w-0"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-gray-500 dark:text-slate-400">{user.email}</p><p className="mt-1 text-[10px] font-semibold text-pink-700 dark:text-pink-300">{goalLabel || 'Study goal not selected'}</p><p className="mt-0.5 text-[10px] text-gray-500 dark:text-slate-400">{subjectNames.length ? subjectNames.join(', ') : 'No subjects selected'}</p></div><span className="shrink-0 rounded-full bg-gray-200 dark:bg-slate-700 px-2 py-1 text-[10px] font-bold">{user.isAdmin ? 'Admin' : 'User'}</span></div>;
+              })}
               {!users.length && <p className="text-sm text-gray-500">No users yet.</p>}
             </div>
           </section>

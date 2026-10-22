@@ -2,6 +2,14 @@
 // academics page. Electives and Diploma in Data Science options can change.
 export const IITM_CURRICULUM_SOURCE = 'https://study.iitm.ac.in/ds/academics.html';
 
+export const IITM_STUDY_GOALS = [
+  { id: 'foundation', label: 'Foundation', curriculumLevel: 'Foundation' },
+  { id: 'diploma-programming', label: 'Diploma in Programming', curriculumLevel: 'Diploma in Programming' },
+  { id: 'diploma-data-science', label: 'Diploma in Data Science', curriculumLevel: 'Diploma in Data Science' },
+  { id: 'bsc-degree', label: 'BSc Degree in Programming and Data Science', curriculumLevel: 'Degree Level' },
+  { id: 'bs-degree', label: 'BS Degree in Data Science and Applications', curriculumLevel: 'Degree Level' }
+];
+
 export const IITM_CURRICULUM = [
   { level: 'Foundation', name: 'Mathematics for Data Science I', code: 'BSMA1001', credits: 4 },
   { level: 'Foundation', name: 'Statistics for Data Science I', code: 'BSMA1002', credits: 4 },

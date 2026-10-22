@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { IITM_CURRICULUM, IITM_CURRICULUM_LEVELS, IITM_CURRICULUM_SOURCE } from '../data/iitmCurriculum';
 import {
   GraduationCap, Play, ExternalLink, Copy, Check, ArrowLeft, Plus,
-  Trash2, Folder, Sparkles, Search, Video, CheckCircle2,
+  Trash2, Folder, Sparkles, Video, CheckCircle2,
   Calendar, Terminal, Cpu, HardDrive, Layers, Globe, Clock, ChevronDown, ChevronUp,
   ArrowRight, BookOpen, FileText, RotateCcw, ClipboardList
 } from 'lucide-react';
@@ -620,8 +619,6 @@ export default function CoursesPage({
   // 'subject' -> 'week' -> 'video' | 'notes'
   const [stage, setStage] = useState(initialStep === 'weeks' ? 'week' : 'subject');
   const [activeCourseId, setActiveCourseId] = useState(initialCourseId || 'sys_cmd');
-  const [curriculumSearch, setCurriculumSearch] = useState('');
-  const [curriculumLevel, setCurriculumLevel] = useState('All levels');
   const [selectedWeekNum, setSelectedWeekNum] = useState(1);
   const [activeVideoSubIndex, setActiveVideoSubIndex] = useState(0); // 0 = primary, 1 = extraVideo
   const [activeQuizQuestion, setActiveQuizQuestion] = useState(0);
@@ -667,17 +664,6 @@ export default function CoursesPage({
     : activeWeek?.video;
   const activeQuiz = activeCourseId === 'dbms' && selectedWeekNum === 1 ? DBMS_WEEK_ONE_QUIZ : null;
   const quizScore = Object.values(quizResults).filter(Boolean).length;
-  const filteredCurriculum = IITM_CURRICULUM.filter(course => {
-    const matchesLevel = curriculumLevel === 'All levels' || course.level === curriculumLevel;
-    const search = curriculumSearch.trim().toLowerCase();
-    const matchesSearch = !search || `${course.name} ${course.code} ${course.kind || ''} ${course.level}`.toLowerCase().includes(search);
-    return matchesLevel && matchesSearch;
-  });
-  const curriculumByLevel = IITM_CURRICULUM_LEVELS.slice(1)
-    .filter(level => curriculumLevel === 'All levels' || curriculumLevel === level)
-    .map(level => ({ level, courses: filteredCurriculum.filter(course => course.level === level) }))
-    .filter(group => group.courses.length > 0);
-
   const startWeekOneQuiz = () => {
     setActiveQuizQuestion(0);
     setQuizSelections({});
@@ -836,80 +822,6 @@ export default function CoursesPage({
               </button>
             </div>
           </div>
-
-          <section className="overflow-hidden rounded-3xl border border-indigo-100 dark:border-indigo-900/60 bg-white dark:bg-slate-900 shadow-sm">
-            <div className="p-5 sm:p-6 border-b border-indigo-100 dark:border-indigo-900/60 bg-gradient-to-r from-indigo-50 via-white to-violet-50 dark:from-indigo-950/40 dark:via-slate-900 dark:to-violet-950/30">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
-                    <h3 className="text-lg font-black text-gray-900 dark:text-white">IITM BS Data Science Curriculum</h3>
-                  </div>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
-                    Official course catalogue across Foundation, both Diplomas and Degree Level.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-                  <label className="relative min-w-0 sm:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                      type="search"
-                      value={curriculumSearch}
-                      onChange={event => setCurriculumSearch(event.target.value)}
-                      placeholder="Search subject or course code"
-                      className="w-full rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-9 pr-3 text-xs font-medium text-gray-800 dark:text-slate-100 outline-none focus:border-indigo-400"
-                    />
-                  </label>
-                  <select
-                    value={curriculumLevel}
-                    onChange={event => setCurriculumLevel(event.target.value)}
-                    className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-xs font-bold text-gray-700 dark:text-slate-200 outline-none focus:border-indigo-400"
-                    aria-label="Filter curriculum by level"
-                  >
-                    {IITM_CURRICULUM_LEVELS.map(level => <option key={level} value={level}>{level}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 mt-4 text-[10px] sm:text-xs font-bold text-indigo-800 dark:text-indigo-200">
-                <span className="rounded-full bg-white/80 dark:bg-slate-800 px-3 py-1.5 border border-indigo-100 dark:border-indigo-900/70">{IITM_CURRICULUM.length} catalogue entries</span>
-                <span className="text-gray-500 dark:text-slate-400 font-medium">Diploma Data Science includes alternative tracks; degree electives vary by term.</span>
-              </div>
-            </div>
-
-            <div className="max-h-[32rem] overflow-y-auto p-4 sm:p-5 space-y-5">
-              {curriculumByLevel.length > 0 ? curriculumByLevel.map(group => (
-                <div key={group.level}>
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <h4 className="text-xs sm:text-sm font-black text-gray-800 dark:text-slate-100">{group.level}</h4>
-                    <span className="text-[10px] font-bold text-gray-400">{group.courses.length} listed</span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {group.courses.map(course => (
-                      <div key={course.code} className="flex items-start justify-between gap-3 rounded-xl border border-gray-100 dark:border-slate-800 bg-gray-50/80 dark:bg-slate-800/50 px-3 py-2.5">
-                        <div className="min-w-0">
-                          <div className="text-xs font-bold text-gray-800 dark:text-slate-100 leading-snug">{course.name}</div>
-                          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-semibold text-gray-500 dark:text-slate-400">
-                            <span>{course.code}</span>
-                            {course.kind && <><span aria-hidden="true">·</span><span>{course.kind}</span></>}
-                          </div>
-                        </div>
-                        <span className="shrink-0 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 px-2 py-1 text-[10px] font-black text-indigo-700 dark:text-indigo-200">{course.credits} cr</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )) : (
-                <p className="py-8 text-center text-sm font-semibold text-gray-500 dark:text-slate-400">No courses match that search.</p>
-              )}
-            </div>
-
-            <div className="px-5 py-3 border-t border-gray-100 dark:border-slate-800 text-[10px] sm:text-xs text-gray-500 dark:text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span>This catalogue is a reference list; it does not show a learner’s term registration.</span>
-              <a href={IITM_CURRICULUM_SOURCE} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-300 hover:underline">
-                Verify on IITM Academics <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-          </section>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map(course => {

@@ -35,7 +35,8 @@ async function mongoQuery(sql, params) {
     await User.create({
       id: params[0], email: params[1], name: params[2], picture: params[3] || '',
       password_hash: params[4] || null, google_id: params[5] || null,
-      auth_provider: params[6] || 'email', created_at: params[7]
+      auth_provider: params[6] || 'email', created_at: params[7],
+      study_goal: params[8] || '', selected_subjects: JSON.parse(params[9] || '[]')
     });
     return { inserted: true };
   }
@@ -88,13 +89,19 @@ export async function listUsers() {
   return db.prepare('SELECT * FROM users ORDER BY created_at DESC').all();
 }
 export const isAdminEmail = email => (process.env.ADMIN_EMAILS || '').split(',').map(value => value.trim().toLowerCase()).filter(Boolean).includes(String(email || '').trim().toLowerCase());
+function parseSelectedSubjects(value) {
+  if (Array.isArray(value)) return value;
+  try { const parsed = JSON.parse(value || '[]'); return Array.isArray(parsed) ? parsed : []; }
+  catch { return []; }
+}
 export const publicUser = row => ({ id: row.id, email: row.email, name: row.name,
   picture: row.picture || '', authProvider: row.auth_provider || row.authProvider, createdAt: row.created_at || row.createdAt,
+  studyGoal: row.study_goal || row.studyGoal || '', selectedSubjects: parseSelectedSubjects(row.selected_subjects || row.selectedSubjects),
   isAdmin: isAdminEmail(row.email) });
 export async function findUser(email) { return (await query('SELECT * FROM users WHERE email = ?', [email]))[0]; }
-export async function createUser({email, name, passwordHash = null, googleId = null, picture = ''}) {
+export async function createUser({email, name, passwordHash = null, googleId = null, picture = '', studyGoal = '', selectedSubjects = []}) {
   const id = crypto.randomUUID();
-  await query(`INSERT INTO users (id,email,name,picture,password_hash,google_id,auth_provider,created_at)
-    VALUES (?,?,?,?,?,?,?,?)`, [id,email,name,picture,passwordHash,googleId,googleId ? 'google' : 'email',new Date().toISOString()]);
+  await query(`INSERT INTO users (id,email,name,picture,password_hash,google_id,auth_provider,created_at,study_goal,selected_subjects)
+    VALUES (?,?,?,?,?,?,?,?,?,?)`, [id,email,name,picture,passwordHash,googleId,googleId ? 'google' : 'email',new Date().toISOString(),studyGoal,JSON.stringify(selectedSubjects)]);
   return findUser(email);
 }

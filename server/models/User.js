@@ -7,6 +7,8 @@ const UserSchema = new mongoose.Schema({
   picture: { type: String, default: '' },
   google_id: { type: String, index: true },
   password_hash: { type: String, default: null },
+  study_goal: { type: String, default: '' },
+  selected_subjects: { type: [String], default: [] },
   auth_provider: { type: String, default: 'google' },
   created_at: { type: String, default: () => new Date().toISOString() }
 }, {

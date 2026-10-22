@@ -127,6 +127,12 @@ export async function initMySQL() {
     try {
       await pool.query('ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL;');
     } catch (e) {}
+    try {
+      await pool.query("ALTER TABLE users ADD COLUMN study_goal VARCHAR(100) NULL;");
+    } catch (e) {}
+    try {
+      await pool.query("ALTER TABLE users ADD COLUMN selected_subjects TEXT NULL;");
+    } catch (e) {}
 
     // 4. Seed default subjects if empty
     const [subCountRows] = await pool.query('SELECT COUNT(*) as count FROM subjects');
