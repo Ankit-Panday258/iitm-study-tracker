@@ -49,6 +49,8 @@ test('Registration, session persistence, ownership, logout and rejected imperson
   assert.equal((await request('/api/tasks')).status,401);
   assert.equal((await request('/api/auth/login','POST',{email:account.email})).status,400);
   assert.equal((await request('/api/auth/register','POST',{...account,password:'123'})).status,400);
+  assert.equal((await request('/api/auth/register','POST',{...account,email:'many@example.com',selectedSubjects:['BSMA1001','BSMA1002','BSCS1001','BSHS1001','BSMA1003']})).status,400);
+  assert.equal((await request('/api/auth/register','POST',{...account,email:'projects@example.com',studyGoal:'diploma-programming',selectedSubjects:['BSCS2003P','BSCS2006P']})).status,400);
   const registered=await request('/api/auth/register','POST',account);
   assert.equal(registered.status,201);assert.equal(registered.data.user.email,'student@example.com');assert.ok(registered.cookie);
   const stored=(await query('SELECT * FROM users WHERE email = ?', ['student@example.com']))[0];assert.ok(stored.password_hash.includes(':'));assert.notEqual(stored.password_hash,account.password);

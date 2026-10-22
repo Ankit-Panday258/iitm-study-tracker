@@ -23,12 +23,15 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     ? IITM_CURRICULUM.filter(course => course.level === selectedGoal.curriculumLevel)
       .filter(course => `${course.name} ${course.code} ${course.kind || ''}`.toLowerCase().includes(subjectSearch.trim().toLowerCase()))
     : [];
+  const selectedProjectCount = selectedSubjects.filter(code => /project/i.test(IITM_CURRICULUM.find(course => course.code === code)?.kind || '')).length;
 
   function toggleSubject(code) {
     const course = IITM_CURRICULUM.find(item => item.code === code);
     const optionTrack = course?.kind?.match(/^Option [12]/)?.[0];
     setSelectedSubjects(current => {
       if (current.includes(code)) return current.filter(item => item !== code);
+      if (current.length >= 4) return current;
+      if (/project/i.test(course?.kind || '') && current.some(item => /project/i.test(IITM_CURRICULUM.find(existing => existing.code === item)?.kind || ''))) return current;
       const compatible = optionTrack
         ? current.filter(item => !IITM_CURRICULUM.find(existing => existing.code === item)?.kind?.match(/^Option [12]/) || IITM_CURRICULUM.find(existing => existing.code === item)?.kind?.startsWith(optionTrack))
         : current;
@@ -123,11 +126,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             <div><label htmlFor="study-goal" className="block text-sm font-semibold mb-1">What are you studying?</label><select id="study-goal" required value={studyGoal} onChange={e=>{setStudyGoal(e.target.value);setSelectedSubjects([]);setSubjectSearch('');}} className={inputClass}><option value="">Select a level or degree goal</option>{IITM_STUDY_GOALS.map(goal=><option key={goal.id} value={goal.id}>{goal.label}</option>)}</select></div>
             {selectedGoal && <div>
               <label className="block text-sm font-semibold mb-1">Choose subjects to track</label>
+              <p className="mb-2 text-xs text-gray-500 dark:text-slate-400">Select up to 4 subjects, including no more than 1 project.</p>
               {(studyGoal === 'bsc-degree' || studyGoal === 'bs-degree') && <p className="mb-2 text-xs text-gray-500 dark:text-slate-400">The official course catalogue is shared across BSc/BS Degree Level; electives offered can vary by term.</p>}
               {studyGoal === 'diploma-data-science' && <p className="mb-2 text-xs text-gray-500 dark:text-slate-400">Choose from required subjects and either Data Science option track.</p>}
               <input type="search" aria-label="Search subjects" placeholder="Find a subject or course code" value={subjectSearch} onChange={e=>setSubjectSearch(e.target.value)} className={inputClass+' mb-2'}/>
               <div className="max-h-56 space-y-1 overflow-y-auto rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2">
-                {availableSubjects.map(course=><label key={course.code} className="flex cursor-pointer items-start gap-2 rounded-lg px-2 py-2 hover:bg-gray-50 dark:hover:bg-slate-800"><input type="checkbox" checked={selectedSubjects.includes(course.code)} onChange={()=>toggleSubject(course.code)} className="mt-0.5 accent-pink-600"/><span className="min-w-0 flex-1"><span className="block text-xs font-semibold leading-snug">{course.name}</span><span className="mt-0.5 block text-[10px] text-gray-500 dark:text-slate-400">{course.code}{course.kind ? ` · ${course.kind}` : ''} · {course.credits} credits</span></span></label>)}
+                {availableSubjects.map(course=>{
+                  const checked=selectedSubjects.includes(course.code);
+                  const isProject=/project/i.test(course.kind || '');
+                  const disabled=!checked && (selectedSubjects.length>=4 || (isProject && selectedProjectCount>=1));
+                  return <label key={course.code} className={`flex items-start gap-2 rounded-lg px-2 py-2 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800'}`}><input type="checkbox" checked={checked} disabled={disabled} onChange={()=>toggleSubject(course.code)} className="mt-0.5 accent-pink-600"/><span className="min-w-0 flex-1"><span className="block text-xs font-semibold leading-snug">{course.name}</span><span className="mt-0.5 block text-[10px] text-gray-500 dark:text-slate-400">{course.code}{course.kind ? ` · ${course.kind}` : ''} · {course.credits} credits</span></span></label>;
+                })}
                 {!availableSubjects.length && <p className="p-3 text-xs text-gray-500">No matching subjects.</p>}
               </div>
               <p className="mt-2 text-xs font-semibold text-pink-700 dark:text-pink-300">{selectedSubjects.length} subject{selectedSubjects.length===1?'':'s'} selected</p>

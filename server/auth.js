@@ -22,10 +22,13 @@ function fail(status, message) { return Object.assign(new Error(message), {statu
 function validateStudySelection(body) {
   const studyGoal=IITM_STUDY_GOALS.find(goal=>goal.id===body.studyGoal);
   if(!studyGoal) throw fail(400,'Choose your IITM study level or degree goal.');
-  if(!Array.isArray(body.selectedSubjects) || body.selectedSubjects.length===0 || body.selectedSubjects.length>50) throw fail(400,'Choose at least one subject.');
+  if(!Array.isArray(body.selectedSubjects) || body.selectedSubjects.length===0) throw fail(400,'Choose at least one subject.');
+  if(body.selectedSubjects.length>4) throw fail(400,'Choose no more than four subjects.');
   const availableCodes=new Set(IITM_CURRICULUM.filter(course=>course.level===studyGoal.curriculumLevel).map(course=>course.code));
   const selectedSubjects=[...new Set(body.selectedSubjects)];
   if(selectedSubjects.length!==body.selectedSubjects.length || selectedSubjects.some(code=>typeof code!=='string' || !availableCodes.has(code))) throw fail(400,'The selected subjects do not match the chosen study level.');
+  const selectedProjects=IITM_CURRICULUM.filter(course=>selectedSubjects.includes(course.code) && /project/i.test(course.kind || '')).length;
+  if(selectedProjects>1) throw fail(400,'Choose no more than one project.');
   return {studyGoal:studyGoal.id,selectedSubjects};
 }
 function cookie(token, age=maxAge) { return `${cookieName}=${token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=${age}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`; }
