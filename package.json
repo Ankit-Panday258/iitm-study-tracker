@@ -9,7 +9,7 @@
     "server": "node server/index.js",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test tests/auth.test.js",
+    "test": "node --test tests/*.test.js",
     "start": "node server/index.js",
     "test:mysql": "AUTH_TEST_MYSQL=1 node --test tests/auth.test.js"
   },

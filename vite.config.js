@@ -8,6 +8,7 @@ export default defineConfig({
       name: 'study-api-plugin',
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
+          if (!req.url.startsWith('/api/')) return next();
           try {
             // Vite serves the frontend and API on the same development origin.
             req.appOrigin = `http://${req.headers.host}`;
@@ -23,6 +24,7 @@ export default defineConfig({
       },
       configurePreviewServer(server) {
         server.middlewares.use(async (req, res, next) => {
+          if (!req.url.startsWith('/api/')) return next();
           try {
             // Vite serves the frontend and API on the same development origin.
             req.appOrigin = `http://${req.headers.host}`;

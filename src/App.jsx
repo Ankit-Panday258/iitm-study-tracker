@@ -15,6 +15,7 @@ import AssignmentCalendar from './components/AssignmentCalendar';
 import GoalsPage from './components/GoalsPage';
 import AdminPanel from './components/AdminPanel';
 import { IITM_CURRICULUM } from './data/iitmCurriculum';
+import ExamStudyPlanner from './components/ExamStudyPlanner';
 import { 
   fetchTasks, getBackupTasks, createTask, updateTask, toggleTask, deleteTask, fetchStreak, fetchSubjects,
   DEFAULT_INITIAL_TASKS, DEFAULT_SUBJECTS, getStoredUser, setStoredUser, logout as logoutAPI, syncGoalToNotion
@@ -379,7 +380,12 @@ export default function App() {
       />
 
         {/* View Switch: Daily Track, Courses & Syllabus, Books Library, Assignment Calendar, or Main Planner */}
-        {currentPage === 'goals' ? (
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex justify-end">
+          <button type="button" onClick={() => { setCurrentPage('examPlanner'); setActiveBottomTab('planner'); }} className="min-h-11 px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-semibold flex gap-2 items-center cursor-pointer focus-visible:ring-2 focus-visible:ring-pink-400"><Calendar size={18} /> Exam study planner</button>
+        </div>
+        {currentPage === 'examPlanner' ? (
+          <ExamStudyPlanner key={currentUser?.id || 'guest'} currentUser={currentUser} tasks={allTasks} subjects={subjects} onBack={() => { setCurrentPage('home'); setActiveBottomTab('tasks'); }} />
+        ) : currentPage === 'goals' ? (
           <GoalsPage tasks={allTasks} onSave={handleSaveTask} onToggle={handleToggleTask} onDelete={handleDeleteTask} onBack={() => setCurrentPage('home')} />
         ) : currentPage === 'admin' ? (
           <AdminPanel onBack={() => setCurrentPage('home')} showToast={showToast} />

@@ -34,6 +34,14 @@ See [AUTH_SETUP.md](AUTH_SETUP.md) for MySQL and MongoDB setup, Google Cloud OAu
 
 Local development can use SQLite automatically when MySQL is unavailable. The fallback database is stored in `server/study_tracker.db`. Production never falls back to SQLite: configure a reachable MySQL or MongoDB database and resolve any connection/schema initialization error before serving requests. Set `ALLOW_SQLITE_FALLBACK=false` to disable the local fallback.
 
+## Exam study planner
+
+Open **Exam study planner** above the main tracker. Add one or more subjects, an exam date for each, your start date, and a combined daily study limit. Paste one topic per line, import a matching saved course syllabus/task list, or enter a topic count when the names are unavailable.
+
+Adjust estimated hours per topic and difficulty. The planner gives earlier exams priority, schedules learning and revision before each exam, stays within your daily limit, and lists any unfinished work when time is insufficient. Revision uses approximately 20% of estimated total effort, rounded to 15-minute blocks. These are adjustable planning estimates. Count-only topics are clearly labeled placeholders; the app does not invent a syllabus for an unknown subject.
+
+The daily table supports filtering by subject and CSV download. Planner inputs are saved in this browser per signed-in user (or as a guest); they do not sync to MySQL. Generating a plan works without a database connection.
+
 ## Stack
 
 React 18, Vite, Tailwind CSS, Express API, MySQL (`mysql2`), Google Auth Library, and optional local SQLite (`better-sqlite3`).
