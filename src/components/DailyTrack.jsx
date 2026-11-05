@@ -47,17 +47,17 @@ function InstagramStyleStickerCard({ dayData, index, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="group relative bg-white dark:bg-slate-900 border-2 border-pink-400 dark:border-pink-600 rounded-3xl p-4 shadow-md hover:shadow-2xl hover:border-pink-500 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between overflow-hidden aspect-[4/5] sm:aspect-square"
+      className="group relative bg-white dark:bg-slate-900 border-2 border-gray-400 dark:border-gray-600 rounded-3xl p-4 shadow-md hover:shadow-2xl hover:border-gray-500 transition-all duration-300 hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between overflow-hidden aspect-[4/5] sm:aspect-square"
     >
       {/* Top washi tape sticker */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-pink-200 dark:bg-pink-800/80 rounded-b-lg border-x border-b border-pink-300 dark:border-pink-700 flex items-center justify-center z-10">
-        <div className="w-8 h-0.5 bg-pink-300 dark:bg-pink-600 rounded-full opacity-70" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-gray-200 dark:bg-gray-700/80 rounded-b-lg border-x border-b border-gray-300 dark:border-gray-700 flex items-center justify-center z-10">
+        <div className="w-8 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full opacity-70" />
       </div>
 
       {/* Top row: Date badge & icon */}
       <div className="flex items-center justify-between mt-2 z-10">
-        <span className="px-2.5 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-[11px] font-bold flex items-center gap-1">
-          <Calendar className="w-3 h-3 text-pink-600 dark:text-pink-400" />
+        <span className="px-2.5 py-0.5 rounded-full bg-gray-50 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[11px] font-bold flex items-center gap-1">
+          <Calendar className="w-3 h-3 text-gray-600 dark:text-gray-400" />
           {formatDate(dayData.date)}
         </span>
 
@@ -68,7 +68,7 @@ function InstagramStyleStickerCard({ dayData, index, onClick }) {
 
       {/* Center visual: Achievement badge */}
       <div className="my-auto text-center flex flex-col items-center justify-center py-2">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-pink-500/20 via-pink-400/10 to-transparent border border-pink-300/60 dark:border-pink-600/40 flex items-center justify-center mb-2 shadow-inner group-hover:scale-110 transition-transform duration-300">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-gray-500/20 via-gray-400/10 to-transparent border border-gray-300/60 dark:border-gray-600/40 flex items-center justify-center mb-2 shadow-inner group-hover:scale-110 transition-transform duration-300">
           <span className="text-3xl sm:text-4xl filter drop-shadow select-none">
             {emoji}
           </span>
@@ -79,7 +79,7 @@ function InstagramStyleStickerCard({ dayData, index, onClick }) {
         </h4>
 
         {dayData.tasks.length > 1 && (
-          <p className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold mt-0.5">
+          <p className="text-[11px] text-gray-600 dark:text-gray-400 font-semibold mt-0.5">
             +{dayData.tasks.length - 1} more topics
           </p>
         )}
@@ -90,7 +90,7 @@ function InstagramStyleStickerCard({ dayData, index, onClick }) {
         <div className="flex items-center gap-3">
           {/* Topics count pill */}
           <span className="flex items-center gap-1 font-bold text-gray-700 dark:text-slate-200" title="Completed Topics">
-            <Heart className="w-3.5 h-3.5 fill-pink-500 text-pink-500" />
+            <Heart className="w-3.5 h-3.5 fill-gray-500 text-gray-500" />
             <span>{dayData.completedCount}</span>
           </span>
 
@@ -102,13 +102,13 @@ function InstagramStyleStickerCard({ dayData, index, onClick }) {
         </div>
 
         {/* Click hint pill */}
-        <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30 px-2 py-0.5 rounded-full border border-pink-200 dark:border-pink-800 opacity-90 group-hover:opacity-100">
+        <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/30 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 opacity-90 group-hover:opacity-100">
           View
         </span>
       </div>
 
       {/* Hover overlay hint */}
-      <div className="absolute inset-0 bg-pink-900/10 dark:bg-pink-950/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-gray-900/10 dark:bg-gray-950/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none" />
     </div>
   );
 }
@@ -123,12 +123,12 @@ function StickerDetailModal({ dayData, onClose }) {
       onClick={onClose}
     >
       <div 
-        className="bg-white dark:bg-slate-900 border-2 border-pink-400 dark:border-pink-600 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative animate-scaleUp p-6 sm:p-7"
+        className="bg-white dark:bg-slate-900 border-2 border-gray-400 dark:border-gray-600 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative animate-scaleUp p-6 sm:p-7"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top washi tape */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-pink-200 dark:bg-pink-800/80 rounded-b-lg border-x border-b border-pink-300 dark:border-pink-700 flex items-center justify-center">
-          <div className="w-12 h-0.5 bg-pink-300 dark:bg-pink-600 rounded-full opacity-70" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-5 bg-gray-200 dark:bg-gray-700/80 rounded-b-lg border-x border-b border-gray-300 dark:border-gray-700 flex items-center justify-center">
+          <div className="w-12 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full opacity-70" />
         </div>
 
         {/* Close Button */}
@@ -142,7 +142,7 @@ function StickerDetailModal({ dayData, onClose }) {
         {/* Header */}
         <div className="mt-2 mb-5 border-b border-gray-100 dark:border-slate-800 pb-4">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 bg-pink-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 bg-gray-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
               24h Daily Sticker
             </span>
             <span className="text-xs font-semibold text-gray-500 dark:text-slate-400">
@@ -156,8 +156,8 @@ function StickerDetailModal({ dayData, onClose }) {
 
           {/* Quick Metrics */}
           <div className="flex items-center gap-2.5 mt-3">
-            <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 rounded-xl text-xs font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+            <span className="px-3 py-1 bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               {dayData.completedCount} Topics Done
             </span>
             <span className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5">
@@ -170,7 +170,7 @@ function StickerDetailModal({ dayData, onClose }) {
         {/* 24-Hour Topics Checklist */}
         <div className="space-y-2.5 mb-5">
           <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+            <Sparkles className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
             Completed Topics (24-Hour Study Log)
           </p>
 
@@ -183,7 +183,7 @@ function StickerDetailModal({ dayData, onClose }) {
                   className="flex items-start justify-between gap-3 p-3.5 rounded-2xl bg-gray-50 dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700/80"
                 >
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-5 h-5 rounded-full bg-pink-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                    <div className="w-5 h-5 rounded-full bg-gray-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                       <Check className="w-3 h-3 stroke-[3]" />
                     </div>
 
@@ -202,7 +202,7 @@ function StickerDetailModal({ dayData, onClose }) {
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 shrink-0">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 shrink-0">
                     ✓ Done
                   </span>
                 </div>
@@ -213,8 +213,8 @@ function StickerDetailModal({ dayData, onClose }) {
 
         {/* Daily Note if present */}
         {dayData.dailyNote && (
-          <div className="mb-5 p-3.5 rounded-2xl bg-pink-50/80 dark:bg-pink-950/20 border border-pink-200 dark:border-pink-800/60">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-pink-700 dark:text-pink-300 uppercase tracking-wider mb-1">
+          <div className="mb-5 p-3.5 rounded-2xl bg-gray-50/80 dark:bg-gray-950/20 border border-gray-200 dark:border-gray-700/60">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
               <FileText className="w-3.5 h-3.5" />
               <span>Daily Summary / Learning Note</span>
             </div>
@@ -226,13 +226,13 @@ function StickerDetailModal({ dayData, onClose }) {
 
         {/* Modal Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-800 text-xs">
-          <span className="flex items-center gap-1.5 text-pink-700 dark:text-pink-300 font-bold">
-            <Award className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+          <span className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 font-bold">
+            <Award className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             IIT Madras Verified Day Streak
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-semibold text-xs transition-all shadow-sm"
+            className="px-4 py-1.5 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-semibold text-xs transition-all shadow-sm"
           >
             Close
           </button>
@@ -285,7 +285,7 @@ export default function DailyTrack({ onBack }) {
             </button>
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                <Trophy className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 Daily Track Gallery
               </h1>
               <p className="text-xs text-gray-500 dark:text-slate-400">
@@ -296,7 +296,7 @@ export default function DailyTrack({ onBack }) {
 
           {/* Overall summary stats */}
           <div className="hidden sm:flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-900/30 border border-pink-300 dark:border-pink-700 text-pink-700 dark:text-pink-300 text-xs font-semibold">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-900/30 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold">
               <Award className="w-4 h-4" />
               <span>{totalDays} Stickers</span>
             </div>
@@ -313,14 +313,14 @@ export default function DailyTrack({ onBack }) {
 
         {loading ? (
           <div className="text-center py-20">
-            <div className="w-12 h-12 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center mx-auto mb-3 border border-pink-200 dark:border-pink-700 animate-pulse">
+            <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400 flex items-center justify-center mx-auto mb-3 border border-gray-200 dark:border-gray-700 animate-pulse">
               <BookOpen className="w-6 h-6" />
             </div>
             <p className="text-sm text-gray-500 dark:text-slate-400">Loading daily stickers...</p>
           </div>
         ) : trackData.length === 0 ? (
           <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center mx-auto mb-4 border border-pink-200 dark:border-pink-700">
+            <div className="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400 flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-gray-700">
               <Star className="w-8 h-8" />
             </div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No daily stickers yet!</h3>
@@ -333,10 +333,10 @@ export default function DailyTrack({ onBack }) {
             {/* Gallery Info Bar */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                <Sparkles className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                 Daily Stickers Gallery (Click any sticker to view 24h details)
               </p>
-              <span className="text-xs font-semibold text-pink-600 dark:text-pink-400">
+              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
                 {totalCompleted} total topics completed
               </span>
             </div>

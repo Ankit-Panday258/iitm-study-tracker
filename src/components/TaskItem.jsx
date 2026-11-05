@@ -40,9 +40,9 @@ export default function TaskItem({
   const getPriorityBadge = (p) => {
     switch (p) {
       case 'High':
-        return <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-pink-600 text-white border border-pink-600">High</span>;
+        return <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-600 text-white border border-gray-600">High</span>;
       case 'Medium':
-        return <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700">Medium</span>;
+        return <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700">Medium</span>;
       default:
         return <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600">Low</span>;
     }
@@ -53,7 +53,7 @@ export default function TaskItem({
       className={`group relative rounded-2xl border p-4 transition-all duration-200 select-none ${
         task.completed
           ? 'bg-gray-50 dark:bg-slate-900/60 border-gray-300 dark:border-slate-700 opacity-80'
-          : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 shadow-sm hover:border-pink-400 dark:hover:border-slate-500'
+          : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 shadow-sm hover:border-gray-400 dark:hover:border-slate-500'
       }`}
     >
       <div className="flex items-start gap-3.5">
@@ -64,8 +64,8 @@ export default function TaskItem({
           onClick={handleToggle}
           className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 border shrink-0 cursor-pointer active:scale-90 ${
             task.completed
-              ? 'bg-pink-600 border-pink-600 text-white shadow-sm shadow-pink-600/30'
-              : 'border-gray-400 dark:border-slate-500 bg-white dark:bg-slate-800 hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 text-transparent'
+              ? 'bg-gray-600 border-gray-600 text-white shadow-sm shadow-gray-600/30'
+              : 'border-gray-400 dark:border-slate-500 bg-white dark:bg-slate-800 hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900/20 text-transparent'
           }`}
           title={task.completed ? 'Mark as Pending' : 'Mark as Completed'}
         >
@@ -87,7 +87,7 @@ export default function TaskItem({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-pink-100 hover:bg-pink-200 dark:bg-pink-900/40 dark:hover:bg-pink-900/60 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700 inline-flex items-center gap-1 transition-colors active:scale-95"
+                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-900/40 dark:hover:bg-gray-900/60 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 inline-flex items-center gap-1 transition-colors active:scale-95"
                 title="Open System Commands Google Drive Folder"
               >
                 <span>📖 Drive Book</span>
@@ -120,7 +120,7 @@ export default function TaskItem({
 
           {/* Completed label */}
           {task.completed && (
-            <p className="mt-1.5 text-[11px] text-pink-600 dark:text-pink-400 font-semibold flex items-center gap-1">
+            <p className="mt-1.5 text-[11px] text-gray-600 dark:text-gray-400 font-semibold flex items-center gap-1">
               ✓ Completed today
             </p>
           )}
@@ -135,7 +135,7 @@ export default function TaskItem({
             <button
               type="button"
               onClick={handleStartTimer}
-              className="p-2 rounded-xl text-white bg-pink-600 hover:bg-pink-700 active:scale-95 border border-pink-600 transition-all shadow-sm shadow-pink-600/20 cursor-pointer"
+              className="p-2 rounded-xl text-white bg-gray-600 hover:bg-gray-700 active:scale-95 border border-gray-600 transition-all shadow-sm shadow-gray-600/20 cursor-pointer"
               title="Start Study Timer"
             >
               <Play className="w-4 h-4 fill-white" />
@@ -156,7 +156,7 @@ export default function TaskItem({
           <button
             type="button"
             onClick={handleDelete}
-            className="p-2 rounded-xl text-gray-400 dark:text-slate-500 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900/20 active:scale-95 border border-transparent hover:border-pink-200 dark:hover:border-pink-800 transition-all cursor-pointer"
+            className="p-2 rounded-xl text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/20 active:scale-95 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all cursor-pointer"
             title="Delete Task"
           >
             <Trash2 className="w-4 h-4" />

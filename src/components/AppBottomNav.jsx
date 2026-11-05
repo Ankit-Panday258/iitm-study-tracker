@@ -59,11 +59,11 @@ export default function AppBottomNav({
           onClick={() => handleTabClick('tasks')}
           className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all py-1 active:scale-95 ${
             activeTab === 'tasks'
-              ? 'text-pink-600 dark:text-pink-400 font-bold'
+              ? 'text-gray-600 dark:text-gray-400 font-bold'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 font-medium'
           }`}
         >
-          <div className={`p-1 rounded-xl transition-all ${activeTab === 'tasks' ? 'bg-pink-50 dark:bg-pink-950/40' : ''}`}>
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'tasks' ? 'bg-gray-50 dark:bg-gray-950/40' : ''}`}>
             <Calendar className="w-5 h-5" />
           </div>
           <span className="text-[10px] tracking-tight">Today</span>
@@ -74,11 +74,11 @@ export default function AppBottomNav({
           onClick={() => handleTabClick('courses')}
           className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all py-1 active:scale-95 ${
             activeTab === 'courses' || activeTab === 'books'
-              ? 'text-pink-600 dark:text-pink-400 font-bold'
+              ? 'text-gray-600 dark:text-gray-400 font-bold'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 font-medium'
           }`}
         >
-          <div className={`p-1 rounded-xl transition-all ${activeTab === 'courses' || activeTab === 'books' ? 'bg-pink-50 dark:bg-pink-950/40 ring-1 ring-pink-500' : ''}`}>
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'courses' || activeTab === 'books' ? 'bg-gray-50 dark:bg-gray-950/40 ring-1 ring-gray-500' : ''}`}>
             <GraduationCap className="w-5 h-5" />
           </div>
           <span className="text-[10px] tracking-tight">Courses</span>
@@ -88,7 +88,7 @@ export default function AppBottomNav({
         <div className="flex-1 flex items-center justify-center -mt-5">
           <button
             onClick={handleCenterPlusClick}
-            className="w-13 h-13 w-[52px] h-[52px] rounded-full bg-pink-600 hover:bg-pink-700 active:scale-90 text-white flex items-center justify-center shadow-lg shadow-pink-600/40 border-4 border-white dark:border-slate-900 transition-all cursor-pointer"
+            className="w-13 h-13 w-[52px] h-[52px] rounded-full bg-gray-600 hover:bg-gray-700 active:scale-90 text-white flex items-center justify-center shadow-lg shadow-gray-600/40 border-4 border-white dark:border-slate-900 transition-all cursor-pointer"
             title="Add New Study Topic"
           >
             <Plus className="w-6 h-6 stroke-[2.5]" />
@@ -100,11 +100,11 @@ export default function AppBottomNav({
           onClick={() => handleTabClick('track')}
           className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all py-1 active:scale-95 ${
             activeTab === 'track'
-              ? 'text-pink-600 dark:text-pink-400 font-bold'
+              ? 'text-gray-600 dark:text-gray-400 font-bold'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 font-medium'
           }`}
         >
-          <div className={`p-1 rounded-xl transition-all ${activeTab === 'track' ? 'bg-pink-50 dark:bg-pink-950/40' : ''}`}>
+          <div className={`p-1 rounded-xl transition-all ${activeTab === 'track' ? 'bg-gray-50 dark:bg-gray-950/40' : ''}`}>
             <Trophy className="w-5 h-5" />
           </div>
           <span className="text-[10px] tracking-tight">Stickers</span>
@@ -115,11 +115,11 @@ export default function AppBottomNav({
           onClick={() => handleTabClick('profile')}
           className={`flex-1 flex flex-col items-center justify-center gap-1 transition-all py-1 active:scale-95 ${
             activeTab === 'profile'
-              ? 'text-pink-600 dark:text-pink-400 font-bold'
+              ? 'text-gray-600 dark:text-gray-400 font-bold'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 font-medium'
           }`}
         >
-          <div className={`p-0.5 rounded-xl transition-all ${activeTab === 'profile' ? 'bg-pink-50 dark:bg-pink-950/40 ring-1 ring-pink-500' : ''}`}>
+          <div className={`p-0.5 rounded-xl transition-all ${activeTab === 'profile' ? 'bg-gray-50 dark:bg-gray-950/40 ring-1 ring-gray-500' : ''}`}>
             <img
               src={currentUser?.picture || "/avatar-bot.png"}
               alt="Account"
