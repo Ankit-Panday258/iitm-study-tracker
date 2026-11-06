@@ -73,12 +73,12 @@ export default function Navbar({
             <div className="relative" ref={mobileMenuRef}>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-300 dark:hover:border-pink-700 transition-all shadow-sm active:scale-95 flex items-center justify-center"
+                className="p-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 transition-all shadow-sm active:scale-95 flex items-center justify-center"
                 title="Menu"
                 aria-label="Navigation Menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                  <X className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                 ) : (
                   <Menu className="w-3.5 h-3.5" />
                 )}
@@ -92,7 +92,7 @@ export default function Navbar({
                       <img
                         src={currentUser.picture || "/avatar-bot.png"}
                         alt={currentUser.name}
-                        className="w-10 h-10 rounded-full object-cover border border-pink-400"
+                        className="w-10 h-10 rounded-full object-cover border border-gray-400"
                       />
                       <div className="min-w-0">
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">
@@ -110,7 +110,7 @@ export default function Navbar({
                           setIsMobileMenuOpen(false);
                           onOpenAuthModal();
                         }}
-                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-800 dark:text-slate-200 text-xs font-bold shadow-sm transition-all active:scale-95 hover:border-pink-400"
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-800 dark:text-slate-200 text-xs font-bold shadow-sm transition-all active:scale-95 hover:border-gray-400"
                       >
                         <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
                           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -135,13 +135,13 @@ export default function Navbar({
                         setIsMobileMenuOpen(false);
                         if (typeof onOpenCourses === 'function') onOpenCourses();
                       }}
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
-                        <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <GraduationCap className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                         <span>Courses & Syllabus</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">→</span>
+                      <span className="text-[10px] text-gray-600 font-bold">→</span>
                     </button>
 
                     <button
@@ -149,13 +149,13 @@ export default function Navbar({
                         setIsMobileMenuOpen(false);
                         if (typeof onOpenCalendar === 'function') onOpenCalendar();
                       }}
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50/70 dark:bg-gray-950/40 hover:bg-gray-100 dark:hover:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <Calendar className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                         <span>Assignment Calendar (T3)</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">📅</span>
+                      <span className="text-[10px] text-gray-600 font-bold">📅</span>
                     </button>
 
                     {currentUser?.isAdmin && typeof onOpenAdmin === 'function' && (
@@ -164,13 +164,13 @@ export default function Navbar({
                           setIsMobileMenuOpen(false);
                           onOpenAdmin();
                         }}
-                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50/70 dark:bg-gray-950/40 hover:bg-gray-100 dark:hover:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60 transition-colors"
                       >
                         <span className="flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                           <span>Admin Panel</span>
                         </span>
-                        <span className="text-[10px] text-pink-600 font-bold">→</span>
+                        <span className="text-[10px] text-gray-600 font-bold">→</span>
                       </button>
                     )}
 
@@ -178,13 +178,13 @@ export default function Navbar({
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
                         <span>⚙️</span>
                         <span>System Commands Drive</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">↗</span>
+                      <span className="text-[10px] text-gray-600 font-bold">↗</span>
                     </a>
 
                     {currentUser && (
@@ -211,9 +211,9 @@ export default function Navbar({
           <div className="flex sm:hidden w-full justify-end">
             <button
               onClick={onInstallApp}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-300 dark:border-pink-700 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 text-xs font-bold transition-all shadow-sm active:scale-95"
             >
-              <Download className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 animate-bounce" />
+              <Download className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 animate-bounce" />
               <span>Install App</span>
             </button>
           </div>
@@ -227,10 +227,10 @@ export default function Navbar({
           {!isInstalled && isInstallable && (
             <button
               onClick={onInstallApp}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-300 dark:border-pink-700 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 text-gray-700 dark:text-gray-300 text-xs font-bold transition-all shadow-sm active:scale-95"
               title="Install App on Device / Desktop"
             >
-              <Download className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400 animate-bounce" />
+              <Download className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400 animate-bounce" />
               <span>Install App</span>
             </button>
           )}
@@ -238,16 +238,16 @@ export default function Navbar({
           {/* Assignment Calendar Button (Desktop) */}
           <button
             onClick={onOpenCalendar}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/30 dark:hover:bg-gray-900/50 text-gray-700 dark:text-gray-300 text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
             title="IITM Term 3 Assignment Calendar & Deadlines"
           >
-            <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+            <Calendar className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
             <span>Assignments Calendar</span>
           </button>
 
           {/* Desktop Streak Counter */}
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300 text-xs font-bold shadow-sm" title="Study Streak">
-            <Flame className="w-4 h-4 fill-pink-500 text-pink-600 dark:fill-pink-400 dark:text-pink-400 animate-pulse" />
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold shadow-sm" title="Study Streak">
+            <Flame className="w-4 h-4 fill-gray-500 text-gray-600 dark:fill-gray-400 dark:text-gray-400 animate-pulse" />
             <span>{streak}d Streak</span>
           </div>
 
@@ -265,12 +265,12 @@ export default function Navbar({
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-300 dark:hover:border-pink-700 transition-all shadow-sm active:scale-95 flex items-center justify-center cursor-pointer"
+                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 transition-all shadow-sm active:scale-95 flex items-center justify-center cursor-pointer"
                 title={currentUser.name || currentUser.email || "Menu"}
                 aria-label="Navigation Menu"
               >
                 {isUserMenuOpen ? (
-                  <X className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                  <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 ) : (
                   <Menu className="w-5 h-5 text-gray-700 dark:text-slate-200 stroke-[2.3]" />
                 )}
@@ -283,7 +283,7 @@ export default function Navbar({
                     <img
                       src={currentUser.picture || "/avatar-bot.png"}
                       alt={currentUser.name}
-                      className="w-10 h-10 rounded-full object-cover border border-pink-400"
+                      className="w-10 h-10 rounded-full object-cover border border-gray-400"
                     />
                     <div className="min-w-0">
                       <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">
@@ -304,13 +304,13 @@ export default function Navbar({
                         setIsUserMenuOpen(false);
                         if (typeof onOpenCourses === 'function') onOpenCourses();
                       }}
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
-                        <GraduationCap className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <GraduationCap className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                         <span>Courses & Syllabus</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">→</span>
+                      <span className="text-[10px] text-gray-600 font-bold">→</span>
                     </button>
 
                     <button
@@ -318,13 +318,13 @@ export default function Navbar({
                         setIsUserMenuOpen(false);
                         if (typeof onOpenCalendar === 'function') onOpenCalendar();
                       }}
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50/70 dark:bg-gray-950/40 hover:bg-gray-100 dark:hover:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                        <Calendar className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                         <span>Assignment Calendar (T3)</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">📅</span>
+                      <span className="text-[10px] text-gray-600 font-bold">📅</span>
                     </button>
 
                     {currentUser?.isAdmin && typeof onOpenAdmin === 'function' && (
@@ -333,13 +333,13 @@ export default function Navbar({
                           setIsUserMenuOpen(false);
                           onOpenAdmin();
                         }}
-                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-pink-700 dark:text-pink-300 bg-pink-50/70 dark:bg-pink-950/40 hover:bg-pink-100 dark:hover:bg-pink-900/40 border border-pink-200 dark:border-pink-800/60 transition-colors"
+                        className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-300 bg-gray-50/70 dark:bg-gray-950/40 hover:bg-gray-100 dark:hover:bg-gray-900/40 border border-gray-200 dark:border-gray-700/60 transition-colors"
                       >
                         <span className="flex items-center gap-1.5">
-                          <ShieldCheck className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                          <ShieldCheck className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                           <span>Admin Panel</span>
                         </span>
-                        <span className="text-[10px] text-pink-600 font-bold">→</span>
+                        <span className="text-[10px] text-gray-600 font-bold">→</span>
                       </button>
                     )}
 
@@ -347,13 +347,13 @@ export default function Navbar({
                       href="https://drive.google.com/drive/folders/1NZBmJYwtCreV-HCminQGxUZTYxa6zRKv"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
+                      className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-gray-900/20 border border-gray-200 dark:border-slate-800 transition-colors"
                     >
                       <span className="flex items-center gap-1.5">
                         <span>⚙️</span>
                         <span>System Commands Drive</span>
                       </span>
-                      <span className="text-[10px] text-pink-600 font-bold">↗</span>
+                      <span className="text-[10px] text-gray-600 font-bold">↗</span>
                     </a>
 
                     <button
@@ -374,7 +374,7 @@ export default function Navbar({
             /* Clean Login Button */
             <button
               onClick={onOpenAuthModal}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-800 dark:text-slate-200 text-xs font-bold shadow-sm transition-all active:scale-95 hover:border-pink-400"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700/80 text-gray-800 dark:text-slate-200 text-xs font-bold shadow-sm transition-all active:scale-95 hover:border-gray-400"
             >
               <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

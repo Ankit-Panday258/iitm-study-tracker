@@ -344,7 +344,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-pink-600 hover:border-pink-300 shadow-sm active:scale-95 transition-all cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-gray-600 hover:border-gray-300 shadow-sm active:scale-95 transition-all cursor-pointer"
             title="Back to Tasks"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -352,10 +352,10 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-                <CalendarIcon className="w-6 h-6 text-pink-600 dark:text-pink-400" />
+                <CalendarIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 <span>Assignment Due Dates & Deadlines</span>
               </h1>
-              <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+              <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 Term 3 (T3) 2026
               </span>
             </div>
@@ -372,7 +372,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               onClick={() => setViewMode('calendar')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                 viewMode === 'calendar'
-                  ? 'bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 shadow-sm font-black'
+                  ? 'bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-400 shadow-sm font-black'
                   : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
               }`}
             >
@@ -383,7 +383,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                 viewMode === 'list'
-                  ? 'bg-white dark:bg-slate-900 text-pink-600 dark:text-pink-400 shadow-sm font-black'
+                  ? 'bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-400 shadow-sm font-black'
                   : 'text-gray-600 dark:text-slate-400 hover:text-gray-900'
               }`}
             >
@@ -397,7 +397,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
       {/* Hero Countdown & Key Milestones Alert Banner */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Next Urgent Deadline Card */}
-        <div className="md:col-span-1 bg-gradient-to-br from-pink-500 to-rose-600 text-white rounded-3xl p-5 shadow-lg shadow-pink-500/20 relative overflow-hidden flex flex-col justify-between">
+        <div className="md:col-span-1 bg-gradient-to-br from-gray-500 to-rose-600 text-white rounded-3xl p-5 shadow-lg shadow-gray-500/20 relative overflow-hidden flex flex-col justify-between">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/30">
@@ -408,7 +408,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
             <h3 className="text-xl font-black tracking-tight mb-1">
               {nextUpcoming.label} Assignment ({nextUpcoming.termWeek})
             </h3>
-            <p className="text-xs text-pink-100 flex items-center gap-1.5 mb-3">
+            <p className="text-xs text-gray-100 flex items-center gap-1.5 mb-3">
               <Clock className="w-3.5 h-3.5" />
               <span>Due: {nextUpcoming.deadlineStr}</span>
             </p>
@@ -419,13 +419,13 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               <div className="text-2xl font-black">
                 {nextDays > 0 ? `${nextDays} Days Left` : 'Due Today!'}
               </div>
-              <div className="text-[10px] text-pink-100">
+              <div className="text-[10px] text-gray-100">
                 Release: {nextUpcoming.releaseDateStr.split(',')[1]}
               </div>
             </div>
             <button
               onClick={() => handleAddAssignmentTask(nextUpcoming)}
-              className="px-3 py-1.5 rounded-xl bg-white text-pink-600 hover:bg-pink-50 active:scale-95 font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1"
+              className="px-3 py-1.5 rounded-xl bg-white text-gray-600 hover:bg-gray-50 active:scale-95 font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1"
             >
               <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Add Task</span>
@@ -438,10 +438,10 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
           <div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Flag className="w-4 h-4 text-pink-600" />
+                <Flag className="w-4 h-4 text-gray-600" />
                 <span>Term 3 Critical Eligibility Milestones</span>
               </span>
-              <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/50 px-2 py-0.5 rounded-full border border-pink-200 dark:border-pink-800">
+              <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950/50 px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700">
                 4 Official Gates
               </span>
             </div>
@@ -471,7 +471,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   <h4 className="text-xs font-black text-emerald-900 dark:text-emerald-100 mt-1">
                     End Term Closes
                   </h4>
-                  <p className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5">
+                  <p className="text-[10px] text-emerald-700 dark:text-gray-300 mt-0.5">
                     Wed, Nov 25, 2026
                   </p>
                 </div>
@@ -501,7 +501,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   <h4 className="text-xs font-black text-emerald-900 dark:text-emerald-100 mt-1">
                     GAA Closes
                   </h4>
-                  <p className="text-[10px] text-emerald-700 dark:text-emerald-300 mt-0.5">
+                  <p className="text-[10px] text-emerald-700 dark:text-gray-300 mt-0.5">
                     Sun, Dec 13, 2026
                   </p>
                 </div>
@@ -514,7 +514,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
             <span className="text-gray-500 dark:text-slate-400">
               Your Submissions: <strong>{Object.values(submittedWeeks).filter(Boolean).length} of 12 Weeks Done</strong>
             </span>
-            <span className="text-pink-600 dark:text-pink-400 font-bold">
+            <span className="text-gray-600 dark:text-gray-400 font-bold">
               {Math.round((Object.values(submittedWeeks).filter(Boolean).length / 12) * 100)}% Complete
             </span>
           </div>
@@ -559,7 +559,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                     : exam.id === 'quiz2'
                     ? 'bg-purple-50/80 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800/80 hover:border-purple-400'
                     : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800/80 hover:border-rose-400'
-                } ${isSelected ? 'ring-2 ring-pink-500 shadow-md' : 'shadow-xs'}`}
+                } ${isSelected ? 'ring-2 ring-gray-500 shadow-md' : 'shadow-xs'}`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
@@ -640,7 +640,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                 </button>
                 <button
                   onClick={() => setCurrentMonthIdx(getInitialMonthIndex())}
-                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95"
+                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-950/40 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 transition-all cursor-pointer active:scale-95"
                   title="Jump to Today's Month"
                 >
                   Today
@@ -655,8 +655,8 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                     onClick={() => setCurrentMonthIdx(idx)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       currentMonthIdx === idx
-                        ? 'bg-pink-600 text-white shadow-sm'
-                        : 'text-gray-600 dark:text-slate-300 hover:text-pink-600'
+                        ? 'bg-gray-600 text-white shadow-sm'
+                        : 'text-gray-600 dark:text-slate-300 hover:text-gray-600'
                     }`}
                   >
                     {mObj.shortLabel}
@@ -667,7 +667,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
               {/* Legend */}
               <div className="flex items-center gap-3 text-[11px] font-bold text-gray-500 dark:text-slate-400 flex-wrap">
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Release
+                  <span className="w-2.5 h-2.5 rounded-full bg-gray-500" /> Release
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Deadline
@@ -714,22 +714,22 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                     key={dayNum}
                     className={`min-h-[85px] sm:min-h-[105px] p-1.5 sm:p-2 rounded-2xl border transition-all flex flex-col justify-between group ${
                       isToday
-                        ? 'bg-pink-50/70 dark:bg-pink-950/30 border-pink-400 dark:border-pink-600 shadow-sm'
+                        ? 'bg-gray-50/70 dark:bg-gray-950/30 border-gray-400 dark:border-gray-600 shadow-sm'
                         : hasEvents
-                        ? 'bg-white dark:bg-slate-800/90 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                        ? 'bg-white dark:bg-slate-800/90 border-gray-200 dark:border-slate-700 hover:border-gray-300'
                         : 'bg-white dark:bg-slate-800/40 border-gray-100 dark:border-slate-800/70 opacity-90'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`text-xs font-black w-6 h-6 rounded-full flex items-center justify-center ${
                         isToday 
-                          ? 'bg-pink-600 text-white shadow-sm' 
+                          ? 'bg-gray-600 text-white shadow-sm' 
                           : 'text-gray-800 dark:text-slate-200'
                       }`}>
                         {dayNum}
                       </span>
                       {isToday && (
-                        <span className="text-[9px] font-black uppercase text-pink-600 dark:text-pink-400 hidden sm:inline">
+                        <span className="text-[9px] font-black uppercase text-gray-600 dark:text-gray-400 hidden sm:inline">
                           Today
                         </span>
                       )}
@@ -763,7 +763,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                         <div
                           key={`rel-${item.week}`}
                           onClick={() => setSelectedWeek(item.week)}
-                          className="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-lg p-1 text-[10px] font-black truncate cursor-pointer hover:scale-102 transition-transform"
+                          className="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-gray-300 border border-emerald-300 dark:border-emerald-800 rounded-lg p-1 text-[10px] font-black truncate cursor-pointer hover:scale-102 transition-transform"
                           title={`Content Released: ${item.label}`}
                         >
                           🟢 {item.label} Released
@@ -833,7 +833,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleAddExamTask(selectedExam)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-md shadow-pink-600/30 active:scale-95 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-gray-600 hover:bg-gray-700 text-white font-bold text-xs shadow-md shadow-gray-600/30 active:scale-95 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4 stroke-[2.5]" />
                     <span>Add Prep Task</span>
@@ -851,11 +851,11 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
 
           {/* Selected Week Inspector Card */}
           {activeWeekObj && (
-            <div className="bg-gradient-to-r from-pink-50/70 via-white to-pink-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-pink-950/20 border-2 border-pink-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-sm">
+            <div className="bg-gradient-to-r from-gray-50/70 via-white to-gray-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-gray-950/20 border-2 border-gray-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-xs font-black uppercase px-2.5 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300">
+                    <span className="text-xs font-black uppercase px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300">
                       {activeWeekObj.termWeek}
                     </span>
                     <h3 className="text-lg font-black text-gray-900 dark:text-white">
@@ -893,7 +893,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   </button>
                   <button
                     onClick={() => handleAddAssignmentTask(activeWeekObj)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-md shadow-pink-600/30 active:scale-95 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-gray-600 hover:bg-gray-700 text-white font-bold text-xs shadow-md shadow-gray-600/30 active:scale-95 transition-all cursor-pointer"
                   >
                     <Plus className="w-4 h-4 stroke-[2.5]" />
                     <span>Add to Study Tasks</span>
@@ -922,8 +922,8 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                   onClick={() => setFilterType(f.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                     filterType === f.id
-                      ? 'bg-pink-600 text-white shadow-sm'
-                      : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:text-pink-600'
+                      ? 'bg-gray-600 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:text-gray-600'
                   }`}
                 >
                   {f.label}
@@ -975,13 +975,13 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                         <td className="py-3.5 px-4 text-gray-600 dark:text-slate-400 font-medium">
                           {exam.scope}
                         </td>
-                        <td className="py-3.5 px-4 font-bold text-pink-600 whitespace-nowrap">
+                        <td className="py-3.5 px-4 font-bold text-gray-600 whitespace-nowrap">
                           {daysLeft > 0 ? `${daysLeft} days remaining` : daysLeft === 0 ? 'Exam Today!' : 'Completed'}
                         </td>
                         <td className="py-3.5 px-4 text-right whitespace-nowrap">
                           <button
                             onClick={() => handleAddExamTask(exam)}
-                            className="px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800 transition-all font-bold text-xs inline-flex items-center gap-1 active:scale-95 cursor-pointer"
+                            className="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-950/50 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 transition-all font-bold text-xs inline-flex items-center gap-1 active:scale-95 cursor-pointer"
                           >
                             <Plus className="w-3.5 h-3.5" />
                             <span>Prep Task</span>
@@ -1017,7 +1017,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                     return (
                       <tr 
                         key={item.week}
-                        className={`hover:bg-pink-50/40 dark:hover:bg-slate-800/50 transition-colors ${
+                        className={`hover:bg-gray-50/40 dark:hover:bg-slate-800/50 transition-colors ${
                           item.type === 'milestone_cyan' ? 'bg-cyan-50/30 dark:bg-cyan-950/10' :
                           item.type === 'milestone_green' ? 'bg-emerald-50/30 dark:bg-emerald-950/10' : ''
                         }`}
@@ -1025,7 +1025,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                         {/* Week Column */}
                         <td className="py-3.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <span className="w-7 h-7 rounded-xl bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300 font-black text-xs flex items-center justify-center">
+                            <span className="w-7 h-7 rounded-xl bg-gray-100 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300 font-black text-xs flex items-center justify-center">
                               {item.week}
                             </span>
                             <div>
@@ -1053,7 +1053,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                             <span className="text-rose-500 font-bold">🔴</span>
                             <span>{item.deadlineStr}</span>
                           </div>
-                          <div className="text-[10px] font-bold text-pink-600 pl-4">
+                          <div className="text-[10px] font-bold text-gray-600 pl-4">
                             {daysLeft > 0 ? `${daysLeft} days remaining` : daysLeft === 0 ? 'Due Today!' : 'Past Due'}
                           </div>
                         </td>
@@ -1080,7 +1080,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                             onClick={() => toggleSubmission(item.week)}
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
                               isSubmitted
-                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300'
+                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-gray-300 border border-emerald-300'
                                 : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:border-gray-300 border border-transparent'
                             }`}
                           >
@@ -1093,7 +1093,7 @@ export default function AssignmentCalendar({ onBack, onAddTask, showToast }) {
                         <td className="py-3.5 px-4 text-right whitespace-nowrap">
                           <button
                             onClick={() => handleAddAssignmentTask(item)}
-                            className="p-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95 inline-flex items-center gap-1 text-xs font-bold"
+                            className="p-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-950/50 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 transition-all cursor-pointer active:scale-95 inline-flex items-center gap-1 text-xs font-bold"
                             title="Add to daily tasks"
                           >
                             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />

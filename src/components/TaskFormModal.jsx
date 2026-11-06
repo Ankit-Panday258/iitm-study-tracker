@@ -146,7 +146,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 sticky top-0 z-10">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+            <BookOpen className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             {editingTask ? 'Edit Study Topic' : 'Add New Study Topic'}
           </h3>
           <button
@@ -174,7 +174,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
               onInvalid={() => setSaveError('Please enter a study topic.')}
               onChange={(e) => { setTopic(e.target.value); setSaveError(''); }}
               placeholder="e.g. Complete Flask CRUD operations for MAD 1 Project"
-              className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 transition-all text-sm font-medium"
+              className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-all text-sm font-medium"
             />
           </div>
 
@@ -185,12 +185,12 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1">
-                  <Tag className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" /> Subject
+                  <Tag className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" /> Subject
                 </label>
                 <button
                   type="button"
                   onClick={() => setIsAddingNewSubject(!isAddingNewSubject)}
-                  className="text-xs text-pink-600 dark:text-pink-400 hover:text-pink-700 font-bold flex items-center gap-0.5 transition-colors"
+                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-700 font-bold flex items-center gap-0.5 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>{isAddingNewSubject ? 'Cancel' : 'New Subject'}</span>
@@ -199,15 +199,15 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
 
               {/* Add New Subject Mini Form */}
               {isAddingNewSubject ? (
-                <div className="p-3 bg-pink-50/70 dark:bg-pink-950/30 border border-pink-300 dark:border-pink-800 rounded-xl space-y-2 mb-2 animate-fadeIn">
-                  <p className="text-xs font-bold text-pink-800 dark:text-pink-300">Add New Subject</p>
+                <div className="p-3 bg-gray-50/70 dark:bg-gray-950/30 border border-gray-300 dark:border-gray-700 rounded-xl space-y-2 mb-2 animate-fadeIn">
+                  <p className="text-xs font-bold text-gray-800 dark:text-gray-300">Add New Subject</p>
                   
                   <input
                     type="text"
                     value={newSubjectName}
                     onChange={(e) => { setNewSubjectName(e.target.value); setSubjectError(''); }}
                     placeholder="Enter subject name (e.g. Python, Math)..."
-                    className="w-full bg-white dark:bg-slate-900 border border-pink-300 dark:border-pink-700 rounded-lg px-3 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                     autoFocus
                   />
                   {subjectError && <p className="text-[10px] text-red-500 font-semibold">{subjectError}</p>}
@@ -223,8 +223,8 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
                           onClick={() => setNewSubjectIcon(em)}
                           className={`w-6 h-6 rounded-md text-xs flex items-center justify-center border transition-all ${
                             newSubjectIcon === em
-                              ? 'bg-pink-600 text-white border-pink-600 scale-110'
-                              : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:border-pink-400'
+                              ? 'bg-gray-600 text-white border-gray-600 scale-110'
+                              : 'bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 hover:border-gray-400'
                           }`}
                         >
                           {em}
@@ -244,7 +244,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
                     <button
                       type="button"
                       onClick={handleAddNewSubjectSubmit}
-                      className="px-3 py-1 bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold rounded-lg shadow-sm"
+                      className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-semibold rounded-lg shadow-sm"
                     >
                       ✓ Add Subject
                     </button>
@@ -260,14 +260,14 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
                       setSubject(e.target.value);
                     }
                   }}
-                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-pink-500 transition-all cursor-pointer font-medium"
+                  className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2.5 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-gray-500 transition-all cursor-pointer font-medium"
                 >
                   {subjectList.map((sub) => (
                     <option key={sub.name} value={sub.name}>
                       {sub.icon} {sub.name}
                     </option>
                   ))}
-                  <option value="__add_new__" className="text-pink-600 font-bold">
+                  <option value="__add_new__" className="text-gray-600 font-bold">
                     ➕ + Add New Subject...
                   </option>
                 </select>
@@ -282,7 +282,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
                 type="date"
                 value={targetDate}
                 onChange={(e) => setTargetDate(e.target.value)}
-                className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-pink-500 font-medium"
+                className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-gray-500 font-medium"
               />
             </div>
           </div>
@@ -290,11 +290,11 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
           {/* Duration: Hours, Minutes, Seconds */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" /> Duration (Hours, Minutes, Seconds)
+              <Clock className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" /> Duration (Hours, Minutes, Seconds)
             </label>
             <div className="grid grid-cols-3 gap-2">
               {/* Hours */}
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-pink-500">
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-gray-500">
                 <input
                   type="number"
                   min="0"
@@ -308,7 +308,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
               </div>
 
               {/* Minutes */}
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-pink-500">
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-gray-500">
                 <input
                   type="number"
                   min="0"
@@ -322,7 +322,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
               </div>
 
               {/* Seconds */}
-              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-pink-500">
+              <div className="flex items-center gap-1 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl px-3 py-2 focus-within:border-gray-500">
                 <input
                   type="number"
                   min="0"
@@ -343,7 +343,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
           {/* Priority */}
           <div>
             <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" /> Priority
+              <AlertCircle className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" /> Priority
             </label>
             <div className="flex items-center gap-2 pt-0.5">
               {['Low', 'Medium', 'High'].map((p) => (
@@ -353,7 +353,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
                   onClick={() => setPriority(p)}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
                     priority === p
-                      ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                      ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
                       : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-400 border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -373,7 +373,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. NCERT Book Page 45-50, solve 10 questions..."
-              className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:border-pink-500"
+              className="w-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-xl p-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:border-gray-500"
             />
           </div>
 
@@ -395,7 +395,7 @@ export default function TaskFormModal({ isOpen, onClose, onSaveTask, editingTask
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold shadow-md shadow-pink-600/20 transition-all border border-pink-600 disabled:cursor-wait disabled:opacity-60"
+              className="px-5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold shadow-md shadow-gray-600/20 transition-all border border-gray-600 disabled:cursor-wait disabled:opacity-60"
             >
               {isSaving ? 'Saving…' : editingTask ? 'Save Changes' : 'Add Task'}
             </button>

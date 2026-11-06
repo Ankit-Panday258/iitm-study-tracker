@@ -167,7 +167,7 @@ export default function App() {
   const selectedProfileSubjects = (currentUser?.selectedSubjects || [])
     .map(code => IITM_CURRICULUM.find(course => course.code === code))
     .filter(Boolean)
-    .map(course => ({ id: `iitm_${course.code}`, name: course.name, icon: '📘', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-200 dark:border-indigo-800' }));
+    .map(course => ({ id: `iitm_${course.code}`, name: course.name, icon: '📘', color: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/30 dark:text-gray-200 dark:border-gray-700' }));
   const availableSubjects = [...subjects, ...selectedProfileSubjects.filter(profileSubject => !subjects.some(subject => subject.name === profileSubject.name))];
   useEffect(() => {
     restoreSession().then(setCurrentUser).catch(error => {
@@ -341,11 +341,11 @@ export default function App() {
 
   // ─── Main Render ───────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 flex flex-col font-sans selection:bg-pink-500 selection:text-white transition-colors duration-200 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 flex flex-col font-sans selection:bg-gray-500 selection:text-white transition-colors duration-200 pb-20">
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-14 sm:top-20 right-4 sm:right-6 z-50 bg-pink-600 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl shadow-pink-600/30 flex items-center gap-2 animate-bounce border border-pink-400">
+        <div className="fixed top-14 sm:top-20 right-4 sm:right-6 z-50 bg-gray-600 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl shadow-gray-600/30 flex items-center gap-2 animate-bounce border border-gray-400">
           <Check className="w-4 h-4" />
           <span>{toastMessage}</span>
         </div>
@@ -381,7 +381,7 @@ export default function App() {
 
         {/* View Switch: Daily Track, Courses & Syllabus, Books Library, Assignment Calendar, or Main Planner */}
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex justify-end">
-          <button type="button" onClick={() => { setCurrentPage('examPlanner'); setActiveBottomTab('planner'); }} className="min-h-11 px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-semibold flex gap-2 items-center cursor-pointer focus-visible:ring-2 focus-visible:ring-pink-400"><Calendar size={18} /> Exam study planner</button>
+          <button type="button" onClick={() => { setCurrentPage('examPlanner'); setActiveBottomTab('planner'); }} className="min-h-11 px-4 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-semibold flex gap-2 items-center cursor-pointer focus-visible:ring-2 focus-visible:ring-gray-400"><Calendar size={18} /> Exam study planner</button>
         </div>
         {currentPage === 'examPlanner' ? (
           <ExamStudyPlanner key={currentUser?.id || 'guest'} currentUser={currentUser} tasks={allTasks} subjects={subjects} onBack={() => { setCurrentPage('home'); setActiveBottomTab('tasks'); }} />
@@ -427,7 +427,7 @@ export default function App() {
           />
         ) : (
           <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            <button onClick={() => setCurrentPage('goals')} className="mb-4 inline-flex items-center gap-2 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40 px-3 py-2 text-xs font-bold text-violet-700 dark:text-violet-300"><Trophy className="w-4 h-4"/> Goals & rewards</button>
+            <button onClick={() => setCurrentPage('goals')} className="mb-4 inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950/40 px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300"><Trophy className="w-4 h-4"/> Goals & rewards</button>
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
 
@@ -436,7 +436,7 @@ export default function App() {
                 type="button"
                 onClick={handlePrevDay}
                 aria-label="Previous day"
-                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-pink-400 transition-colors"
+                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-gray-400 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -447,7 +447,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setSelectedDate(getTodayString())}
-                  className="px-3 py-2 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 text-xs font-bold hover:bg-pink-100 dark:hover:bg-pink-900/50 transition-colors"
+                  className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950/40 text-gray-700 dark:text-gray-300 text-xs font-bold hover:bg-gray-100 dark:hover:bg-gray-900/50 transition-colors"
                 >
                   Today
                 </button>
@@ -456,23 +456,23 @@ export default function App() {
                 type="button"
                 onClick={handleNextDay}
                 aria-label="Next day"
-                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-pink-400 transition-colors"
+                className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:border-gray-400 transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* IIT Madras Term 3 Assignment Calendar & Deadlines Banner */}
-            <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-pink-950/80 text-white rounded-2xl p-3.5 sm:p-4 mb-4 border border-indigo-500/30 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-gray-950/80 text-white rounded-2xl p-3.5 sm:p-4 mb-4 border border-indigo-500/30 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="flex items-center gap-3 relative z-10">
-                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-lg shadow-md shrink-0">
+                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-gray-500 text-white flex items-center justify-center text-lg shadow-md shrink-0">
                   📅
                 </span>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 flex-wrap">
                       <span>Term 3 Deadlines &amp; Exam Calendar (Oct 2026 – Jan 2027)</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-300 border border-gray-500/40">
                         Week 1 to 12
                       </span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
@@ -492,7 +492,7 @@ export default function App() {
                     setCurrentPage('calendar');
                     setActiveBottomTab('calendar');
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-pink-600/30 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-gray-600 to-rose-600 hover:from-gray-500 hover:to-rose-500 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-gray-600/30 transition-all cursor-pointer"
                 >
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Open Calendar</span>
@@ -502,9 +502,9 @@ export default function App() {
             </div>
 
             {/* Quick Course Syllabus Shortcut Banner */}
-            <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-pink-500/5 dark:from-pink-950/40 dark:via-slate-800/90 dark:to-pink-950/30 border border-pink-200 dark:border-pink-800/60 rounded-2xl p-3 sm:p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
+            <div className="bg-gradient-to-r from-gray-500/10 via-gray-500/10 to-gray-500/5 dark:from-gray-950/40 dark:via-slate-800/90 dark:to-gray-950/30 border border-gray-200 dark:border-gray-700/60 rounded-2xl p-3 sm:p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-600 to-rose-600 text-white flex items-center justify-center text-lg shadow-sm shrink-0">
+                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-600 to-rose-600 text-white flex items-center justify-center text-lg shadow-sm shrink-0">
                   ⚙️
                 </span>
                 <div>
@@ -512,7 +512,7 @@ export default function App() {
                     <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
                       System Commands — 8-Week Course & Video Classes
                     </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                       Week 1 to 8 Full Syllabus
                     </span>
                   </div>
@@ -527,7 +527,7 @@ export default function App() {
                   href="https://youtu.be/Byx4sgLR88E"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-red-600/30 border border-red-700 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-gray-600/30 border border-gray-700 transition-all cursor-pointer"
                   title="Watch Week 1 Linux Video Masterclass"
                 >
                   <Play className="w-3.5 h-3.5 fill-white" />
@@ -538,10 +538,10 @@ export default function App() {
                   href={SYSTEM_COMMANDS_DRIVE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/40 dark:hover:bg-pink-900/60 active:scale-95 text-pink-700 dark:text-pink-300 font-bold text-xs border border-pink-300 dark:border-pink-700 shadow-sm transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-950/40 dark:hover:bg-gray-900/60 active:scale-95 text-gray-700 dark:text-gray-300 font-bold text-xs border border-gray-300 dark:border-gray-700 shadow-sm transition-all cursor-pointer"
                   title="Open Notes in Google Drive"
                 >
-                  <Folder className="w-3.5 h-3.5 text-pink-600 dark:text-pink-400" />
+                  <Folder className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
                   <span>Notes</span>
                 </a>
 
@@ -551,7 +551,7 @@ export default function App() {
                     setCurrentPage('courses');
                     setActiveBottomTab('courses');
                   }}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-pink-600/30 transition-transform whitespace-nowrap cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-600 hover:bg-gray-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-gray-600/30 transition-transform whitespace-nowrap cursor-pointer"
                 >
                   <span>Open Course</span>
                   <span>→</span>
@@ -563,7 +563,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h2 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white flex items-center gap-2">
-                  <BookMarked className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                  <BookMarked className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                   Daily Study Tasks
                 </h2>
                 <p className="text-[11px] sm:text-xs text-gray-500 dark:text-slate-400">
@@ -580,7 +580,7 @@ export default function App() {
                       onClick={() => setFilterTab(tab)}
                       className={`px-2.5 py-1.5 rounded-lg transition-all border ${
                         filterTab === tab
-                          ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
+                          ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
                           : 'text-gray-600 dark:text-slate-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700'
                       }`}
                     >
@@ -592,7 +592,7 @@ export default function App() {
                 <select
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 dark:text-slate-200 focus:outline-none focus:border-pink-500 font-medium shadow-sm"
+                  className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-gray-800 dark:text-slate-200 focus:outline-none focus:border-gray-500 font-medium shadow-sm"
                 >
                   <option value="All">All Subjects</option>
                   {availableSubjects.map(s => (
@@ -612,7 +612,7 @@ export default function App() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search study topics or subjects..."
-                className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 shadow-sm"
+                className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-500 shadow-sm"
               />
             </div>
 
@@ -635,7 +635,7 @@ export default function App() {
               </div>
             ) : (
               <div className="text-center py-12 px-4 bg-white dark:bg-slate-900/60 rounded-3xl border border-dashed border-gray-300 dark:border-slate-700 mb-6">
-                <div className="w-12 h-12 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 flex items-center justify-center mx-auto mb-3 border border-pink-200 dark:border-pink-700">
+                <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400 flex items-center justify-center mx-auto mb-3 border border-gray-200 dark:border-gray-700">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">
@@ -648,7 +648,7 @@ export default function App() {
                 </p>
                 <button
                   onClick={handleOpenAddModal}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-pink-600/25 border border-pink-600 transition-transform"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-gray-600/25 border border-gray-600 transition-transform"
                 >
                   <Plus className="w-4 h-4" />
                   Add New Study Topic
@@ -666,8 +666,8 @@ export default function App() {
                 >
                   <span>📦 View Database</span>
                 </button>
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 font-semibold text-[11px]">
-                  <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse" />
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 font-semibold text-[11px]">
+                  <span className="w-2 h-2 rounded-full bg-gray-500 animate-pulse" />
                   <span>{currentUser ? 'Signed in' : 'Sign in to sync'}</span>
                 </span>
               </div>

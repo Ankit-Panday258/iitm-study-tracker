@@ -48,20 +48,20 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/75 dark:bg-slate-950/85 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white dark:bg-slate-900 border-2 border-pink-400 dark:border-pink-600 rounded-3xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border-2 border-gray-400 dark:border-gray-600 rounded-3xl w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/90">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-300 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-900/40 text-gray-600 dark:text-gray-300 flex items-center justify-center font-bold">
               <Database className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
                 <span>Database Explorer</span>
                 {dbStatus?.activeDatabase === 'MySQL' ? (
-                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse"></span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-500 animate-pulse"></span>
                     🐬 MySQL 9.6 (Local)
                   </span>
                 ) : (
@@ -103,8 +103,8 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               onClick={() => setActiveTab('tasks')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'tasks'
-                  ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
-                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
+                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300'
               }`}
             >
               Tasks Table ({tasks.length})
@@ -113,8 +113,8 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               onClick={() => setActiveTab('subjects')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'subjects'
-                  ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
-                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
+                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300'
               }`}
             >
               Subjects ({subjects.length})
@@ -123,8 +123,8 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               onClick={() => setActiveTab('users')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
                 activeTab === 'users'
-                  ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
-                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
+                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300'
               }`}
             >
               <UsersIcon className="w-3.5 h-3.5" />
@@ -134,8 +134,8 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               onClick={() => setActiveTab('rawJson')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                 activeTab === 'rawJson'
-                  ? 'bg-pink-600 text-white border-pink-600 shadow-sm'
-                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-pink-300'
+                  ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
+                  : 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300'
               }`}
             >
               Raw JSON
@@ -145,7 +145,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
           {activeTab === 'rawJson' && (
             <button
               onClick={copyJson}
-              className="px-3 py-1 bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 rounded-lg text-xs font-semibold hover:bg-pink-100 transition-all"
+              className="px-3 py-1 bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-100 transition-all"
             >
               {copied ? '✓ Copied!' : 'Copy JSON'}
             </button>
@@ -157,7 +157,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
           
           {loading ? (
             <div className="text-center py-12">
-              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-pink-600 mb-2" />
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-gray-600 mb-2" />
               <p className="text-xs text-gray-500">Loading database records...</p>
             </div>
           ) : activeTab === 'tasks' ? (
@@ -195,7 +195,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                           {t.date}
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className="px-2 py-0.5 rounded-md bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-[10px] font-semibold">
+                          <span className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[10px] font-semibold">
                             {t.subject}
                           </span>
                         </td>
@@ -259,7 +259,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                           <img
                             src={u.picture || "/avatar-bot.png"}
                             alt={u.name}
-                            className="w-6 h-6 rounded-full object-cover border border-pink-300"
+                            className="w-6 h-6 rounded-full object-cover border border-gray-300"
                           />
                           <span>{u.name}</span>
                         </td>
@@ -267,7 +267,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
                           {u.email}
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
-                          <span className="px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 text-[10px] font-semibold uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-gray-50 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[10px] font-semibold uppercase">
                             {u.authProvider || u.auth_provider || 'email'}
                           </span>
                         </td>
@@ -284,7 +284,7 @@ export default function DatabaseViewerModal({ isOpen, onClose }) {
               </div>
             )
           ) : (
-            <pre className="p-4 rounded-2xl bg-gray-900 text-pink-300 font-mono text-xs overflow-x-auto max-h-[50vh]">
+            <pre className="p-4 rounded-2xl bg-gray-900 text-gray-300 font-mono text-xs overflow-x-auto max-h-[50vh]">
               {JSON.stringify({ tasks, subjects, users }, null, 2)}
             </pre>
           )}

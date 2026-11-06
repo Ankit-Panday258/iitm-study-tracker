@@ -71,8 +71,8 @@ export default function PomodoroTimer({ activeTask, onClose, onCompleteTask }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-slate-700 pb-2">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-          <span className="text-xs font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider">Focus Timer</span>
+          <Clock className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          <span className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Focus Timer</span>
         </div>
         <button
           onClick={onClose}
@@ -95,7 +95,7 @@ export default function PomodoroTimer({ activeTask, onClose, onCompleteTask }) {
         
         <div className="w-full bg-gray-200 dark:bg-slate-700 h-2 rounded-full mt-3 overflow-hidden border border-gray-300 dark:border-slate-600">
           <div
-            className="h-full bg-pink-600 dark:bg-pink-500 transition-all duration-300"
+            className="h-full bg-gray-600 dark:bg-gray-500 transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -108,7 +108,7 @@ export default function PomodoroTimer({ activeTask, onClose, onCompleteTask }) {
           className={`flex-1 py-2 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all border ${
             isRunning
               ? 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-slate-200 border-gray-300 dark:border-slate-600 hover:bg-gray-200 dark:hover:bg-slate-600'
-              : 'bg-pink-600 hover:bg-pink-700 text-white border-pink-600 shadow-md shadow-pink-600/20'
+              : 'bg-gray-600 hover:bg-gray-700 text-white border-gray-600 shadow-md shadow-gray-600/20'
           }`}
         >
           {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
@@ -125,7 +125,7 @@ export default function PomodoroTimer({ activeTask, onClose, onCompleteTask }) {
 
         <button
           onClick={() => onCompleteTask(activeTask.id)}
-          className="p-2.5 rounded-xl bg-pink-50 dark:bg-pink-900/30 hover:bg-pink-100 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-300 dark:border-pink-700 transition-colors"
+          className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900/30 hover:bg-gray-100 dark:hover:bg-gray-900/50 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 transition-colors"
           title="Mark Complete"
         >
           <CheckCircle className="w-4 h-4" />

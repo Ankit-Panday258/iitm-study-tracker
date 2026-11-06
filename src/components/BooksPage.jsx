@@ -148,14 +148,14 @@ export default function BooksPage({ onBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-300 dark:hover:border-pink-700 shadow-sm active:scale-95 transition-all"
+            className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 shadow-sm active:scale-95 transition-all"
             title="Back to Today's Tasks"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-pink-600 dark:text-pink-400" />
+              <BookOpen className="w-6 h-6 text-gray-600 dark:text-gray-400" />
               <span>Books & Study Materials</span>
             </h1>
             <p className="text-xs text-gray-500 dark:text-slate-400">
@@ -167,7 +167,7 @@ export default function BooksPage({ onBack }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-pink-600/30 border border-pink-600 transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-gray-600/30 border border-gray-600 transition-all"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Book / Link</span>
@@ -176,22 +176,22 @@ export default function BooksPage({ onBack }) {
       </div>
 
       {/* FEATURED HERO CARD: System Commands Google Drive Book */}
-      <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50/30 dark:from-pink-950/30 dark:via-slate-900 dark:to-pink-950/20 border-2 border-pink-300 dark:border-pink-800/80 rounded-3xl p-5 sm:p-7 mb-8 shadow-lg shadow-pink-600/10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50/30 dark:from-gray-950/30 dark:via-slate-900 dark:to-gray-950/20 border-2 border-gray-300 dark:border-gray-700/80 rounded-3xl p-5 sm:p-7 mb-8 shadow-lg shadow-gray-600/10 relative overflow-hidden">
         
         {/* Subtle decorative background circle */}
-        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-pink-500/10 dark:bg-pink-500/10 blur-2xl pointer-events-none" />
+        <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-gray-500/10 dark:bg-gray-500/10 blur-2xl pointer-events-none" />
 
         <div className="relative z-10">
           
           {/* Header Tag */}
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-600 text-white font-black text-xs shadow-sm shadow-pink-600/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-600 text-white font-black text-xs shadow-sm shadow-gray-600/30">
               <span>⚙️</span>
               <span>System Commands</span>
             </span>
 
-            <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 shadow-sm flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-gray-500 animate-pulse" />
               <span>Google Drive Connected</span>
             </span>
           </div>
@@ -200,7 +200,7 @@ export default function BooksPage({ onBack }) {
           <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-1">
             System Commands Book & Complete Study Materials
           </h2>
-          <p className="text-xs sm:text-sm text-pink-700 dark:text-pink-300 font-semibold mb-3">
+          <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-semibold mb-3">
             Official Google Drive Folder &bull; IIT Madras Course Curriculum
           </p>
 
@@ -213,9 +213,9 @@ export default function BooksPage({ onBack }) {
             {sysCommandBook.modules.map((mod, idx) => (
               <div 
                 key={idx}
-                className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-pink-200 dark:border-pink-900/60 rounded-2xl p-2.5 flex items-start gap-2 shadow-sm text-xs font-semibold text-gray-800 dark:text-slate-200"
+                className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700/60 rounded-2xl p-2.5 flex items-start gap-2 shadow-sm text-xs font-semibold text-gray-800 dark:text-slate-200"
               >
-                <span className="text-pink-600 dark:text-pink-400 font-black">0{idx + 1}.</span>
+                <span className="text-gray-600 dark:text-gray-400 font-black">0{idx + 1}.</span>
                 <span>{mod}</span>
               </div>
             ))}
@@ -227,7 +227,7 @@ export default function BooksPage({ onBack }) {
               href={SYSTEM_COMMANDS_DRIVE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-extrabold text-sm shadow-xl shadow-pink-600/30 border border-pink-600 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-extrabold text-sm shadow-xl shadow-gray-600/30 border border-gray-600 transition-all cursor-pointer"
             >
               <Folder className="w-4 h-4 fill-white" />
               <span>Open System Commands Drive Book</span>
@@ -245,7 +245,7 @@ export default function BooksPage({ onBack }) {
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4 text-pink-600" />
+                  <Copy className="w-4 h-4 text-gray-600" />
                   <span>Copy Drive Link</span>
                 </>
               )}
@@ -259,7 +259,7 @@ export default function BooksPage({ onBack }) {
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
-            <FileText className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+            <FileText className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             All Subject Books & Course Materials
           </h3>
           <p className="text-xs text-gray-500 dark:text-slate-400">
@@ -275,7 +275,7 @@ export default function BooksPage({ onBack }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search books or subjects..."
-            className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 shadow-sm"
+            className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl pl-9 pr-3.5 py-2 text-xs text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-gray-500 shadow-sm"
           />
         </div>
       </div>
@@ -291,8 +291,8 @@ export default function BooksPage({ onBack }) {
               key={book.id}
               className={`rounded-3xl border p-5 flex flex-col justify-between transition-all duration-200 ${
                 isSysCmd
-                  ? 'bg-white dark:bg-slate-900 border-pink-400 dark:border-pink-700 shadow-md ring-1 ring-pink-500/20'
-                  : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 hover:border-pink-300 dark:hover:border-slate-700 shadow-sm'
+                  ? 'bg-white dark:bg-slate-900 border-gray-400 dark:border-gray-700 shadow-md ring-1 ring-gray-500/20'
+                  : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700 shadow-sm'
               }`}
             >
               <div>
@@ -308,7 +308,7 @@ export default function BooksPage({ onBack }) {
                   <div className="flex items-center gap-1.5">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                       isSysCmd
-                        ? 'bg-pink-600 text-white border-pink-600'
+                        ? 'bg-gray-600 text-white border-gray-600'
                         : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700'
                     }`}>
                       {book.badge}
@@ -333,7 +333,7 @@ export default function BooksPage({ onBack }) {
                 
                 {/* Subtitle */}
                 {book.subtitle && (
-                  <p className="text-[11px] font-semibold text-pink-600 dark:text-pink-400 mb-2">
+                  <p className="text-[11px] font-semibold text-gray-600 dark:text-gray-400 mb-2">
                     {book.subtitle}
                   </p>
                 )}
@@ -352,7 +352,7 @@ export default function BooksPage({ onBack }) {
                     <ul className="text-[11px] text-gray-600 dark:text-slate-300 space-y-0.5">
                       {book.modules.slice(0, 3).map((m, i) => (
                         <li key={i} className="flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                           <span className="truncate">{m}</span>
                         </li>
                       ))}
@@ -369,7 +369,7 @@ export default function BooksPage({ onBack }) {
                       href={book.driveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-pink-600/30 transition-all cursor-pointer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-gray-600/30 transition-all cursor-pointer"
                     >
                       <Folder className="w-3.5 h-3.5" />
                       <span>Open Book (Google Drive)</span>
@@ -378,11 +378,11 @@ export default function BooksPage({ onBack }) {
 
                     <button
                       onClick={() => handleCopyLink(book.id, book.driveUrl)}
-                      className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:text-pink-600 dark:hover:text-pink-400 hover:border-pink-300 transition-all active:scale-95"
+                      className="p-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-300 transition-all active:scale-95"
                       title="Copy Link"
                     >
                       {copiedId === book.id ? (
-                        <Check className="w-4 h-4 text-pink-600" />
+                        <Check className="w-4 h-4 text-gray-600" />
                       ) : (
                         <Copy className="w-4 h-4" />
                       )}
@@ -397,7 +397,7 @@ export default function BooksPage({ onBack }) {
                         setNewTitle(`${book.subject} Course Book`);
                         setIsAddModalOpen(true);
                       }}
-                      className="text-pink-600 dark:text-pink-400 font-bold hover:underline"
+                      className="text-gray-600 dark:text-gray-400 font-bold hover:underline"
                     >
                       + Add Drive Link
                     </button>
@@ -413,9 +413,9 @@ export default function BooksPage({ onBack }) {
       {/* Add New Book Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/70 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white dark:bg-slate-900 border-2 border-pink-400 dark:border-pink-600 rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-slate-900 border-2 border-gray-400 dark:border-gray-600 rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
             <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+              <Sparkles className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               Add Course Book / Drive Link
             </h3>
             <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
@@ -428,7 +428,7 @@ export default function BooksPage({ onBack }) {
                 <select
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 font-medium"
+                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500 font-medium"
                 >
                   <option value="System Commands">⚙️ System Commands</option>
                   <option value="MAD 1 Project">💻 MAD 1 Project</option>
@@ -446,7 +446,7 @@ export default function BooksPage({ onBack }) {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Linux Command Reference Book"
-                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 font-medium"
+                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500 font-medium"
                 />
               </div>
 
@@ -458,7 +458,7 @@ export default function BooksPage({ onBack }) {
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://drive.google.com/drive/folders/..."
-                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 font-mono"
+                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500 font-mono"
                 />
               </div>
 
@@ -469,7 +469,7 @@ export default function BooksPage({ onBack }) {
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="e.g. Week 1 to 12 lecture slides & exercises"
-                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500 font-medium"
+                  className="w-full mt-1 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500 font-medium"
                 />
               </div>
 
@@ -483,7 +483,7 @@ export default function BooksPage({ onBack }) {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-pink-600/30 transition-all"
+                  className="px-5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-gray-600/30 transition-all"
                 >
                   Save Book
                 </button>

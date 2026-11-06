@@ -796,14 +796,14 @@ export default function CoursesPage({
             <div className="flex items-center gap-3">
               <button
                 onClick={onBack}
-                className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-pink-600 hover:border-pink-300 shadow-sm active:scale-95 transition-all"
+                className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:text-gray-600 hover:border-gray-300 shadow-sm active:scale-95 transition-all"
                 title="Back to Tasks"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
-                  <BookOpen className="w-6 h-6 text-pink-600 dark:text-pink-400" />
+                  <BookOpen className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                   <span>Select a Subject</span>
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-slate-400">
@@ -815,7 +815,7 @@ export default function CoursesPage({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsAddWeekModalOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-pink-600/30 border border-pink-600 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-md shadow-gray-600/30 border border-gray-600 transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
                 <span>Add Week</span>
@@ -842,25 +842,25 @@ export default function CoursesPage({
                   key={course.id}
                   className={`bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 transition-all flex flex-col justify-between group shadow-sm hover:shadow-xl ${
                     isCurrent 
-                      ? 'border-pink-500 shadow-pink-500/10' 
-                      : 'border-gray-200 dark:border-slate-800 hover:border-pink-400'
+                      ? 'border-gray-500 shadow-gray-500/10' 
+                      : 'border-gray-200 dark:border-slate-800 hover:border-gray-400'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center text-3xl shadow-md shadow-pink-600/30 group-hover:scale-110 transition-transform">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-500 to-rose-600 text-white flex items-center justify-center text-3xl shadow-md shadow-gray-600/30 group-hover:scale-110 transition-transform">
                         {course.icon}
                       </div>
-                      <span className="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                      <span className="text-[10px] font-extrabold uppercase px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                         {course.badge || `${totalWeeks} Weeks`}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
                       {course.name}
                     </h3>
                     {course.subtitle && (
-                      <p className="text-xs font-bold text-pink-600 dark:text-pink-400 mt-1 mb-3">
+                      <p className="text-xs font-bold text-gray-600 dark:text-gray-400 mt-1 mb-3">
                         {course.subtitle}
                       </p>
                     )}
@@ -877,7 +877,7 @@ export default function CoursesPage({
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                         <div
-                          className="bg-pink-600 h-full rounded-full transition-all duration-300"
+                          className="bg-gray-600 h-full rounded-full transition-all duration-300"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -892,7 +892,7 @@ export default function CoursesPage({
                       setActiveVideoSubIndex(0);
                       setStage('week');
                     }}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-pink-600 hover:bg-pink-700 active:scale-95 text-white font-black text-sm shadow-lg shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-black text-sm shadow-lg shadow-gray-600/30 border border-gray-700 transition-all cursor-pointer"
                   >
                     <span>Select {course.name}</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -914,7 +914,7 @@ export default function CoursesPage({
             <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setStage('subject')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-pink-600 border border-gray-200 dark:border-slate-700 font-bold text-xs shadow-sm active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:text-gray-600 border border-gray-200 dark:border-slate-700 font-bold text-xs shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Subjects</span>
@@ -930,7 +930,7 @@ export default function CoursesPage({
                 href={activeCourse.driveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 hover:bg-pink-50 border border-pink-200 dark:border-pink-800 font-bold text-xs shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 border border-gray-200 dark:border-gray-700 font-bold text-xs shadow-sm cursor-pointer"
               >
                 <Folder className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Drive Notes</span>
@@ -952,11 +952,11 @@ export default function CoursesPage({
               return (
                 <div
                   key={w.id}
-                  className="bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 hover:border-pink-500 dark:hover:border-pink-600 rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group"
+                  className="bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 hover:border-gray-500 dark:hover:border-gray-600 rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2.5">
-                      <span className="text-xs font-black uppercase px-2.5 py-1 rounded-xl bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                      <span className="text-xs font-black uppercase px-2.5 py-1 rounded-xl bg-gray-100 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                         Week {w.weekNumber}
                       </span>
                       {isWeekComplete ? (
@@ -970,7 +970,7 @@ export default function CoursesPage({
                       )}
                     </div>
 
-                    <h4 className="text-sm font-black text-gray-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors line-clamp-2 mb-2">
+                    <h4 className="text-sm font-black text-gray-900 dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors line-clamp-2 mb-2">
                       {w.title}
                     </h4>
 
@@ -984,12 +984,12 @@ export default function CoursesPage({
                     <div className="space-y-1 mb-4 text-[11px] text-gray-600 dark:text-slate-400">
                       {w.topics?.slice(0, 3).map((topic, tIdx) => (
                         <div key={tIdx} className="flex items-start gap-1.5 line-clamp-1">
-                          <span className="text-pink-500 font-bold">•</span>
+                          <span className="text-gray-500 font-bold">•</span>
                           <span>{topic}</span>
                         </div>
                       ))}
                       {w.topics && w.topics.length > 3 && (
-                        <div className="text-[10px] font-bold text-pink-600 dark:text-pink-400 pl-3">
+                        <div className="text-[10px] font-bold text-gray-600 dark:text-gray-400 pl-3">
                           +{w.topics.length - 3} more topics
                         </div>
                       )}
@@ -1004,7 +1004,7 @@ export default function CoursesPage({
                         setActiveVideoSubIndex(0);
                         setStage('video');
                       }}
-                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 active:scale-95 text-white font-black text-sm shadow-md shadow-pink-600/30 border border-pink-700 transition-all cursor-pointer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-gray-600 to-rose-600 hover:from-gray-700 hover:to-rose-700 active:scale-95 text-white font-black text-sm shadow-md shadow-gray-600/30 border border-gray-700 transition-all cursor-pointer"
                     >
                       <Play className="w-4 h-4 fill-current" />
                       <span>Start</span>
@@ -1045,18 +1045,18 @@ export default function CoursesPage({
       {stage === 'video' && activeWeek && (
         <div className="space-y-6 animate-fadeIn">
           {/* Top Control Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border-2 border-pink-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setStage('week')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-pink-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:text-gray-600 font-bold text-xs transition-all cursor-pointer active:scale-95"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>← Back to Weeks</span>
               </button>
               <button
                 onClick={() => setStage('subject')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 hover:bg-pink-100 font-bold text-xs border border-pink-200 dark:border-pink-800 transition-all cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 dark:bg-gray-950/40 text-gray-700 dark:text-gray-300 hover:bg-gray-100 font-bold text-xs border border-gray-200 dark:border-gray-700 transition-all cursor-pointer active:scale-95"
               >
                 <span>Change Subject</span>
               </button>
@@ -1076,7 +1076,7 @@ export default function CoursesPage({
               </button>
               <button
                 onClick={() => handleAddWeekToToday(activeWeek)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-md shadow-pink-600/30"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700 text-white font-bold text-xs transition-all cursor-pointer active:scale-95 shadow-md shadow-gray-600/30"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add to Tasks</span>
@@ -1100,7 +1100,7 @@ export default function CoursesPage({
                 <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
                   {currentVideoObj?.title || activeWeek.title}
                 </h3>
-                <p className="text-xs text-pink-600 dark:text-pink-400 font-bold mt-1">
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mt-1">
                   Instructor / Channel: {currentVideoObj?.instructor || 'IITM Recommended'}
                 </p>
               </div>
@@ -1170,7 +1170,7 @@ export default function CoursesPage({
                       href={currentVideoObj.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/30 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-bold text-xs shadow-md shadow-gray-600/30 transition-all cursor-pointer"
                     >
                       <Play className="w-3.5 h-3.5 fill-current" />
                       <span>Watch on YouTube</span>
@@ -1178,7 +1178,7 @@ export default function CoursesPage({
                     </a>
                     <button
                       onClick={() => handleCopy(currentVideoObj.url, 'Video link')}
-                      className="p-2 rounded-xl bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:text-pink-600 font-bold text-xs transition-all cursor-pointer"
+                      className="p-2 rounded-xl bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:text-gray-600 font-bold text-xs transition-all cursor-pointer"
                       title="Copy URL"
                     >
                       {copiedLink === currentVideoObj.url ? (
@@ -1396,7 +1396,7 @@ export default function CoursesPage({
                   href={activeCourse.driveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer self-start sm:self-auto active:scale-95"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-gray-600 hover:from-indigo-700 hover:to-gray-700 text-white font-black text-xs sm:text-sm shadow-lg shadow-indigo-600/30 transition-all cursor-pointer self-start sm:self-auto active:scale-95"
                 >
                   <Folder className="w-4 h-4" />
                   <span>Open Official Google Drive Notes</span>
@@ -1429,14 +1429,14 @@ export default function CoursesPage({
                       className={`flex items-start gap-3 p-3 rounded-2xl border transition-all cursor-pointer select-none ${
                         isChecked
                           ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-200'
-                          : 'bg-gray-50/70 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 hover:border-pink-300'
+                          : 'bg-gray-50/70 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 hover:border-gray-300'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        className="mt-0.5 w-4 h-4 rounded text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-slate-600 cursor-pointer"
+                        className="mt-0.5 w-4 h-4 rounded text-gray-600 focus:ring-gray-500 border-gray-300 dark:border-slate-600 cursor-pointer"
                       />
                       <span className={`text-xs leading-relaxed ${isChecked ? 'line-through opacity-80' : 'font-medium'}`}>
                         {topic}
@@ -1461,7 +1461,7 @@ export default function CoursesPage({
             {activeWeek.keyCommands && activeWeek.keyCommands.length > 0 && (
               <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
                 <h4 className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-slate-300 flex items-center gap-1.5 mb-3">
-                  <Terminal className="w-4 h-4 text-pink-600" />
+                  <Terminal className="w-4 h-4 text-gray-600" />
                   <span>Essential Commands & Syntax Reference</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -1471,7 +1471,7 @@ export default function CoursesPage({
                       className="bg-gray-50 dark:bg-slate-800/70 border border-gray-200 dark:border-slate-700 rounded-2xl p-3 flex flex-col justify-between"
                     >
                       <div className="flex items-center justify-between gap-1 mb-1.5">
-                        <code className="text-xs font-mono font-bold text-pink-600 dark:text-pink-400 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-lg border border-pink-100 dark:border-slate-800">
+                        <code className="text-xs font-mono font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-slate-900 px-2 py-0.5 rounded-lg border border-gray-100 dark:border-slate-800">
                           {item.cmd}
                         </code>
                         <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400 bg-gray-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">
@@ -1502,7 +1502,7 @@ export default function CoursesPage({
             </h3>
             <button
               onClick={() => setShowFullOverview(false)}
-              className="text-xs font-bold text-gray-500 hover:text-pink-600 cursor-pointer"
+              className="text-xs font-bold text-gray-500 hover:text-gray-600 cursor-pointer"
             >
               Hide Overview ✕
             </button>
@@ -1516,7 +1516,7 @@ export default function CoursesPage({
               >
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-pink-100 dark:bg-pink-900/60 text-pink-700 dark:text-pink-300">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-900/60 text-gray-700 dark:text-gray-300">
                       Week {w.weekNumber}
                     </span>
                     <span className="text-sm font-black text-gray-900 dark:text-white">
@@ -1569,7 +1569,7 @@ export default function CoursesPage({
                   Add Week / Syllabus Topic
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Course: <span className="font-bold text-pink-600">{activeCourse.name}</span>
+                  Course: <span className="font-bold text-gray-600">{activeCourse.name}</span>
                 </p>
               </div>
               <button
@@ -1592,7 +1592,7 @@ export default function CoursesPage({
                     max="20"
                     value={newWeekNum}
                     onChange={(e) => setNewWeekNum(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                     required
                   />
                 </div>
@@ -1605,7 +1605,7 @@ export default function CoursesPage({
                     value={newWeekTitle}
                     onChange={(e) => setNewWeekTitle(e.target.value)}
                     placeholder="e.g. Week 2: Shell Scripting & Grep"
-                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                     required
                   />
                 </div>
@@ -1620,7 +1620,7 @@ export default function CoursesPage({
                   value={newWeekTopics}
                   onChange={(e) => setNewWeekTopics(e.target.value)}
                   placeholder="e.g. Bash loops, conditionals, grep regex, file processing"
-                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                  className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                   required
                 />
               </div>
@@ -1640,7 +1640,7 @@ export default function CoursesPage({
                       value={newVideoInstructor}
                       onChange={(e) => setNewVideoInstructor(e.target.value)}
                       placeholder="e.g. M Prashant"
-                      className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                      className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -1652,7 +1652,7 @@ export default function CoursesPage({
                       value={newVideoTitle}
                       onChange={(e) => setNewVideoTitle(e.target.value)}
                       placeholder="e.g. Shell Scripting Masterclass"
-                      className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                      className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                     />
                   </div>
                 </div>
@@ -1666,7 +1666,7 @@ export default function CoursesPage({
                     value={newVideoUrl}
                     onChange={(e) => setNewVideoUrl(e.target.value)}
                     placeholder="https://youtu.be/..."
-                    className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                   />
                 </div>
 
@@ -1679,7 +1679,7 @@ export default function CoursesPage({
                     value={newVideoNotes}
                     onChange={(e) => setNewVideoNotes(e.target.value)}
                     placeholder="e.g. Covers loops, functions, variables"
-                    className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-pink-500"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-gray-500"
                   />
                 </div>
               </div>
@@ -1694,7 +1694,7 @@ export default function CoursesPage({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold shadow-md shadow-pink-600/30"
+                  className="px-5 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-bold shadow-md shadow-gray-600/30"
                 >
                   Save Week Syllabus
                 </button>
