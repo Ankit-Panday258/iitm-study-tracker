@@ -88,7 +88,7 @@ export default function AppBottomNav({
         <div className="flex-1 flex items-center justify-center -mt-5">
           <button
             onClick={handleCenterPlusClick}
-            className="w-13 h-13 w-[52px] h-[52px] rounded-full bg-gray-600 hover:bg-gray-700 active:scale-90 text-white flex items-center justify-center shadow-lg shadow-gray-600/40 border-4 border-white dark:border-slate-900 transition-all cursor-pointer"
+            className="w-13 h-13 w-[52px] h-[52px] rounded-full bg-pink-700 hover:bg-pink-800 active:scale-90 text-white flex items-center justify-center shadow-lg shadow-pink-700/40 border-4 border-white dark:border-slate-900 transition-all cursor-pointer"
             title="Add New Study Topic"
           >
             <Plus className="w-6 h-6 stroke-[2.5]" />
