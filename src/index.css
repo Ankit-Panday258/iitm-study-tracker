@@ -6,8 +6,8 @@
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
+    user-select: text;
+    -webkit-user-select: text;
   }
   
   /* Input fields should allow text selection */
@@ -59,4 +59,49 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
+}
+
+/* Refined study workspace */
+body { line-height: 1.6; }
+#root > div { background: #f4f6fb; }
+.dark #root > div { background: #0b1120; }
+header { backdrop-filter: blur(20px); }
+button, a { cursor: pointer; transition: background-color .18s, box-shadow .18s; }
+button, input, select { min-height: 44px; }
+:focus-visible { outline: 3px solid #818cf8; outline-offset: 3px; }
+@media(max-width:640px) { input, textarea, select { font-size:16px !important; } }
+@media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+
+/* Clean dashboard and shared navigation */
+.workspace-nav { position: sticky; top: 0; z-index: 30; background: var(--bg-card); border-bottom: 1px solid var(--border-light); }
+.workspace-nav-inner { max-width: 1280px; margin: auto; padding: 16px 24px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.workspace-brand { display:flex; align-items:center; gap:12px; text-align:left; font-weight:800; }
+.workspace-brand img { border-radius:50%; background:white; }
+.workspace-brand small { display:block; font-size:11px; color:var(--text-secondary); font-weight:500; }
+.workspace-tabs { display:flex; gap:6px; }
+.workspace-tabs button { display:flex; align-items:center; gap:8px; border-radius:12px; padding:10px 18px; font-size:13px; font-weight:600; color:var(--text-secondary); }
+.workspace-tabs button[aria-current] { background:#eef2ff; color:#4338ca; }
+.dark .workspace-tabs button[aria-current] { background:#312e81; color:#e0e7ff; }
+.workspace-menu { position:relative; }
+.workspace-menu-trigger { display:grid; place-items:center; width:44px; border:1px solid var(--border-light); border-radius:12px; }
+.workspace-menu-panel { position:absolute; right:0; top:56px; width:280px; max-width:calc(100vw - 32px); max-height:calc(100dvh - 150px); overflow-y:auto; background:var(--bg-card); border:1px solid var(--border-light); border-radius:18px; padding:10px; box-shadow:0 18px 55px #0002; }
+.workspace-menu-panel > button, .workspace-menu-panel > a { display:flex; align-items:center; gap:12px; width:100%; min-height:44px; padding:10px 12px; border-radius:10px; font-size:13px; text-align:left; }
+.workspace-menu-panel > button:hover, .workspace-menu-panel > a:hover { background:var(--bg-secondary); }
+.workspace-account { padding:10px 12px 16px; margin-bottom:6px; border-bottom:1px solid var(--border-light); overflow-wrap:anywhere; }
+.workspace-account strong { font-size:13px; }
+.workspace-account small { display:block; color:var(--text-secondary); font-size:11px; margin-top:4px; }
+.workspace-heading { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:14px 0 28px; }
+.workspace-kicker { font-size:10px; letter-spacing:.16em; font-weight:700; color:#6366f1; }
+.workspace-heading h1 { font-size:clamp(28px,4vw,40px); font-weight:800; letter-spacing:-.045em; margin:8px 0; line-height:1.2; }
+.workspace-heading h1 span { color:#6366f1; }
+.workspace-heading > div > p:last-child { color:var(--text-secondary); font-size:13px; }
+.workspace-add { display:flex; align-items:center; gap:8px; flex-shrink:0; background:#4f46e5; color:white; border-radius:12px; padding:12px 18px; font-size:13px; font-weight:600; }
+.workspace-add:hover { background:#4338ca; }
+.workspace-task-panel { background:var(--bg-card); border:1px solid var(--border-light); border-radius:24px; padding:24px; }
+@media(max-width:640px) {
+ .workspace-nav-inner { padding:12px 16px; gap:12px; flex-wrap:wrap; }
+ .workspace-tabs { order:3; width:100%; }
+ .workspace-tabs button { flex:1; justify-content:center; }
+ .workspace-heading { align-items:flex-start; flex-direction:column; padding-top:10px; gap:16px; }
+ .workspace-task-panel { padding:16px; border-radius:18px; }
 }

@@ -8,7 +8,6 @@ import PomodoroTimer from './components/PomodoroTimer';
 import DailyTrack from './components/DailyTrack';
 import DatabaseViewerModal from './components/DatabaseViewerModal';
 import AuthModal from './components/AuthModal';
-import AppBottomNav from './components/AppBottomNav';
 import BooksPage from './components/BooksPage';
 import CoursesPage, { SYSTEM_COMMANDS_DRIVE_URL } from './components/CoursesPage';
 import AssignmentCalendar from './components/AssignmentCalendar';
@@ -353,6 +352,10 @@ export default function App() {
 
       {/* App Header */}
       <Navbar
+        currentPage={currentPage}
+        onOpenDashboard={() => { setCurrentPage('home'); setActiveBottomTab('tasks'); }}
+        onOpenGoals={() => setCurrentPage('goals')}
+        onOpenExamPlanner={() => setCurrentPage('examPlanner')}
         streak={streak}
         onOpenAddModal={handleOpenAddModal}
         darkMode={darkMode}
@@ -379,10 +382,6 @@ export default function App() {
         onOpenAdmin={currentUser?.isAdmin ? () => setCurrentPage('admin') : undefined}
       />
 
-        {/* View Switch: Daily Track, Courses & Syllabus, Books Library, Assignment Calendar, or Main Planner */}
-        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pt-4 flex justify-end">
-          <button type="button" onClick={() => { setCurrentPage('examPlanner'); setActiveBottomTab('planner'); }} className="min-h-11 px-4 py-2 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-semibold flex gap-2 items-center cursor-pointer focus-visible:ring-2 focus-visible:ring-gray-400"><Calendar size={18} /> Exam study planner</button>
-        </div>
         {currentPage === 'examPlanner' ? (
           <ExamStudyPlanner key={currentUser?.id || 'guest'} currentUser={currentUser} tasks={allTasks} subjects={subjects} onBack={() => { setCurrentPage('home'); setActiveBottomTab('tasks'); }} />
         ) : currentPage === 'goals' ? (
@@ -426,8 +425,11 @@ export default function App() {
             showToast={showToast}
           />
         ) : (
-          <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            <button onClick={() => setCurrentPage('goals')} className="mb-4 inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950/40 px-3 py-2 text-xs font-bold text-gray-700 dark:text-gray-300"><Trophy className="w-4 h-4"/> Goals & rewards</button>
+          <main className="workspace-dashboard flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <section className="workspace-heading">
+              <div><p className="workspace-kicker">IIT MADRAS / YOUR WORKSPACE</p><h1>Make today count<span>.</span></h1><p>A little focus today. A step closer to your goals.</p></div>
+              <button onClick={handleOpenAddModal} className="workspace-add"><Plus size={18} /> New study task</button>
+            </section>
             {/* Stats Overview */}
             <StatsOverview tasks={dateTasks} selectedDate={selectedDate} />
 
@@ -462,103 +464,7 @@ export default function App() {
               </button>
             </div>
 
-            {/* IIT Madras Term 3 Assignment Calendar & Deadlines Banner */}
-            <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900 to-gray-950/80 text-white rounded-2xl p-3.5 sm:p-4 mb-4 border border-indigo-500/30 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-center gap-3 relative z-10">
-                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-gray-500 text-white flex items-center justify-center text-lg shadow-md shrink-0">
-                  📅
-                </span>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 flex-wrap">
-                      <span>Term 3 Deadlines &amp; Exam Calendar (Oct 2026 – Jan 2027)</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-300 border border-gray-500/40">
-                        Week 1 to 12
-                      </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                        Quiz 1, 2 &amp; End Term
-                      </span>
-                    </h4>
-                  </div>
-                  <p className="text-[11px] text-slate-300 mt-0.5">
-                    12-Week Assignment Deadlines, Quiz 1 (15 Nov), Quiz 2 (05 Dec), End Term (10 Jan 2027) &amp; Eligibility Gates.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 self-start md:self-auto relative z-10">
-                <button
-                  onClick={() => {
-                    setCurrentPage('calendar');
-                    setActiveBottomTab('calendar');
-                  }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-gray-600 to-rose-600 hover:from-gray-500 hover:to-rose-500 active:scale-95 text-white rounded-xl font-bold text-xs shadow-md shadow-gray-600/30 transition-all cursor-pointer"
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>Open Calendar</span>
-                  <span>→</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Course Syllabus Shortcut Banner */}
-            <div className="bg-gradient-to-r from-gray-500/10 via-gray-500/10 to-gray-500/5 dark:from-gray-950/40 dark:via-slate-800/90 dark:to-gray-950/30 border border-gray-200 dark:border-gray-700/60 rounded-2xl p-3 sm:p-4 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-3">
-                <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-600 to-rose-600 text-white flex items-center justify-center text-lg shadow-sm shrink-0">
-                  ⚙️
-                </span>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
-                      System Commands — 8-Week Course & Video Classes
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                      Week 1 to 8 Full Syllabus
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-600 dark:text-slate-400 mt-0.5">
-                    M Prashant (Linux, Permissions, Bash, AWK) + Networking + Chai aur Code (Git & GitHub).
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
-                <a
-                  href="https://youtu.be/Byx4sgLR88E"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-600 hover:bg-gray-700 active:scale-95 text-white font-bold text-xs shadow-sm shadow-gray-600/30 border border-gray-700 transition-all cursor-pointer"
-                  title="Watch Week 1 Linux Video Masterclass"
-                >
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                  <span>Video</span>
-                </a>
-
-                <a
-                  href={SYSTEM_COMMANDS_DRIVE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-950/40 dark:hover:bg-gray-900/60 active:scale-95 text-gray-700 dark:text-gray-300 font-bold text-xs border border-gray-300 dark:border-gray-700 shadow-sm transition-all cursor-pointer"
-                  title="Open Notes in Google Drive"
-                >
-                  <Folder className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
-                  <span>Notes</span>
-                </a>
-
-                <button
-                  onClick={() => {
-                    setCoursesInitialStep('weeks');
-                    setCurrentPage('courses');
-                    setActiveBottomTab('courses');
-                  }}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-600 hover:bg-gray-700 active:scale-95 text-white rounded-xl font-bold text-xs shadow-sm shadow-gray-600/30 transition-transform whitespace-nowrap cursor-pointer"
-                >
-                  <span>Open Course</span>
-                  <span>→</span>
-                </button>
-              </div>
-            </div>
-
+            <section className="workspace-task-panel" aria-label="Study tasks">
             {/* Task List Header & Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
@@ -567,7 +473,7 @@ export default function App() {
                   Daily Study Tasks
                 </h2>
                 <p className="text-[11px] sm:text-xs text-gray-500 dark:text-slate-400">
-                  Tick mark (✓) after completing each topic to generate your 24h sticker.
+                  Your next steps, one topic at a time.
                 </p>
               </div>
 
@@ -580,7 +486,7 @@ export default function App() {
                       onClick={() => setFilterTab(tab)}
                       className={`px-2.5 py-1.5 rounded-lg transition-all border ${
                         filterTab === tab
-                          ? 'bg-gray-600 text-white border-gray-600 shadow-sm'
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                           : 'text-gray-600 dark:text-slate-400 border-transparent hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700'
                       }`}
                     >
@@ -656,6 +562,7 @@ export default function App() {
               </div>
             )}
 
+            </section>
             {/* App Footer */}
             {currentUser?.isAdmin && <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-gray-200 dark:border-slate-800 pt-4 text-xs text-gray-500 dark:text-slate-500">
               <p>IIT Madras Study Tracker &bull; Mobile App Edition</p>
@@ -675,47 +582,6 @@ export default function App() {
 
           </main>
         )}
-
-        {/* Native Mobile Bottom Navigation Bar */}
-        <AppBottomNav
-          activeTab={activeBottomTab}
-          setActiveTab={(tab) => {
-            setActiveBottomTab(tab);
-            if (tab === 'tasks') setCurrentPage('home');
-            else if (tab === 'courses' || tab === 'books') setCurrentPage('courses');
-            else if (tab === 'track') setCurrentPage('dailyTrack');
-          }}
-          onOpenAddModal={handleOpenAddModal}
-          onOpenDailyTrack={() => {
-            setCurrentPage('dailyTrack');
-            setActiveBottomTab('track');
-          }}
-          onCloseDailyTrack={() => {
-            setCurrentPage('home');
-            setActiveBottomTab('tasks');
-          }}
-          onOpenCourses={() => {
-            setCoursesInitialStep('subjects');
-            setCurrentPage('courses');
-            setActiveBottomTab('courses');
-          }}
-          onCloseCourses={() => {
-            setCurrentPage('home');
-            setActiveBottomTab('tasks');
-          }}
-          onOpenBooks={() => {
-            setCurrentPage('courses');
-            setActiveBottomTab('courses');
-          }}
-          onCloseBooks={() => {
-            setCurrentPage('home');
-            setActiveBottomTab('tasks');
-          }}
-          onOpenDatabaseViewer={() => setIsDbModalOpen(true)}
-          onOpenAuthModal={() => setIsAuthModalOpen(true)}
-          currentUser={currentUser}
-          streak={streak}
-        />
 
         {/* Database Viewer Modal */}
         <DatabaseViewerModal
